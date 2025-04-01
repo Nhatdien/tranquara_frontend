@@ -1,0 +1,19 @@
+# Build the application
+FROM node:20.18.1-alpine3.19 AS builder
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+RUN yarn install
+
+COPY . .
+RUN yarn build
+
+# Run the application
+FROM node:20.18.1-alpine3.19
+
+WORKDIR /app
+
+COPY --from=builder /app/.output ./.output
+
+EXPOSE 3000

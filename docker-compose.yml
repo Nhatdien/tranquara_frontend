@@ -1,0 +1,14 @@
+
+services:
+  web-frontend:
+      build:
+        context: .
+        dockerfile: ./Dockerfile.yml
+      # image: nhatbontot/quizz-app-frontend:latest
+      command: "node .output/server/index.mjs" 
+      env_file:
+        - .env
+      ports:
+        - 3000:3000
+      volumes:
+        - .:/app
