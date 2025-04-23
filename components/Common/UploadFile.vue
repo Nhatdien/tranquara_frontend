@@ -71,7 +71,7 @@ const props = defineProps({
   },
 });
 
-const { $quizzAppSDK } = useNuxtApp();
+const { $tranquaraSDK } = useNuxtApp();
 // File Types
 type FileType = File | null;
 
@@ -154,7 +154,7 @@ function handleFiles(files: FileList): void {
 const handleClickUploadFile = async () => {
   if (file.value) {
     try {
-      const response = (await $quizzAppSDK.uploadFile(
+      const response = (await $tranquaraSDK.uploadFile(
         file.value,
         props.uploadPath
       )) as Response;

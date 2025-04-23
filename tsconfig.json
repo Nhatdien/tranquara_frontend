@@ -4,6 +4,9 @@
   "compilerOptions": {
     "noImplicitAny": true,
     "strict": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false
   },
   "noImplicitThis": true,
+  
 }

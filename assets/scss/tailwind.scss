@@ -45,43 +45,124 @@
     --success: 120 100% 40%; /* Dark green */
     --success-foreground: 120 100% 85%; /* Light green for strong contrast */
   }
-  .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
+  // .dark {
+  //   --background: 224 71.4% 4.1%;
+  //   --foreground: 210 20% 98%;
 
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
+  //   --card: 224 71.4% 4.1%;
+  //   --card-foreground: 210 20% 98%;
 
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
+  //   --popover: 224 71.4% 4.1%;
+  //   --popover-foreground: 210 20% 98%;
 
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 20% 98%;
+  //   --primary: 263.4 70% 50.4%;
+  //   --primary-foreground: 210 20% 98%;
 
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
+  //   --secondary: 215 27.9% 16.9%;
+  //   --secondary-foreground: 210 20% 98%;
 
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+  //   --muted: 215 27.9% 16.9%;
+  //   --muted-foreground: 217.9 10.6% 64.9%;
 
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
+  //   --accent: 215 27.9% 16.9%;
+  //   --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
+  //   --destructive: 0 62.8% 30.6%;
+  //   --destructive-foreground: 210 20% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 70% 50.4%;
-    --info: 200 100% 50.4%;
-    --info-foreground: 210 20% 98%;
+  //   --border: 215 27.9% 16.9%;
+  //   --input: 215 27.9% 16.9%;
+  //   --ring: 263.4 70% 50.4%;
+  //   --info: 200 100% 50.4%;
+  //   --info-foreground: 210 20% 98%;
 
-    --warning: 40 100% 20%;
-    --warning-foreground: 210 20% 70%;
+  //   --warning: 40 100% 20%;
+  //   --warning-foreground: 210 20% 70%;
 
-    --success: 120 100% 20%;
-    --success-foreground: 210 20% 70%;
-  }
+  //   --success: 120 100% 20%;
+  //   --success-foreground: 210 20% 70%;
+  // }
+  .afternoon{
+    --sky-color: #de6353;
+    --sun-color: #FEE8AE;
+    --light-shine-color: #E79270;
+    --sun-wave: #FEE8AE;
+    --hill-1: #704439;
+    --hill-2-end: #a95f56;
+    --hill-3-end: #e18d68;
+    --sun-ray: #bbb5a5;
+    --beach-color: linear-gradient(to right, #2f6ea1 30%, #818994 60%, #376390);
+    --boat: #6E4237;
+    --fore-beach:#b57061;
+    --back-beach: #b57061;
+    --background-light: #e79270;
+    --tree-start:  #92534f;
+    --tree-end:  #714338;
+}
+
+.morning {
+    --sky-color: #ffd9a0 ;
+    --sun-color: #f6c28b;
+    --light-shine-color: #fde2b6;
+    --sun-wave: #ffcb77;
+    --hill-1: #a66e4a;
+    --hill-2-end: #c48b6f;
+    --hill-3-end: #f1b38c;
+    --sun-ray: #f4d7a1;
+    --beach-color: linear-gradient(to right, #88c2d0 30%, #c0d6df 60%, #a1cbe6);
+    --boat: #8b5e3c;
+    --fore-beach: #e3a77d;
+    --back-beach: #e6b289;
+    --background-light: #fff3e1;
+    --tree-start: #b67a57;
+    --tree-end: #905b40;
+}
+
+
+.evening {
+    --sky-color: #c7a8af;// afternoon sk;
+    --sun-color: #fefae0;           /* soft moon glow */
+    --light-shine-color: #f6d6a8;   /* gentle amber twilight */
+    --sun-wave: #d6d3c9;            /* moon reflection on waves */
+
+    --hill-1: #4a3c44;              /* cool, dusky base hill */
+    --hill-2-end: #6a4e58;          /* muted mid-ground */
+    --hill-3-end: #91636f;          /* softened background hill */
+    --sun-ray: #c5b8b0;
+    --beach-color: linear-gradient(to right, #5c4e57 30%, #948c92 60%, #6e5c6f);
+    --boat: #3f3a45;                /* dark silhouette on moonlight */
+
+    --fore-beach: #7c5a5a;          /* shadowed sand */
+    --back-beach: #8c6a6a;          /* dusk-warmed tones */
+
+    --background-light: #eacdc2;    /* soft pink-beige sky */
+    
+    --tree-start: #5b4149;          /* near-shadow trees */
+    --tree-end: #3e2f35;            /* tree fade into dark */
+}
+.night {
+  --sky-color: #0d1b2a;                /* deep night sky */
+  --sun-color: #f4f4f4;                /* soft moon white */
+  --light-shine-color: #cfcfcf;        /* moonlight shimmer */
+  --sun-wave: #b8c1c1;                 /* subtle moon reflection */
+
+  --hill-1: #1c1c2e;                   /* dark foreground hill */
+  --hill-2-end: #2c2c44;               /* mid-ground muted hill */
+  --hill-3-end: #3e3e5c;               /* distant soft shadow hill */
+  --sun-ray: #a8b0b8;
+  --beach-color: linear-gradient(to right, #1a2c38 30%, #2e3948 60%, #1d2a3a);
+  --boat: #2e2e38;                     /* boat in silhouette */
+
+  --fore-beach: #4a3b4d;               /* darker sand tone */
+  --back-beach: #59495a;               /* dim back beach */
+
+  --background-light: #1a1a2e;         /* general low-light background */
+
+  --tree-start: #2f2f3d;               /* shadowy tree base */
+  --tree-end: #1a1a26;                 /* tree fading into darkness */
+}
+
+
 }
 
 @each $variant
