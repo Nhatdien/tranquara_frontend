@@ -47,7 +47,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     provide: {
       keycloak: UserService,
       sdkSokcetClient: TranquaraSDK.getInstance().webSocketClient,
-      TranquaraSDK,
+      tranquaraSDK,
     },
   };
 });
