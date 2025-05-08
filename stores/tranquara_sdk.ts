@@ -1,6 +1,12 @@
 import { Base } from "./base";
 import type { Config } from "./base";
 import { applyMixins } from "./utils/utils";
+import { Exercises } from "./exercises";
+import { ProgramExercises } from "./program_exericse";
+import { UserSelfGuideActivities } from "./user_self_guilde_activity";
+import { UserCompletedExercises } from "./user_completed_exercise";
+import { UserInformations } from "./user_information";
+import { UserStreaks } from "./user_streak";
 
 class TranquaraSDK extends Base {
   constructor(config?: null | Config) {
@@ -16,8 +22,8 @@ class TranquaraSDK extends Base {
 
 }
 
-interface TranquaraSDK {}
+interface TranquaraSDK extends Exercises, ProgramExercises, UserSelfGuideActivities, UserCompletedExercises, UserInformations, UserStreaks { }
 
-applyMixins(TranquaraSDK, []);
+applyMixins(TranquaraSDK, [Exercises, ProgramExercises, UserSelfGuideActivities, UserCompletedExercises, UserInformations, UserStreaks]);
 
 export default TranquaraSDK;

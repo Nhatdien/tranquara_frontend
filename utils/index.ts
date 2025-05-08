@@ -42,7 +42,7 @@ export async function waitForToken(callback: () => void = () => {}) {
         clearInterval(interval);
         resolve();
       }
-    }, 100);
+    }, 10);
 
     setTimeout(() => {
       clearInterval(interval);

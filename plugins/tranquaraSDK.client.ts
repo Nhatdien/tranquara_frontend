@@ -1,6 +1,7 @@
 import UserService from "~/stores/auth/keycloak_service";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 import { useToast } from "@/components/ui/toast/use-toast";
+import { WebSocketClient } from "~/stores/websocket_client";
 import { ToastAction } from "@/components/ui/toast";
 import { h, render } from "vue";
 import { User } from "lucide-vue-next";
@@ -19,22 +20,18 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     current_username: "",
   });
 
-  if (import.meta.client) {
-    if (!keycloakInitialized) {
-      keycloakInitialized = true;
 
-      // Initialize Keycloak and ensure it's ready
-      await UserService.initKeycloak(() => {
-        // Once Keycloak is initialized, update the SDK with the token and username
-        const token = UserService.getToken();
-        const username = UserService.getTokenParsed()?.preferred_username;
+  if (!keycloakInitialized) {
+    keycloakInitialized = true;
 
-        // Update TranquaraSDK configuration with Keycloak details
+    // Initialize Keycloak and ensure it's ready
+    await UserService.initKeycloak(() => {
+      // Once Keycloak is initialized, update the SDK with the token and username
+      tranquaraSDK.config.access_token = UserService.getToken();
+      tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
 
-        // Activate the WebSocket client after initialization
-        TranquaraSDK.getInstance().webSocketClient.activate();
-      });
-    }
+
+    });
   }
 
   TranquaraSDK.getInstance().onError = (error) => {
@@ -46,7 +43,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   return {
     provide: {
       keycloak: UserService,
-      sdkSokcetClient: TranquaraSDK.getInstance().webSocketClient,
       tranquaraSDK,
     },
   };

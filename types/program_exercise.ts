@@ -4,3 +4,7 @@ export type ProgramExercise = {
     day_number: number,
     exercise_id: number,
 }
+
+export type ProgramExerciseResponse = {
+    program_exercise: ProgramExercise
+}

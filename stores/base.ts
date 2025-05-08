@@ -1,5 +1,5 @@
-import { Client } from "@stomp/stompjs";
 import type { IFrame, ActivationState } from "@stomp/stompjs";
+import { WebSocketClient } from "./websocket_client";
 import { toast, useToast } from "@/components/ui/toast/use-toast";
 
 export type Config = {
@@ -80,60 +80,17 @@ export abstract class Base {
     this.config = config;
   }
 
-  private static wsClientInstance: Client;
-  public get webSocketClient(): Client {
-    if (!Base.wsClientInstance) {
-      Base.wsClientInstance = new Client({
-        brokerURL: `${this.config.websocket_url!}/quiz-room`,
-        reconnectDelay: 5000,
-        connectHeaders: {
-          Authorization: this.config.access_token as string,
-        },
-      });
-    }
-    return Base.wsClientInstance;
-  }
 
-  public set webSocketClient(config: Config) {
-    if (Base.wsClientInstance) {
-      Base.wsClientInstance.deactivate();
-    }
-    Base.wsClientInstance = new Client({
-      brokerURL: `${config.websocket_url!}/quiz-room`,
-      reconnectDelay: 5000,
-      connectHeaders: {
-        Authorization: config.access_token as string,
-      },
-    });
-
-    Base.wsClientInstance.onConnect = (frame: IFrame) => {
-      console.log("Connected to websocket", frame);
-    };
-
-    Base.wsClientInstance.onStompError = (frame: IFrame) => {
-      console.error("Error", frame);
-    };
-
-    Base.wsClientInstance.onChangeState = (state: ActivationState) => {
-      console.log("State", state);
-    };
-
-    Base.wsClientInstance.onWebSocketError = (event: Event) => {
-      console.error("Websocket error", event);
-      Base.wsClientInstance.deactivate();
-    };
-  }
-
-  public onLoading = (loading: boolean, callback = (): void => {}): void => {
+  public onLoading = (loading: boolean, callback = (): void => { }): void => {
     this.loading = loading;
     callback();
   };
 
-  public onResponse = (callback = (): void => {}): void => {
+  public onResponse = (callback = (): void => { }): void => {
     callback();
   };
 
-  public onError = (error: Error, callback = (): void => {}): void => {
+  public onError = (error: Error, callback = (): void => { }): void => {
     this.error = error.message;
     console.error(error);
     callback();

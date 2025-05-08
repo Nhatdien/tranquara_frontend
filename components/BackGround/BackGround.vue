@@ -91,7 +91,7 @@
       <div class="light-house-top-top right"></div>
     </div>
     <div class="light-house-light-container">
-      <lighthouse-light></lighthouse-light>
+      <!-- <lighthouse-light></lighthouse-light> -->
     </div>
     <div class="light-head-railings">
       <div class="railings railings-1"></div>
@@ -173,5 +173,4 @@
 </script>
 
 <style>
-.top{}
 </style>

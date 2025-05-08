@@ -6,3 +6,7 @@ export type UserInformation = {
     daily_reminder_time: Date
     notification_enabled: boolean
 }
+
+export type UserInformationResponse = {
+    user_info: UserInformation
+}

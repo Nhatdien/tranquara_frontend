@@ -4,3 +4,7 @@ export type UserStreak = {
     longest_streak: number,
     last_active: Date,
 }
+
+export type UserStreakResponse = {
+    user_streak: UserStreak
+}
