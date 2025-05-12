@@ -2,7 +2,6 @@
   <NuxtLayout>
     <NuxtPage />
   
-    <button @click="send('Siuuu')">Siuuu</button>
     <Toaster />
   </NuxtLayout>
 </template>
@@ -17,7 +16,7 @@ const exerciseStore = useExerciseStore()
 const { $keycloak, $tranquaraSDK } = useNuxtApp();
 useHead({
   bodyAttrs: {
-    class: 'night' // or 'afternoon', 'evening'
+    class: 'afternoon' // or 'afternoon', 'evening'
   }
 })
 

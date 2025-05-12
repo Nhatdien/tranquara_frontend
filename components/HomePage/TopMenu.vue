@@ -1,23 +1,27 @@
 <template>
-  <div
-    :class="[
-      'flex sm:gap-8 md:gap-8 justify-around items-center',
-    
-    ]">
-    <UserAuthSection />
-  </div>
+  <section class="flex justify-between w-full h-min">
+    <h2>Good morning, Nhat</h2>
+    <div class="flex items-center gap-4">
+
+      <!-- will be moved to user-auth section -->
+      {{ moment().format('dddd, MMMM Do, YYYY')}}
+      <button class="glass-button p-2 rounded-full">
+        <Bell></Bell>
+        
+      </button>
+      <button class="glass-button p-5 rounded-full"></button>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import UserAuthSection from "~/components/HomePage/UserAuthSection.vue";
-import LogoSection from "~/components/HomePage/LogoSection.vue";
 import { useScreen } from "~/composables/useScreen"; // Assuming you have a useScreen composable
-
+import { Bell } from "lucide-vue-next";
+import moment from "moment";
 const isSearchActive = ref(false);
 const screen = useScreen();
 
 const isMediumOrBelow = computed(() => !screen.isLargerThanMedium);
-
 </script>
 
 <style scoped>

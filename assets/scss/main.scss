@@ -1,29 +1,35 @@
 @forward "./tailwind.scss";
 @forward "./components/index.scss";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 .body-container {
   width: 100%;
   overflow-y: auto;
   min-height: 100vh;
   position: relative;
-  -index: 1;
-  
-  // > * {
-  //   position: relative;
-  //   // z-index: 2;
-  // }
 }
 
 .main-content {
-  height: 100%;
-  padding-left: 8rem;
-  padding-right: 8rem;
-  padding-top: 2rem;
+  position: fixed;
+  display: flex;
+  gap: 4;
+  top: 5%;
+  left: 5%;
+  height: 90%;
+  width: 90%;
+  padding: 2rem;
+  border-radius: 8px;
 }
 
 @media (max-width: 1200px) {
   .main-content {
-    padding-left: 6rem;
-    padding-right: 6rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     padding-top: 1.5rem;
   }
 }

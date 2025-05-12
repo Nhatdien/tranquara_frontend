@@ -60,10 +60,10 @@ onMounted(() => {
 <template>
   <ScrollAreaRoot
     v-bind="delegatedProps"
-    :class="cn('relative overflow-hidden', props.class)">
+    :class="cn('relative', props.class)">
     <ScrollAreaViewport
       @scroll="onScroll"
-      class="scroll-area-viewport h-full w-full rounded-[inherit]">
+      class="scroll-area-viewport p-4 h-full w-full rounded-[inherit]">
       <slot />
       <div
         v-if="loadingTop"
