@@ -9,8 +9,6 @@
       </div>
       <HomePageEncourageMent />
       <HomePageDailySuggest />
-      <HomePageEncourageMent />
-      <HomePageDailySuggest />
     </div>
   </ScrollArea>
 

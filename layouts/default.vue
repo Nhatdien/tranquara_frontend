@@ -2,9 +2,8 @@
   <div class="body-container">
     <BackGround />
       <main class="main-content gap-x-4 glass-1">
-        <!-- <TopMenu></TopMenu> -->
-        <Sidebar></Sidebar>
         <slot />
+        <Sidebar></Sidebar>
       </main>
   </div>
 </template>

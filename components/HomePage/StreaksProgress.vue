@@ -1,5 +1,5 @@
 <template>
-    <section class="glass-2 min-w-[200px] min-h-[200px] h-full">
+    <section class="glass-2  min-h-[200px] h-full">
    
     </section>
    </template>

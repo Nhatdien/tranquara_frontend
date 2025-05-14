@@ -17,45 +17,15 @@
 .main-content {
   position: fixed;
   display: flex;
-  gap: 4;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.5rem;
   top: 5%;
   left: 5%;
   height: 90%;
   width: 90%;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 8px;
-}
-
-@media (max-width: 1200px) {
-  .main-content {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 1.5rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .main-content {
-    padding-left: 4rem;
-    padding-right: 4rem;
-    padding-top: 1.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    padding-left: 2rem;
-    padding-right: 2rem;
-    padding-top: 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .main-content {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-top: 0.75rem;
-  }
 }
 
 @font-face {

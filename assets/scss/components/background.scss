@@ -22,52 +22,6 @@
     }
   }
   
-  .arch {
-    position: absolute;
-    left: 0px;
-    height: 10vh;
-    width: 120px;
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuMCIgeTE9IjAuNSIgeDI9IjEuMCIgeTI9IjAuNSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzdkNGM0YiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzcwNDMzOCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-    background-size: 100%;
-    background-image: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #7d4c4b), color-stop(100%, #704338));
-    background-image: -moz-linear-gradient(left,  var(--fore-beach), var(--back-beach));
-    background-image: -webkit-linear-gradient(left,  var(--fore-beach), var(--back-beach));
-    background-image: linear-gradient(to right,  var(--fore-beach), var(--back-beach));
-  }
-  
-  .arch-1 {
-    position: absolute;
-    left: 67px;
-    top: 20px;
-    height: 48px;
-    width: 102px;
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuMCIgeTE9IjAuNSIgeDI9IjEuMCIgeTI9IjAuNSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzdkNGM0YiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzcwNDMzOCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
-    background-size: 100%;
-    background-image: -moz-linear-gradient(left,  var(--tree-start), var(--tree-end));
-    background-image: -webkit-linear-gradient(left,  var(--tree-start), var(--tree-end));
-    background-image: linear-gradient(to right,  var(--tree-start), var(--tree-end));
-    -moz-border-radius-topleft: 100%;
-    -webkit-border-top-left-radius: 100%;
-    border-top-left-radius: 100%;
-    -moz-border-radius-topright: 100%;
-    -webkit-border-top-right-radius: 100%;
-    border-top-right-radius: 100%;
-    -moz-transform: skew(0deg) rotate(0deg);
-    -ms-transform: skew(0deg) rotate(0deg);
-    -webkit-transform: skew(0deg) rotate(0deg);
-    transform: skew(0deg) rotate(0deg);
-  }
-  
-  .umbrella-pole {
-    position: relative;
-    height: 7vh;
-    top: 7vh;
-    width: 1vw;
-    max-width: 6px;
-    left: 113px;
-    background: var(--tree-start);
-  }
-  
   .tree-container {
     width: 20px;
     height: 35vh;
@@ -859,69 +813,91 @@
     right: 5%;
   }
   
+  @keyframes sunShine {
+    0% {
+      height: 400px;
+      width: 400px;
+    }
+
+    50% {
+      height: 420px;
+      width: 420px;
+    }
+
+    100% {
+      height: 400px;
+      width: 400px;
+    }
+  }
   .sun {
     position: absolute;
     height: 400px;
     width: 400px;
-    background: var(--sun-color);
+    background: radial-gradient(
+      circle farthest-side,
+      var(--sun-color) 60%,
+      rgba(245, 207, 103, 0)
+    );
+    // background: var(--sun-color);
     left: 45%;
     bottom: -130px;
     -moz-border-radius: 100%;
     -webkit-border-radius: 100%;
-    border-radius: 100%;
+    border-radius: 50%;
     z-index: 3;
+    // animation: sunShine 5s ease infinite;
   }
   
-  .sun-wave-container {
-    position: absolute;
-    height: 400px;
-    width: 800px;
-    bottom: 0px;
-    left: calc(45% - 200px);
-    z-index: 0;
-  }
+  // .sun-wave-container {
+  //   position: absolute;
+  //   height: 400px;
+  //   width: 800px;
+  //   bottom: 0px;
+  //   left: calc(45% - 200px);
+  //   z-index: 0;
+  // }
   
-  .sun-wave {
-    position: relative;
-    margin: auto;
-    background: var(--sun-wave);
-    -moz-border-radius: 100%;
-    -webkit-border-radius: 100%;
-    border-radius: 100%;
-    bottom: 300px;
-  }
+  // .sun-wave {
+  //   position: relative;
+  //   margin: auto;
+  //   background: var(--sun-wave);
+  //   -moz-border-radius: 100%;
+  //   -webkit-border-radius: 100%;
+  //   border-radius: 100%;
+  //   bottom: 300px;
+  // }
   
-  .sun-wave-1 {
-    position: absolute;
-    height: 458px;
-    width: 458px;
-    margin: auto;
-    background: var(--sun-wave);
-    -moz-border-radius: 100%;
-    -webkit-border-radius: 100%;
-    border-radius: 100%;
-    bottom: -158px;
-    left: 172px;
-    z-index: 3;
-    -moz-animation: ray-1;
-    -moz-animation-duration: 3s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-delay: 0s;
-    -moz-animation-direction: forwards;
-    -moz-animation-timing-function: linear;
-    -webkit-animation: ray-1;
-    -webkit-animation-duration: 3s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-delay: 0s;
-    -webkit-animation-direction: forwards;
-    -webkit-animation-timing-function: linear;
-    animation: ray-1;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-delay: 0s;
-    animation-direction: forwards;
-    animation-timing-function: linear;
-  }
+  // .sun-wave-1 {
+  //   position: absolute;
+  //   height: 458px;
+  //   width: 458px;
+  //   margin: auto;
+  //   background: var(--sun-wave);
+  //   -moz-border-radius: 100%;
+  //   -webkit-border-radius: 100%;
+  //   border-radius: 100%;
+  //   bottom: -158px;
+  //   left: 172px;
+  //   z-index: 3;
+  //   -moz-animation: ray-1;
+  //   -moz-animation-duration: 3s;
+  //   -moz-animation-iteration-count: infinite;
+  //   -moz-animation-delay: 0s;
+  //   -moz-animation-direction: forwards;
+  //   -moz-animation-timing-function: linear;
+  //   -webkit-animation: ray-1;
+  //   -webkit-animation-duration: 3s;
+  //   -webkit-animation-iteration-count: infinite;
+  //   -webkit-animation-delay: 0s;
+  //   -webkit-animation-direction: forwards;
+  //   -webkit-animation-timing-function: linear;
+  //   animation: ray-1;
+  //   animation-duration: 3s;
+  //   animation-iteration-count: infinite;
+  //   animation-delay: 0s;
+  //   animation-direction: forwards;
+  //   animation-timing-function: linear;
+  // }
   
   @keyframes ray-1 {
     0% {
@@ -1034,7 +1010,7 @@
     margin: auto;
     background: var(--sun-ray);
     margin-top: 2vh;
-    height: 1vh;
+    height: 0.5vh;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
@@ -1440,7 +1416,7 @@
     -webkit-transform: skew(64deg);
     transform: skew(64deg);
   }
-  
+
   .middle {
     position: absolute;
     background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuMCIgeTE9IjAuNSIgeDI9IjEuMCIgeTI9IjAuNSI+PHN0b3Agb2Zmc2V0PSIzMCUiIHN0b3AtY29sb3I9IiMyZjZlYTEiLz48c3RvcCBvZmZzZXQ9IjYwJSIgc3RvcC1jb2xvcj0iIzgxODk5NCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzM3NjM5MCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
@@ -1449,10 +1425,8 @@
     background-image: -moz-linear-gradient(left, #2f6ea1 30%, #818994 60%, #376390);
     background-image: -webkit-linear-gradient(left, #2f6ea1 30%, #818994 60%, #376390);
     background-image: var(--beach-color);
-    height: 20vh;
-    left:0;
     width: 100%;
-    bottom: 20vh;
+    // filter: saturate(350%);
   }
   
   .bottom {
@@ -1463,11 +1437,20 @@
     background-image: -moz-linear-gradient(left, #2f6ea1 30%, #818994 60%, #376390);
     background-image: -webkit-linear-gradient(left, #2f6ea1 30%, #818994 60%, #376390);
     background-image: var(--beach-color);
-    height: 30vh;
     width: 100%;
-    bottom: 0px;
-    left: 0px;
     overflow: hidden;
+
+  }
+  .middle {
+    height: 20vh;
+    bottom: 20vh;
+    left: 0;
+  }
+  
+  .bottom {
+    height: 30vh;
+    bottom: 0;
+    left: 0
   }
   
   .top {
@@ -1642,11 +1625,15 @@
   
   .background-light-1 {
     position: absolute;
-    top: -35px;
-    left: 18px;
-    height: 94px;
-    width: 94px;
-    background: var(--light-shine-color);
+    top: -65px;
+    left: -5px;
+    height: 144px;
+    width: 144px;
+    background:radial-gradient(
+      circle farthest-side,
+      var(--light-shine-color) 60%,
+      rgba(245, 207, 103, 0)
+    );
     z-index: 0;
     -moz-border-radius: 100%;
     -webkit-border-radius: 100%;

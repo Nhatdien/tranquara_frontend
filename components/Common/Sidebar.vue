@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex flex-col w-min p-2 gap-2 rounded-full glass-2 items-center  justify-center h-min my-auto">
+  <nav class="flex p-2 gap-2 rounded-full glass-2 justify-center">
       <button @click="navigateTo(sidebar.link)" v-for="sidebar in sidebarSchema" class="glass-button w-min p-3 rounded-full">
 
         <component class="" :is="componentMapping[sidebar.icon]"/>

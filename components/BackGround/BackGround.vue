@@ -104,9 +104,9 @@
           <div class="railings railings-7"></div>
           <div class="railings railings-8"></div>
         </div>
-        <div class="background-light-1"></div>
-        <div class="background-light-2"></div>
-        <div class="background-light-3"></div>
+   <div class="background-light-1"></div> 
+        <!-- <div class="background-light-2"></div> -->
+        <!-- <div class="background-light-3"></div>  -->
         <div class="light-head-base"></div>
         <div class="light-top"></div>
         <div class="light-bottom"></div>
@@ -126,17 +126,19 @@
           <div class="boat-base-back"></div>
         </div>
       </div>
-      <div class="sun-wave-container">
+      <!-- <div class="sun-wave-container">
         <div class="sun-wave sun-wave-1"></div>
         <div class="sun-wave sun-wave-2"></div>
         <div class="sun-wave sun-wave-3"></div>
-      </div>
+      </div> -->
     </div>
     <div class="middle">
       <div class="sun-reflection">
         <div class="sun-ray sun-ray-1"></div>
+        <div class="sun-ray sun-ray-3"></div>
         <div class="sun-ray sun-ray-2"></div>
         <div class="sun-ray sun-ray-3"></div>
+        <div class="sun-ray sun-ray-5"></div>
         <div class="sun-ray sun-ray-4"></div>
         <div class="sun-ray sun-ray-5"></div>
       </div>
@@ -151,10 +153,6 @@
             <div class="leaf leaf-6"></div>
           </div>
         </div>
-      </div>
-      <div class="umbrella-container">
-        <div class="arch arch-1"></div>
-        <div class="umbrella-pole"></div>
       </div>
     </div>
     <div class="bottom">
