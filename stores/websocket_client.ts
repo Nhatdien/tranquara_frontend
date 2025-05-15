@@ -1,6 +1,6 @@
 export class WebSocketClient {
     private static instance: WebSocketClient;
-    private socket: WebSocket;
+    public socket: WebSocket;
     private url: string;
 
     private constructor(url: string) {

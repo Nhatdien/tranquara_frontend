@@ -21,19 +21,19 @@ useHead({
 })
 
 
-const { status, data, send, open, close } = useWebSocket($tranquaraSDK.config.websocket_url || "", {
-  onConnected(ws) {
-    console.log("Connected to: ", ws)
-  },
-  autoReconnect: {
-    retries: 5,
-    delay: 3000,
-  },
-  immediate: true,
-  onDisconnected(ws, event) {
-    console.log("Disconnected with reason: ", event.reason)
-  },
-})
+// const { status, data, send, open, close } = useWebSocket($tranquaraSDK.config.websocket_url || "", {
+//   onConnected(ws) {
+//     console.log("Connected to: ", ws)
+//   },
+//   autoReconnect: {
+//     retries: 5,
+//     delay: 3000,
+//   },
+//   immediate: true,
+//   onDisconnected(ws, event) {
+//     console.log("Disconnected with reason: ", event.reason)
+//   },
+// })
 // await callOnce('exercise', async () => {
 //   await waitForToken()
 //   exerciseStore.getExercises({})
@@ -45,7 +45,6 @@ const { status, data, send, open, close } = useWebSocket($tranquaraSDK.config.we
 
 onMounted(async () => {
   await waitForToken()
-  send("Siuuu")
 })
 
 </script>

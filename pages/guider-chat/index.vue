@@ -25,23 +25,31 @@ const input = ref("");
 const messages = ref([{ sender: "bot", text: "Hi! I’m here to help. 🌿" }]);
 
 const chatBox = ref(null);
-
+const { $socketClient } = useNuxtApp();
 function sendMessage() {
   if (!input.value.trim()) return;
 
   // Add user message
   messages.value.push({ sender: "user", text: input.value });
   const userMessage = input.value;
+  $socketClient.send(userMessage);
+
   input.value = "";
 
   // Add bot reply (simple echo for now)
-  setTimeout(() => {
-    messages.value.push({ sender: "bot", text: `You said: "${userMessage}"` });
+}
+
+onMounted(() => {
+  $socketClient.socket.onmessage = (event) => {
+    messages.value.push({
+      sender: "bot",
+      text: `${event.data}`,
+    });
     nextTick(() => {
       chatBox.value.scrollTop = chatBox.value.scrollHeight;
     });
-  }, 500);
-}
+  };
+});
 </script>
 
 <style scoped>
