@@ -20,7 +20,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     current_username: "",
   });
 
-  const socketClient = WebSocketClient.getInstance(config.public.websocketURL)
   if (!keycloakInitialized) {
     keycloakInitialized = true;
 
@@ -44,7 +43,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     provide: {
       keycloak: UserService,
       tranquaraSDK,
-      socketClient
     },
   };
 });

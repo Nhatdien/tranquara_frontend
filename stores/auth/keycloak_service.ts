@@ -75,6 +75,10 @@ class KeycloakService {
     return KeycloakService._kc.tokenParsed;
   }
 
+  public getUserUUid(): string | undefined {
+    return this.getTokenParsed()?.sub
+  }
+
   public refreshToken(): Promise<string | undefined> {
     return new Promise((resolve, reject) => {
       KeycloakService._kc

@@ -1,12 +1,14 @@
 <template>
   <div class="chat-header glass-2">🤖 Tranquara Bot</div>
   <transition-group class="h-full" name="message-pop" tag="div">
+    <ScrollArea class="h-[600px]">
     <div
       v-for="(msg, i) in messages"
       :key="i"
       :class="['chat-message', msg.sender]">
       {{ msg.text }}
     </div>
+  </ScrollArea>
   </transition-group>
   <form class="chat-input" @submit.prevent="sendMessage">
     <input
@@ -20,27 +22,35 @@
 
 <script setup>
 import { ref, nextTick } from "vue";
+import ScrollArea from "~/components/ui/scroll-area/ScrollArea.vue";
+import { WebSocketClient } from "~/stores/websocket_client";
 
+const { $keycloak } = useNuxtApp();
+const config = useRuntimeConfig();
+const socketClient = ref();
 const input = ref("");
 const messages = ref([{ sender: "bot", text: "Hi! I’m here to help. 🌿" }]);
 
 const chatBox = ref(null);
-const { $socketClient } = useNuxtApp();
 function sendMessage() {
   if (!input.value.trim()) return;
 
   // Add user message
   messages.value.push({ sender: "user", text: input.value });
   const userMessage = input.value;
-  $socketClient.send(userMessage);
+  socketClient.value.send(userMessage);
 
   input.value = "";
 
   // Add bot reply (simple echo for now)
 }
 
-onMounted(() => {
-  $socketClient.socket.onmessage = (event) => {
+onMounted(async () => {
+  await waitForToken();
+  socketClient.value = WebSocketClient.getInstance(
+    `${config.public.websocketURL}/${$keycloak.getUserUUid()}`
+  );
+  socketClient.value.socket.onmessage = (event) => {
     messages.value.push({
       sender: "bot",
       text: `${event.data}`,
