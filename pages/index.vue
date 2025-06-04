@@ -1,12 +1,9 @@
 <template>
-  <ScrollArea :scroll-hide-delay="2" class="h-[750px] w-full">
+  <ScrollArea :scroll-hide-delay="2" class="min-h-[70vh] max-h-[800px] w-full">
     <div class="flex flex-col w-full gap-4">
       <HomePageTopMenu />
-
-      <div class="h-full flex gap-4">
-        <HomePageEmotionCharts class="flex-1" />
-        <HomePageStreaksProgress class="flex-1" />
-      </div>
+      <HomePageEmotionCharts class="flex-1" />
+      <HomePageStreaksProgress class="flex-1" />
       <HomePageEncourageMent />
       <HomePageDailySuggest />
     </div>

@@ -1,15 +1,15 @@
 <template>
   <div class="chat-header glass-2">🤖 Tranquara Bot</div>
-  <transition-group class="h-full" name="message-pop" tag="div">
-    <ScrollArea class="h-[600px]">
+  <ScrollArea :scroll-hide-delay="2" class="min-h-[70vh] max-h-[800px] w-full">
+  <transition-group name="message-pop" tag="div">
     <div
       v-for="(msg, i) in messages"
       :key="i"
       :class="['chat-message', msg.sender]">
       {{ msg.text }}
     </div>
-  </ScrollArea>
   </transition-group>
+</ScrollArea>
   <form class="chat-input" @submit.prevent="sendMessage">
     <input
       v-model="input"
