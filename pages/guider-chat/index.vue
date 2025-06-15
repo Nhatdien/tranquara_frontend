@@ -1,6 +1,5 @@
 <template>
   <div class="chat-header glass-2">🤖 Tranquara Bot</div>
-  <ScrollArea :scroll-hide-delay="2" class="min-h-[70vh] max-h-[800px] w-full">
   <transition-group name="message-pop" tag="div">
     <div
       v-for="(msg, i) in messages"
@@ -9,7 +8,6 @@
       {{ msg.text }}
     </div>
   </transition-group>
-</ScrollArea>
   <form class="chat-input" @submit.prevent="sendMessage">
     <input
       v-model="input"
@@ -22,7 +20,6 @@
 
 <script setup>
 import { ref, nextTick } from "vue";
-import ScrollArea from "~/components/ui/scroll-area/ScrollArea.vue";
 import { WebSocketClient } from "~/stores/websocket_client";
 
 const { $keycloak } = useNuxtApp();

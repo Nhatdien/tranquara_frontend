@@ -7,11 +7,9 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from "./components/ui/toast/use-toast";
 import TranquaraSDK from "./stores/tranquara_sdk";
 import { useWebSocket } from '@vueuse/core'
 const config = useRuntimeConfig()
-const { toast } = useToast();
 const exerciseStore = useExerciseStore()
 const { $keycloak, $tranquaraSDK } = useNuxtApp();
 useHead({

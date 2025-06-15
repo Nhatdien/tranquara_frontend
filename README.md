@@ -74,11 +74,3 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 link to find when facing a bug realte
-
-```bash
-# init component config
-npx shadcn-vue@0.10.4 init
-
-#add a component 
-
-npx shadcn-vue@0.10.4 add <componen\t>

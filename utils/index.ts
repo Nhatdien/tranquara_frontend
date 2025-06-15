@@ -1,7 +1,6 @@
 import { parse } from "node-html-parser";
 import moment from "moment";
 import UserService from "~/stores/auth/keycloak_service";
-import { useToast } from "@/components/ui/toast/use-toast";
 
 export function getInnerTextFromHTML(htmlString: string): string {
   // Parse the HTML string
@@ -35,7 +34,6 @@ export function formatDate(date: string) {
 }
 
 export async function waitForToken(callback: () => void = () => {}) {
-  const { toast } = useToast();
   return new Promise<void>((resolve, reject) => {
     const interval = setInterval(() => {
       if (UserService.getToken()) {

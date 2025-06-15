@@ -51,7 +51,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { Upload } from "lucide-vue-next";
-import { useToast } from "../ui/toast/use-toast";
 
 const props = defineProps({
   accept: {
@@ -164,11 +163,7 @@ const handleClickUploadFile = async () => {
       navigateTo(`/quiz/${quizUpload?.id}/view`)
       emits("onFileUploaded")
       if (response.status >= 400) {
-        useToast().toast({
-          title: "Error",
-          description: await response.text(),
-          variant: "destructive",
-        });
+
       }
     } catch (error) {
       console.error(error);

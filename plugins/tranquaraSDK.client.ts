@@ -1,15 +1,11 @@
 import UserService from "~/stores/auth/keycloak_service";
 import TranquaraSDK from "~/stores/tranquara_sdk";
-import { useToast } from "@/components/ui/toast/use-toast";
 import { WebSocketClient } from "~/stores/websocket_client";
-import { ToastAction } from "@/components/ui/toast";
-import { h, render } from "vue";
 import { User } from "lucide-vue-next";
 
 let keycloakInitialized = false;
 
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const { toast } = useToast();
   const config = nuxtApp.$config;
   const tranquaraSDK = TranquaraSDK.getInstance({
     base_url: config.public.baseURL,

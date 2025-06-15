@@ -1,4 +1,3 @@
-import { useToast } from "@/components/ui/toast/use-toast";
 
 type ToastInfo = {
   title: string;
@@ -6,7 +5,6 @@ type ToastInfo = {
   variant: "success" | "destructive" | "warning" | "info" | "default";
 };
 export const useTryCatch = (toastInfo?: ToastInfo | undefined) => {
-  const { toast } = useToast();
 
   const tryCatch = async (fn: () => Promise<any>) => {
     const response = null as Response | null;

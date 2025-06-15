@@ -1,6 +1,5 @@
 import type { IFrame, ActivationState } from "@stomp/stompjs";
 import { WebSocketClient } from "./websocket_client";
-import { toast, useToast } from "@/components/ui/toast/use-toast";
 
 export type Config = {
   base_url: string;
@@ -39,25 +38,11 @@ const createNotify = (response: Response) => {
       const parsedData = JSON.parse(data);
       const errorMessage =
         parsedData?.detail || parsedData?.message || parsedData?.errorMessage;
-      useToast().toast({
-        title: "Error: " + response.status,
-        description: errorMessage,
-        variant: "destructive",
-      });
+
     } else if (typeof data === "object") {
 
       const errorMessage = data?.detail || data?.message || data?.errorMessage || JSON.stringify(data);
-      useToast().toast({
-        title: "Error: " + response.status,
-        description: errorMessage,
-        variant: "destructive",
-      });
     } else {
-      useToast().toast({
-        title: "Error: " + response.status,
-        description: "An error occurred",
-        variant: "destructive",
-      });
     }
   });
 };
@@ -116,11 +101,7 @@ export abstract class Base {
         .then((response: Response) => {
           if (response.status !== 200) {
             if (response.status === 401) {
-              useToast().toast({
-                title: "Unauthorized",
-                description: "You are not authorized to perform this action",
-                variant: "destructive",
-              });
+ 
               throw new Error("401 Unauthorized");
             }
             else if (response.status >= 400) {
