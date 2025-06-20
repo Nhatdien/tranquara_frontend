@@ -1,23 +1,22 @@
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  
-    <Toaster />
-  </NuxtLayout>
+  <UApp>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UApp>
 </template>
 
 <script setup lang="ts">
 import TranquaraSDK from "./stores/tranquara_sdk";
-import { useWebSocket } from '@vueuse/core'
-const config = useRuntimeConfig()
-const exerciseStore = useExerciseStore()
+import { useWebSocket } from "@vueuse/core";
+const config = useRuntimeConfig();
+const exerciseStore = useExerciseStore();
 const { $keycloak, $tranquaraSDK } = useNuxtApp();
 useHead({
   bodyAttrs: {
-    class: 'afternoon' // or 'afternoon', 'evening'
-  }
-})
-
+    class: "afternoon", // or 'afternoon', 'evening'
+  },
+});
 
 // const { status, data, send, open, close } = useWebSocket($tranquaraSDK.config.websocket_url || "", {
 //   onConnected(ws) {
@@ -42,7 +41,6 @@ useHead({
 // })
 
 onMounted(async () => {
-  await waitForToken()
-})
-
+  await waitForToken();
+});
 </script>

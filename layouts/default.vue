@@ -11,4 +11,5 @@
 <script setup lang="ts">
 import TopMenu from "~/components/HomePage/TopMenu.vue";
 import Sidebar from "~/components/Common/Sidebar.vue";
+import BackGround from "~/components/BackGround/BackGround.vue";
 </script>

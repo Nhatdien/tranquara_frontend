@@ -74,3 +74,8 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 link to find when facing a bug realte
+
+
+### Run android app
+```bash
+npx cap run android

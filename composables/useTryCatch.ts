@@ -11,22 +11,9 @@ export const useTryCatch = (toastInfo?: ToastInfo | undefined) => {
     try {
       await fn();
       !toastInfo?.title
-        ? toast({
-            title: "Success",
-            description: "Operation completed successfully",
-            variant: "success",
-          })
-        : toast({
-            title: toastInfo?.title,
-            description: toastInfo?.description,
-            variant: toastInfo?.variant,
-          });
+       
     } catch (error: any) {
-      toast({
-        title: `Error: ${error.message}`,
-        description: "An error occurred",
-        variant: "destructive",
-      });
+    
 
       console.error(error);
     }
