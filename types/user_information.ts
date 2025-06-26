@@ -1,10 +1,11 @@
 export type UserInformation = {
     user_uuid: string
+    name: string
     age: number
+    gender: string
     kyc_answers: {[key: string]: any}
-    program_mode: '8-week' | 'self-guided'
-    daily_reminder_time: Date
-    notification_enabled: boolean
+    user_settings: {[key: string]: any}
+    created_at: Date
 }
 
 export type UserInformationResponse = {

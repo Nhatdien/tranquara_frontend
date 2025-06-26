@@ -10,7 +10,7 @@ export type UserCompletedExercise = {
     notes: string
 }
 
-export type UserSelfGuideActivityResponse = {
+export type UserCompletedExerciseResponse = {
     metadata: FilterMetaData
     user_completed_exercises: UserCompletedExercise
 }
