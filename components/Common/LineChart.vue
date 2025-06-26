@@ -3,6 +3,13 @@
 </template>
 
 <script setup>
+import { use } from 'echarts/core'
+import { LineChart } from 'echarts/charts'
+import { GridComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+
+
+use([GridComponent, LineChart, CanvasRenderer])
 
 
 const option = ref({

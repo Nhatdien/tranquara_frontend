@@ -12,11 +12,6 @@ import { useWebSocket } from "@vueuse/core";
 const config = useRuntimeConfig();
 const exerciseStore = useExerciseStore();
 const { $keycloak, $tranquaraSDK } = useNuxtApp();
-useHead({
-  bodyAttrs: {
-    class: "afternoon", // or 'afternoon', 'evening'
-  },
-});
 
 // const { status, data, send, open, close } = useWebSocket($tranquaraSDK.config.websocket_url || "", {
 //   onConnected(ws) {

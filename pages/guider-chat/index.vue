@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-header glass-2">🤖 Tranquara Bot</div>
+  <div class="chat-header ">🤖 Tranquara Bot</div>
   <transition-group name="message-pop" tag="div">
     <div
       v-for="(msg, i) in messages"
@@ -13,7 +13,7 @@
       v-model="input"
       type="text"
       placeholder="Ask something..."
-      class="glass-2" />
+      class="" />
     <button type="submit" class="glass-button">➤</button>
   </form>
 </template>
