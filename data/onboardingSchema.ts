@@ -4,12 +4,6 @@ export const onboardingSchema = [
       title: "User Profile",
       steps: [
         {
-          id: "fullName",
-          type: "text",
-          label: "Full Name",
-          required: true
-        },
-        {
           id: "age",
           type: "number",
           label: "Age",

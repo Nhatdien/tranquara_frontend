@@ -24,8 +24,6 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       // Once Keycloak is initialized, update the SDK with the token and username
       tranquaraSDK.config.access_token = UserService.getToken();
       tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
-      
-
     });
   }
 
