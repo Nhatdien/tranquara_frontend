@@ -1,20 +1,22 @@
 <template>
-  <div>
+  <div class="h-full flex w-full flex-col justify-center">
     <UStepper ref="stepper" :disabled="true" :items="items">
       <template #content="{ item }">
         <OnboardingUserProfileForm
-          class="flex flex-col items-center"
+          class="flex flex-col items-center mt-20"
           v-if="item.title == 'Profile'">
         </OnboardingUserProfileForm>
         <div class="flex flex-col items-center">
           <CommonEmotionSlider
-          class="max-w-1/2"
             v-if="item.title == 'Check-in'"></CommonEmotionSlider>
+        </div>
+        <div class="flex flex-col items-center">
+          <OnboardingPreferenceForm v-if="item.title == 'Preferences'" />
         </div>
       </template>
     </UStepper>
 
-    <div class="flex gap-2 justify-between mt-4">
+    <div class="flex justify-between mt-auto">
       <UButton
         leading-icon="i-lucide-arrow-left"
         :disabled="!stepper?.hasPrev"
