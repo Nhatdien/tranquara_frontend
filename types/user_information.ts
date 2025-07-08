@@ -1,5 +1,5 @@
 export type UserInformation = {
-    user_uuid: string
+    user_id: string
     name: string
     age: number
     gender: string
@@ -11,3 +11,16 @@ export type UserInformation = {
 export type UserInformationResponse = {
     user_info: UserInformation
 }
+
+export type OnboardingState = {
+    profile: {
+        age: number
+        gender: string
+    }
+    preference: {
+        goal: string
+        therapy_experience: string
+    }
+}
+
+export type OnboardingRequestPayload = Omit<UserInformation, "user_id" | "created_at">

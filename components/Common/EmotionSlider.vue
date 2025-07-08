@@ -25,15 +25,19 @@
         </div>
       </div>
     </div>
-    <div class="flex-item">
-      {{ emotions[currentValue] }}
+    <div class="flex-item mt-8">
       <USlider v-model="currentValue" :min="0" :max="4" :step="1"> </USlider>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { emotions } from '~/data/emotionArray';
+
+const model = defineModel()
 const currentValue = ref(2);
 
-const emotions = ["depress", "sad", "neutral", "Joy", "Happy"];
+watch(currentValue, ()=> {
+  model.value = currentValue.value
+})
 </script>

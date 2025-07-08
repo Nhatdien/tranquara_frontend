@@ -12,10 +12,7 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-const state = reactive<Partial<Schema>>({
-  age: undefined,
-  gender: undefined,
-});
+const state = reactive<Schema>(userInformationStore().onboardingState.profile);
 
 const toast = useToast();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -41,6 +38,8 @@ const genderItems = ref<RadioGroupItem[]>([
     value: "Prefer not to say",
   },
 ]);
+
+
 </script>
 
 <template>

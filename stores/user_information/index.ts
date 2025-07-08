@@ -1,11 +1,16 @@
 import { Base } from "../base";
-import { UserInformation, UserInformationResponse } from "~/types/user_information";
+import { UserInformation, UserInformationResponse, OnboardingRequestPayload } from "~/types/user_information";
 
 export class UserInformations extends Base {
-    async getExerciseById(exericseId: number): Promise<UserInformationResponse> {
-
+    async getUserInformation(): Promise<UserInformationResponse> {
         return this.fetch(`${this.config.base_url}/user_information`)
     }
 
+    async createUserInformation(info: OnboardingRequestPayload): Promise<UserInformationResponse> {
+        return this.fetch(`${this.config.base_url}/user_information`, {
+            method: "POST",
+            body: JSON.stringify(info)
+        })
+    }
 
 }

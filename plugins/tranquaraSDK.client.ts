@@ -5,7 +5,7 @@ import { User } from "lucide-vue-next";
 
 let keycloakInitialized = false;
 
-export default defineNuxtPlugin(async (nuxtApp) => {
+export default defineNuxtPlugin((nuxtApp) => {
   const config = nuxtApp.$config;
   const tranquaraSDK = TranquaraSDK.getInstance({
     base_url: config.public.baseURL,
@@ -20,7 +20,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     keycloakInitialized = true;
 
     // Initialize Keycloak and ensure it's ready
-    await UserService.initKeycloak(() => {
+   UserService.initKeycloak(() => {
       // Once Keycloak is initialized, update the SDK with the token and username
       tranquaraSDK.config.access_token = UserService.getToken();
       tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;

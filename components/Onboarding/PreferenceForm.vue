@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import type { RadioGroupItem, RadioGroupValue } from "@nuxt/ui";
 
+const userInfoStore = userInformationStore()
 const goalItems = ref<RadioGroupItem[]>([
   {
     label: "Journaling emotions",
@@ -63,4 +64,10 @@ const experienceItems = ref<RadioGroupItem[]>([
 ])
 
 const experienceValue = ref<RadioGroupValue>()
+
+watch([goalValue, experienceValue], () => {
+  userInfoStore.onboardingState.preference.goal = goalValue.value as string
+  userInfoStore.onboardingState.preference.therapy_experience = experienceValue.value as string
+
+})
 </script>

@@ -1,0 +1,1 @@
+export const emotions = ["depress", "sad", "neutral", "Joy", "Happy"];

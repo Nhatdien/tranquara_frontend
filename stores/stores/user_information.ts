@@ -1,0 +1,40 @@
+import { defineStore } from "pinia";
+import TranquaraSDK from "../tranquara_sdk";
+import { UserInformation, UserInformationResponse, OnboardingState, OnboardingRequestPayload } from "~/types/user_information";
+import tranquaraSDKClient from "~/plugins/tranquaraSDK.client";
+
+
+export const userInformationStore = defineStore("user_info", {
+    state: () => ({
+        userInfomation: {} as UserInformation,
+        onboardingState: {
+            "profile": {
+                gender: "",
+                age: 0,
+            },
+            "preference": {
+                goal: "",
+                therapy_experience: ""
+            }
+        } as OnboardingState,
+        isError: false as Boolean,
+    }),
+
+    actions: {
+        async getMe() {
+            return TranquaraSDK.getInstance().getUserInformation().then((response: UserInformationResponse) => {
+                this.userInfomation = response.user_info
+            }).catch((error: Error) => {
+                this.isError = true
+            })
+        },
+
+        async sendOnboardingInfo(info: OnboardingRequestPayload) {
+            return TranquaraSDK.getInstance().createUserInformation(info).then((response: UserInformationResponse) => {
+                this.userInfomation = response.user_info
+            }).catch((error: Error) => {
+                this.isError = true
+            })
+        }
+    }
+})

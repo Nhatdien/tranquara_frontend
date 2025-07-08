@@ -11,33 +11,16 @@
 }
 
 .main-content {
-  position: fixed;
+  position: relative;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
   gap: 0.5rem;
-  overflow: scroll;
-  // top: 5%;
-  // left: 5%;
   height: 100%;
   width: 100%;
   padding: 1rem;
   border-radius: 8px;
-}
-
-@font-face {
-  font-family: "Nunito";
-  src: url("/fonts/Nunito-VariableFont_wght.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: "Amelia";
-  src: url("/fonts/AmeliaHeart.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "SketchChalk";
-  src: url("/fonts/SketchChalk-vnveO.ttf") format("truetype");
+  margin-bottom: 80px;
 }
 
 h1,

@@ -1,4 +1,3 @@
-import type { IFrame, ActivationState } from "@stomp/stompjs";
 import { WebSocketClient } from "./websocket_client";
 
 export type Config = {
