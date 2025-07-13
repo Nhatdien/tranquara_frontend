@@ -1,3 +1,4 @@
+import { plugin } from "postcss";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
@@ -32,7 +33,8 @@ export default defineNuxtConfig({
   },
   postcss: {
     plugins: {
-      "@tailwindcss/postcss": {},
+      "@tailwindcss/postcss": {
+      },
     }
   },
 });

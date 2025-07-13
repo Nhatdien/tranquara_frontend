@@ -7,7 +7,7 @@
     </div>
     <div class="flex flex-col items-center gap-8">
       <h2>What makes you feel that way ?</h2>
-      <UTextarea class="w-full" :rows="12"></UTextarea>
+      <CommonMarkdownEditor v-model="journalText"></CommonMarkdownEditor>
     </div>
   </section>
 </template>

@@ -16,12 +16,12 @@
             v-if="item.title == 'Check-in'"></OnboardingInitalJournal>
         </div>
         <div class="flex flex-col items-center">
-          <OnboardingPreferenceForm v-if="item.title == 'Preferences'" />
+          <OnboardingPreferenceForm v-model="userPreferenceInfo" v-if="item.title == 'Preferences'" />
         </div>
       </template>
     </UStepper>
-    <pre class="my-4">{{ userInformationStore().onboardingState }}</pre>
-    <div class="flex justify-between mt-auto">
+    <!-- <pre class="my-4"> {{ userProfileInfo }} {{ userPreferenceInfo }}</pre> -->
+    <div class="flex justify-between items-end mt-4">
       <UButton
         leading-icon="i-lucide-arrow-left"
         :disabled="!stepper?.hasPrev"
@@ -61,22 +61,29 @@ const items: StepperItem[] = [
   },
 ];
 
-const userProfileInfo = ref({});
+const userPreferenceInfo = ref({
+  goal: "",
+  experience: ""
+});
+
+const userProfileInfo = ref({
+  age: 0,
+  gender: ""
+});
 
 const nextStepButtonText = computed((): string => {
   return stepper.value?.hasNext ? "Next" : "Submit";
 });
 
-const onboardingState = userInformationStore().onboardingState;
 const nextStep = async () => {
   if (stepper.value?.hasNext) {
     stepper.value?.next();
   } else {
     await userInformationStore().sendOnboardingInfo({
       name: $keycloak.getTokenParsed()?.preferred_username,
-      ...onboardingState.profile,
+      ...userProfileInfo.value,
       kyc_answers: {
-        ...onboardingState.preference,
+        ...userPreferenceInfo.value,
       },
       user_settings: {},
     });

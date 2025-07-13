@@ -1,22 +1,12 @@
 import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
-import { UserInformation, UserInformationResponse, OnboardingState, OnboardingRequestPayload } from "~/types/user_information";
+import { UserInformation, UserInformationResponse, OnboardingRequestPayload } from "~/types/user_information";
 import tranquaraSDKClient from "~/plugins/tranquaraSDK.client";
 
 
 export const userInformationStore = defineStore("user_info", {
     state: () => ({
         userInfomation: {} as UserInformation,
-        onboardingState: {
-            "profile": {
-                gender: "",
-                age: 0,
-            },
-            "preference": {
-                goal: "",
-                therapy_experience: ""
-            }
-        } as OnboardingState,
         isError: false as Boolean,
     }),
 

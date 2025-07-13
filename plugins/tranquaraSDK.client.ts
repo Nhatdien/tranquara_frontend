@@ -16,8 +16,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     current_username: "",
   });
 
-  if (!keycloakInitialized) {
-    keycloakInitialized = true;
 
     // Initialize Keycloak and ensure it's ready
    UserService.initKeycloak(() => {
@@ -25,7 +23,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       tranquaraSDK.config.access_token = UserService.getToken();
       tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
     });
-  }
 
   TranquaraSDK.getInstance().onError = (error) => {
     if (error.message.includes("Unauthorized")) {

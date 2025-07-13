@@ -12,7 +12,7 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-const state = reactive<Schema>(userInformationStore().onboardingState.profile);
+const model = defineModel<Schema>({required: true})
 
 const toast = useToast();
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -23,6 +23,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   });
   console.log(event.data);
 }
+
 
 const genderItems = ref<RadioGroupItem[]>([
   {
@@ -43,15 +44,15 @@ const genderItems = ref<RadioGroupItem[]>([
 </script>
 
 <template>
-  <UForm :schema="schema" :state="state" class="space-y-8" @submit="onSubmit">
+  <UForm :schema="schema" :state="model" class="space-y-8" @submit="onSubmit">
     <UFormField size='xl' name="gender">
       <h3>Gender</h3>
-      <URadioGroup :items="genderItems" v-model="state.gender" />
+      <URadioGroup :items="genderItems" v-model="model.gender" />
     </UFormField>
 
     <UFormField size='xl'  name="age">
       <h3>Age</h3>
-      <UInput v-model="state.age" type="number" />
+      <UInput v-model="model.age" type="number" />
     </UFormField>
 
     <!-- <UButton type="submit"> Submit </UButton> -->
