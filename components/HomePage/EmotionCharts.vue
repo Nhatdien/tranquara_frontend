@@ -1,9 +1,10 @@
 <template>
   <section class="h-full">
-      <LineChart/>
+    <h1>Emotion Chart</h1>
+    <LineChart />
   </section>
 </template>
 
 <script setup lang="ts">
-import LineChart from '../Common/LineChart.vue';
+import LineChart from "../Common/LineChart.vue";
 </script>

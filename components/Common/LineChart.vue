@@ -32,7 +32,7 @@ const option = ref({
 
 <style scoped>
 .chart {
-  min-height: 280px;
+  min-height: 250px;
   margin-left: 1rem;
 }
 </style>

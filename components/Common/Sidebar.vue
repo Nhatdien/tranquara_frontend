@@ -1,23 +1,35 @@
 <template>
-  <nav class="flex fixed left-0 bottom-0 w-full p-2 gap-2 rounded-full  justify-center">
-      <button @click="navigateTo(sidebar.link)" v-for="sidebar in sidebarSchema" class="glass-button w-min p-3 rounded-full">
+  <UDrawer direction="right">
+    <UButton color="neutral" variant="ghost" trailing-icon="i-lucide-menu" />
 
-        <component class="" :is="componentMapping[sidebar.icon]"/>
-      </button>
-
-  </nav>
+    <template #content>
+      <nav class="flex flex-col w-full p-2 gap-2 rounded-full justify-center">
+        <UButton
+          variant="ghost"
+          @click="navigateTo(sidebar.link)"
+          v-for="sidebar in sidebarSchema"
+          class="w-min p-3 rounded-full">
+          <div class="flex items-center gap-2">
+            <component class="" :is="componentMapping[sidebar.icon]" />
+            <p>{{ sidebar.title }}</p>
+          </div>
+        </UButton>
+      </nav>
+    </template>
+  </UDrawer>
 </template>
 
 <script setup lang="ts">
-import { sidebarSchema } from './sidebarSchema';
-import { Settings, House, User, BotMessageSquare } from 'lucide-vue-next';
+import { UButton } from "#components";
+import { sidebarSchema } from "./sidebarSchema";
+import { Settings, House, User, BotMessageSquare } from "lucide-vue-next";
 
 const componentMapping = {
-  "settings": Settings,
-  "house": House,
-  "user":User,
-  "bot-message-square": BotMessageSquare
-} as {[key:string]: any}
+  settings: Settings,
+  house: House,
+  user: User,
+  "bot-message-square": BotMessageSquare,
+} as { [key: string]: any };
 </script>
 
 <style scoped>

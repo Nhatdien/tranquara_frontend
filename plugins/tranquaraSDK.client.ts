@@ -1,9 +1,6 @@
 import UserService from "~/stores/auth/keycloak_service";
 import TranquaraSDK from "~/stores/tranquara_sdk";
-import { WebSocketClient } from "~/stores/websocket_client";
-import { User } from "lucide-vue-next";
 
-let keycloakInitialized = false;
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = nuxtApp.$config;

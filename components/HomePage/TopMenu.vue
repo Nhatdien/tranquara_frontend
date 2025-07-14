@@ -1,15 +1,13 @@
 <template>
-  <section class="flex justify-between w-full h-min">
-    <h2>Good morning, Nhat</h2>
+  <section class="flex justify-between items-center w-full">
+    <div class="flex flex-col justify-center items-start w-full gap-y-4">
+      <h1>Hi {{ $tranquaraSDK.config.current_username }} 👋</h1>
+      <h4>How are you feeling now ?</h4>
+      <UButton class="font-semibold cursor-pointer w-full" size="xl"> <span class="text-center w-full p-2">Open TheraPrep Chat </span> </UButton>
+      <h4>Check in with your AI companion</h4>
+    </div>
     <div class="flex items-center gap-4">
-
       <!-- will be moved to user-auth section -->
-      {{ moment().format('dddd, MMMM Do, YYYY')}}
-      <button class="glass-button p-2 rounded-full">
-        <Bell></Bell>
-        
-      </button>
-      <button class="glass-button p-5 rounded-full"></button>
     </div>
   </section>
 </template>
@@ -18,6 +16,8 @@
 import { useScreen } from "~/composables/useScreen"; // Assuming you have a useScreen composable
 import { Bell } from "lucide-vue-next";
 import moment from "moment";
+
+const { $tranquaraSDK } = useNuxtApp()
 const isSearchActive = ref(false);
 const screen = useScreen();
 
