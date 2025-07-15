@@ -1,12 +1,13 @@
 <template>
   <div class="chat-header ">🤖 Tranquara Bot</div>
-  <transition-group name="message-pop" tag="div">
+  <transition-group  name="message-pop" tag="div" class="overflow-y-scroll max-h-[65vh]">
     <div
       v-for="(msg, i) in messages"
       :key="i"
-      :class="['chat-message', msg.sender]">
-      {{ msg.text }}
+      :class="['chat-message', msg.sender_type]">
+      {{ msg.message }}
     </div>
+    <div ref="chatBoxBottom" key="999"></div>
   </transition-group>
   <form class="chat-input" @submit.prevent="sendMessage">
     <input
@@ -18,22 +19,24 @@
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, nextTick } from "vue";
+import { useChatlogtore } from "~/stores/stores/chatlog";
 import { WebSocketClient } from "~/stores/websocket_client";
 
 const { $keycloak } = useNuxtApp();
+const chatlogStore = useChatlogtore()
 const config = useRuntimeConfig();
 const socketClient = ref();
 const input = ref("");
-const messages = ref([{ sender: "bot", text: "Hi! I’m here to help. 🌿" }]);
+const messages = ref([{ sender_type: "bot", message: "Hi! I’m here to help. 🌿" }]);
 
-const chatBox = ref(null);
+const chatBoxBottom = ref<HTMLDivElement | null>(null);
 function sendMessage() {
   if (!input.value.trim()) return;
 
   // Add user message
-  messages.value.push({ sender: "user", text: input.value });
+  messages.value.push({ sender_type: "user", message: input.value });
   const userMessage = input.value;
   socketClient.value.send(userMessage);
 
@@ -44,19 +47,36 @@ function sendMessage() {
 
 onMounted(async () => {
   await waitForToken();
+  chatlogStore.getChatlogs({
+    page: "1",
+    page_size: "200",
+  })
   socketClient.value = WebSocketClient.getInstance(
     `${config.public.websocketURL}/${$keycloak.getUserUUid()}`
   );
-  socketClient.value.socket.onmessage = (event) => {
+  socketClient.value.socket.onmessage = async (event: any) => {
     messages.value.push({
-      sender: "bot",
-      text: `${event.data}`,
+      sender_type: "bot",
+      message: `${event.data}`,
     });
-    nextTick(() => {
-      chatBox.value.scrollTop = chatBox.value.scrollHeight;
-    });
+
   };
 });
+
+watch(messages.value, async () => {
+  console.log("called")
+  await nextTick(() => {
+      const chatBoxValue = chatBoxBottom.value!
+      console.log(chatBoxValue)
+      chatBoxValue.scrollIntoView()
+    });
+
+    console.log("called")
+})
+
+watch(() => chatlogStore.chatlogs, async () => {
+  messages.value = [messages.value[0], ...chatlogStore.chatlogs]
+})
 </script>
 
 <style scoped>

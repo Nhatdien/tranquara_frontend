@@ -1,14 +1,13 @@
 <template>
-  <UDrawer direction="right">
+  <UDrawer :handle="false" direction="right">
     <UButton color="neutral" variant="ghost" trailing-icon="i-lucide-menu" />
-
     <template #content>
       <nav class="flex flex-col w-full p-2 gap-2 rounded-full justify-center">
         <UButton
           variant="ghost"
           @click="navigateTo(sidebar.link)"
           v-for="sidebar in sidebarSchema"
-          class="w-min p-3 rounded-full">
+          class="w-min p-3">
           <div class="flex items-center gap-2">
             <component class="" :is="componentMapping[sidebar.icon]" />
             <p>{{ sidebar.title }}</p>

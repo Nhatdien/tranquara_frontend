@@ -5,3 +5,9 @@ export type FilterMetaData = {
 	last_page: number    
 	total_record: number 
 }
+
+export type BaseFilter = {
+	page: `${number}`
+	page_size: `${number}`
+	sort?: string
+}
