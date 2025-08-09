@@ -3,10 +3,7 @@ import * as z from "zod";
 import { RadioGroupItem, type FormSubmitEvent } from "@nuxt/ui";
 
 const schema = z.object({
-  age: z
-    .number()
-    .min(12, "Age should be more than 12")
-    .max(120, "Age should be less than 120"),
+  age_range: z.string(),
   gender: z.string(),
 });
 
@@ -24,7 +21,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   console.log(event.data);
 }
 
-
 const genderItems = ref<RadioGroupItem[]>([
   {
     label: "Male",
@@ -40,6 +36,21 @@ const genderItems = ref<RadioGroupItem[]>([
   },
 ]);
 
+const ageRangeItem = ref<RadioGroupItem[]>([
+  {
+    label: "< 13",
+    value: "< 13",
+  },
+  {
+    label: "13 - 18",
+    value: "13 - 18",
+  },
+  {
+    label: "> 18",
+    value: "> 18",
+  },
+]);
+
 
 </script>
 
@@ -47,12 +58,12 @@ const genderItems = ref<RadioGroupItem[]>([
   <UForm :schema="schema" :state="model" class="space-y-8" @submit="onSubmit">
     <UFormField size='xl' name="gender">
       <h3>Gender</h3>
-      <URadioGroup :items="genderItems" v-model="model.gender" />
+      <URadioGroup variant="table" :items="genderItems" v-model="model.gender" />
     </UFormField>
 
     <UFormField size='xl'  name="age">
-      <h3>Age</h3>
-      <UInput v-model="model.age" type="number" />
+      <h3>Age Range</h3>
+      <URadioGroup variant="table" :items="ageRangeItem" v-model="model.age_range" />
     </UFormField>
 
     <!-- <UButton type="submit"> Submit </UButton> -->

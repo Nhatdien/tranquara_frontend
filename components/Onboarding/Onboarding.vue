@@ -12,10 +12,6 @@
           v-if="item.title == 'Profile'">
         </OnboardingUserProfileForm>
         <div class="flex flex-col items-center">
-          <OnboardingInitalJournal
-            v-if="item.title == 'Check-in'"></OnboardingInitalJournal>
-        </div>
-        <div class="flex flex-col items-center">
           <OnboardingPreferenceForm v-model="userPreferenceInfo" v-if="item.title == 'Preferences'" />
         </div>
       </template>
@@ -54,11 +50,6 @@ const items: StepperItem[] = [
     description: "Choose your goals and therapy experience",
     icon: "i-lucide-settings",
   },
-  {
-    title: "Check-in",
-    description: "Log your current mood and emotions",
-    icon: "i-lucide-smile",
-  },
 ];
 
 const userPreferenceInfo = ref({
@@ -67,7 +58,7 @@ const userPreferenceInfo = ref({
 });
 
 const userProfileInfo = ref({
-  age: 0,
+  age_range: "",
   gender: ""
 });
 

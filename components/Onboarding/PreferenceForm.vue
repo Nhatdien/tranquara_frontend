@@ -3,7 +3,8 @@
     <div>
       <h3>What is you goal using this webiste ?</h3>
       <URadioGroup
-        :variant="'card'"
+      
+        :variant="'table'"
         class="mt-2"
         v-model="model.goal"
         :items="goalItems"
@@ -15,7 +16,7 @@
     <div class="mt-8">
       <h3>Have you had any experience with mental therapy?</h3>
       <URadioGroup
-        :variant="'card'"
+        :variant="'table'"
         class="mt-2"
         v-model="model.experience"
         :items="experienceItems"

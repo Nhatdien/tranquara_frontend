@@ -1,7 +1,7 @@
 export type UserInformation = {
     user_id: string
     name: string
-    age: number
+    age_range: string
     gender: string
     kyc_answers: {[key: string]: any}
     user_settings: {[key: string]: any}
@@ -14,7 +14,7 @@ export type UserInformationResponse = {
 
 export type OnboardingState = {
     profile: {
-        age: number
+        age: string
         gender: string
     }
     preference: {

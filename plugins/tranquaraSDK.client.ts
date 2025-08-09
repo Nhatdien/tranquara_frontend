@@ -27,6 +27,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
+
+
   return {
     provide: {
       keycloak: UserService,

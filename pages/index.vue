@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-const { $keycloak, $quizzAppSDK } = useNuxtApp();
 const userInfoStore = userInformationStore();
 
 onMounted(async () => {
