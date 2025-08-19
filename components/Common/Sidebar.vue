@@ -21,13 +21,14 @@
 <script setup lang="ts">
 import { UButton } from "#components";
 import { sidebarSchema } from "./sidebarSchema";
-import { Settings, House, User, BotMessageSquare } from "lucide-vue-next";
+import { Settings, House, User, Notebook, Library } from "lucide-vue-next";
 
 const componentMapping = {
   settings: Settings,
   house: House,
   user: User,
-  "bot-message-square": BotMessageSquare,
+  notebook: Notebook,
+  library: Library
 } as { [key: string]: any };
 </script>
 

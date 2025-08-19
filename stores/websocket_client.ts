@@ -1,17 +1,24 @@
+import { InitConnectData } from "~/types/user_journal";
 export class WebSocketClient {
     private static instance: WebSocketClient;
     public socket: WebSocket;
     private url: string;
 
-    private constructor(url: string) {
+    private constructor(url: string, initMetadata: InitConnectData) {
         this.url = url;
         this.socket = new WebSocket(this.url);
-        this.initialize();
+        this.initialize(initMetadata);
     }
 
-    private initialize(): void {
+    private sendInitialdata(initMetadata: InitConnectData): void {
+        this.socket.send(JSON.stringify(initMetadata))
+    }
+
+    private initialize(initMetadata: InitConnectData): void {
+        const sendInitData =  () => this.sendInitialdata(initMetadata)
         this.socket.onopen = function () {
             console.log("Connected to WebSocket server");
+            sendInitData()
         };
 
         this.socket.onmessage = function (event) {
@@ -27,10 +34,10 @@ export class WebSocketClient {
         };
     }
 
-    public static getInstance(url: string): WebSocketClient {
+    public static getInstance(url: string, initMetadata: InitConnectData): WebSocketClient {
         if (!WebSocketClient.instance) {
             console.log("Initializing WebSocket client");
-            WebSocketClient.instance = new WebSocketClient(url);
+            WebSocketClient.instance = new WebSocketClient(url, initMetadata);
         }
         return WebSocketClient.instance;
     }

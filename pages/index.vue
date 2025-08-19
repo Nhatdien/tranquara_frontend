@@ -4,10 +4,9 @@
     class="flex flex-col w-full gap-12"
   >
     <HomePageTopMenu />
+    <CommonQuoteCard />
     <HomePageEmotionCharts class="flex-1" />
     <HomePageLatestEntries />
-    <HomePageStreaksProgress class="flex-1" />
-    <HomePageEncourageMent />
   </div>
   <div class="h-full" v-else>
     <Onboarding></Onboarding>

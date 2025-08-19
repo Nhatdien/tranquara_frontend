@@ -28,7 +28,6 @@
         </div>
       </UCard>
     </div>
-    <p class="mt-4">Remember, every breath is a fresh start.</p>
   </section>
 </template>
 

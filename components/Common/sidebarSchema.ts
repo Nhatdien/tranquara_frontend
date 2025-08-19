@@ -5,18 +5,18 @@ export const sidebarSchema = [
         link: "/",
     },
     {
-        title: "Guider",
-        icon: "bot-message-square",
-        link: "/guider-chat",
+        title: "Journaling",
+        icon: "notebook",
+        link: "/journal",
     },
     {
-        title: "Settings",
-        icon: "settings",
+        title: "Learn/Prepare",
+        icon: "library",
         link: "/settings",
     },
     {
-        title: "User",
+        title: "Profile/Settings",
         icon: "user",
-        link: "/user",
+        link: "/profile",
     },
 ]

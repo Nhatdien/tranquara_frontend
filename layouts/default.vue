@@ -9,8 +9,10 @@
             navigateTo('/');
           }
         ">
-        <NotebookPen :size="32" />
-        <p class="text-3xl font-bold">TheraPrep</p>
+        <Logo :width="32" :height="32" />
+        <p class="text-3xl font-bold">
+          Thera<span class="text-primary-300">Prep</span>
+        </p>
       </div>
       <Sidebar></Sidebar>
     </section>
@@ -23,5 +25,6 @@
 <script setup lang="ts">
 import TopMenu from "~/components/HomePage/TopMenu.vue";
 import Sidebar from "~/components/Common/Sidebar.vue";
+import Logo from "~/assets/img/Logo.vue";
 import { NotebookPen } from "lucide-vue-next";
 </script>
