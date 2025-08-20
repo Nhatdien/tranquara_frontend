@@ -7,6 +7,5 @@ export type Chatlog = {
 }
 
 export type ChatlogResponse = {
-    metadata: FilterMetaData
     chat_logs: Chatlog[]
 }

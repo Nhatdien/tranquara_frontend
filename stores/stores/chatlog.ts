@@ -9,8 +9,8 @@ export const useChatlogtore = defineStore("chatlogs", {
     }),
 
     actions: {
-        async getChatlogs(filter: BaseFilter) {
-            return TranquaraSDK.getInstance().getChatLogs(filter).then((response: ChatlogResponse) => {
+        async getChatlogs(journalId: string) {
+            return TranquaraSDK.getInstance().getChatLogs(journalId).then((response: ChatlogResponse) => {
                 this.chatlogs = response.chat_logs
             })
         },

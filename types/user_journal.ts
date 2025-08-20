@@ -5,7 +5,26 @@ export type JournalTemplate = {
     title: string
     content: string
     category: string
+    greetings: string[]
     created_at: string
+}
+
+export type Journal = {
+  id: string
+  user_id: string
+  template_id: string
+  status: "draft" | "active" | "completed"
+  title: string
+  short_description: string
+  created_at: string
+}
+
+export type CreateJournalRequest = {
+  template_id: string
+}
+
+export type UserJournalsResponse = {
+  user_journals: Journal[]
 }
 
 export type JournalTemplateResponse = {
@@ -19,6 +38,7 @@ export type TemplateData = {
   };
   
   export type InitConnectData = {
+    journal_id: string
     template_data: TemplateData;
     user_info: UserInformation;
   };

@@ -28,7 +28,6 @@
 import { ref, nextTick } from "vue";
 import { useChatlogtore } from "~/stores/stores/chatlog";
 import { WebSocketClient } from "~/stores/websocket_client";
-import { journalTemplates } from "@/mock/journal_template";
 import { Chatlog } from "~/types/chatlog";
 import { InitConnectData, TemplateData } from "~/types/user_journal";
 
@@ -46,7 +45,7 @@ const input = ref("");
 const route = useRoute();
 
 const selectedTemplate = computed(() =>
-  journalTemplates.find((template) => route.query.templateId === template.id)
+  userJournalStore().templates.find((template) => route.query.templateId === template.id)
 );
 
 const greetChat = computed(() => {
@@ -72,13 +71,20 @@ function sendMessage() {
   socketClient.value.send(userMessage);
 
   input.value = "";
-
+ 
+  if (userJournalStore().currentJournal.status !== "active"){
+    userJournalStore().updateJournal({
+      ...userJournalStore().currentJournal,
+      status: "active",
+    })
+  }
   // Add bot reply (simple echo for now)
 }
 
 const createSocketConnection = () => {
   const initMetadata: InitConnectData = {
     user_info: userInformationStore().userInfomation,
+    journal_id: userJournalStore().currentJournal.id,
     template_data: {
       title: selectedTemplate.value?.title || "",
       content: selectedTemplate.value?.content || "",
@@ -91,20 +97,31 @@ const createSocketConnection = () => {
   );
 
   socketClient.value.socket.onmessage = async (event: any) => {
+    console.log(event.data)
     messages.value.push({
       sender_type: "bot",
-      message: `${event.data}`,
+      message: `${event.data?.content}`,
     });
   };
 };
 
 onMounted(async () => {
   await waitForToken();
+  
   messages.value.push({ sender_type: "bot", message: greetChat.value });
-  chatlogStore.getChatlogs({
-    page: "1",
-    page_size: "200",
-  });
+
+  //check if the active journal is equal to the localstorage value to get the chatlog or create a new one
+  const prevActiveJounral = localStorage.getItem("active_journal_id") 
+  if (prevActiveJounral === userJournalStore().currentJournal.id){
+    chatlogStore.getChatlogs(localStorage.getItem("active_journal_id") || "");
+  }
+  else {
+    await userJournalStore().createJournal({
+      template_id:  route.query.templateId as string
+    })
+    localStorage.setItem("active_journal_id",  userJournalStore().currentJournal.id)
+  }
+
 
   createSocketConnection();
 });

@@ -7,6 +7,7 @@
     <CommonQuoteCard />
     <HomePageEmotionCharts class="flex-1" />
     <HomePageLatestEntries />
+    <JournalResumeJournaling />
   </div>
   <div class="h-full" v-else>
     <Onboarding></Onboarding>
@@ -16,10 +17,9 @@
 </template>
 
 <script setup lang="ts">
+import { Notebook } from 'lucide-vue-next';
+
 const userInfoStore = userInformationStore();
 
-onMounted(async () => {
-  await waitForToken();
-  userInfoStore.getMe();
-});
+
 </script>

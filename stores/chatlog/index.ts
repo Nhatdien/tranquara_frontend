@@ -3,13 +3,13 @@ import type { BaseFilter } from "~/types/metadatas";
 import type { ChatlogResponse } from "~/types/chatlog";
 
 export class Chatlogs extends Base {
-    async getChatLogs(filter?: BaseFilter) {
+    async getChatLogs(journalId: string) {
         const searchParams = new URLSearchParams({
-            ...filter
+            journal_id: journalId
         })
 
         let searchString
-        if (filter){    
+        if (journalId){    
             searchString = `?${searchParams}`
         }
 
