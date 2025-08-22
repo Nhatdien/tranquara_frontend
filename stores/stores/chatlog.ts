@@ -3,9 +3,15 @@ import TranquaraSDK from "../tranquara_sdk";
 import type { BaseFilter } from "~/types/metadatas";
 import type { ChatlogResponse, Chatlog } from "~/types/chatlog";
 
+type ChatMessage = {
+    sender_type: "user" | "bot";
+    message: string;
+};
+
 export const useChatlogtore = defineStore("chatlogs", {
     state: () => ({
         chatlogs: [] as Chatlog[],
+        messages: [] as ChatMessage[]
     }),
 
     actions: {

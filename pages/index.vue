@@ -5,7 +5,7 @@
   >
     <HomePageTopMenu />
     <CommonQuoteCard />
-    <HomePageEmotionCharts class="flex-1" />
+    <!-- <HomePageEmotionCharts class="flex-1" /> -->
     <HomePageLatestEntries />
     <JournalResumeJournaling />
   </div>

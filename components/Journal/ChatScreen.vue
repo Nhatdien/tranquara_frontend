@@ -1,12 +1,12 @@
 <template>
-  <section class="h-[85vh]">
+  <section class="h-[50vh]">
     <div class="chat-header">🤖 Tranquara Bot</div>
     <transition-group
       name="message-pop"
       tag="div"
-      class="overflow-y-scroll max-h-[65vh]">
+      class="overflow-y-scroll h-2/3">
       <div
-        v-for="(msg, i) in messages"
+        v-for="(msg, i) in useChatlogtore().messages"
         :key="i"
         :class="['chat-message', msg.sender_type]">
         {{ msg.message }}
@@ -41,16 +41,30 @@ const chatlogStore = useChatlogtore();
 const config = useRuntimeConfig();
 const socketClient = ref();
 const input = ref("");
-
-const route = useRoute();
+// const props = defineProps(["templateId", "currentPreviewContent"])
+const props = defineProps({
+  templateId: {
+    type: String,
+    required: true,
+  },
+  currentPreviewContent: {
+    type: String,
+    required: true,
+  },
+  mode: {
+    type: String,
+    default: "new",
+    required: false,
+  },
+});
 
 const selectedTemplate = computed(() =>
-  userJournalStore().templates.find((template) => route.query.templateId === template.id)
+  userJournalStore().templates.find(
+    (template) => props.templateId === template.id
+  )
 );
 
 const greetChat = computed(() => {
-  console.log(route.query);
-
   const greetList = selectedTemplate.value?.greetings as [];
 
   console.log(greetList);
@@ -59,74 +73,67 @@ const greetChat = computed(() => {
   return greetList[randIdx] ?? "Hi";
 });
 
-const messages = ref<ChatMessage[]>([]);
-
 const chatBoxBottom = ref<HTMLDivElement | null>(null);
 function sendMessage() {
   if (!input.value.trim()) return;
 
+  if (useChatlogtore().messages.length <= 1 && props.mode === "new") {
+    // Create new journal
+    userJournalStore().createJournal({
+      title: "Journal",
+      content: props.currentPreviewContent,
+      template_id: props.templateId,
+      mood: "Neutral",
+    });
+  }
+
   // Add user message
-  messages.value.push({ sender_type: "user", message: input.value });
+  useChatlogtore().messages.push({ sender_type: "user", message: input.value });
   const userMessage = input.value;
-  socketClient.value.send(userMessage);
+  socketClient.value.send(
+    JSON.stringify({
+      content: userMessage,
+      current_journal: props.currentPreviewContent,
+      journal_id: userJournalStore().currentJournal.id
+    })
+  );
 
   input.value = "";
- 
-  if (userJournalStore().currentJournal.status !== "active"){
-    userJournalStore().updateJournal({
-      ...userJournalStore().currentJournal,
-      status: "active",
-    })
-  }
   // Add bot reply (simple echo for now)
 }
 
 const createSocketConnection = () => {
   const initMetadata: InitConnectData = {
     user_info: userInformationStore().userInfomation,
-    journal_id: userJournalStore().currentJournal.id,
     template_data: {
       title: selectedTemplate.value?.title || "",
-      content: selectedTemplate.value?.content || "",
+      content: selectedTemplate.value?.content || [],
       category: selectedTemplate.value?.category || "",
     },
   };
 
   socketClient.value = WebSocketClient.getInstance(
-    `${config.public.websocketURL}/${$keycloak.getUserUUid()}`, initMetadata
+    `${config.public.websocketURL}/${$keycloak.getUserUUid()}`,
+    initMetadata
   );
 
   socketClient.value.socket.onmessage = async (event: any) => {
-    console.log(event.data)
-    messages.value.push({
+    const response = JSON.parse(event.data);
+    useChatlogtore().messages.push({
       sender_type: "bot",
-      message: `${event.data?.content}`,
+      message: `${response?.content}`,
     });
   };
 };
 
 onMounted(async () => {
   await waitForToken();
-  
-  messages.value.push({ sender_type: "bot", message: greetChat.value });
 
-  //check if the active journal is equal to the localstorage value to get the chatlog or create a new one
-  const prevActiveJounral = localStorage.getItem("active_journal_id") 
-  if (prevActiveJounral === userJournalStore().currentJournal.id){
-    chatlogStore.getChatlogs(localStorage.getItem("active_journal_id") || "");
-  }
-  else {
-    await userJournalStore().createJournal({
-      template_id:  route.query.templateId as string
-    })
-    localStorage.setItem("active_journal_id",  userJournalStore().currentJournal.id)
-  }
-
-
+  // useChatlogtore().messages.push({ sender_type: "bot", message: greetChat.value });
   createSocketConnection();
 });
 
-watch(messages.value, async () => {
+watch(useChatlogtore().messages, async () => {
   console.log("called");
   await nextTick(() => {
     const chatBoxValue = chatBoxBottom.value!;
@@ -140,8 +147,8 @@ watch(messages.value, async () => {
 watch(
   () => chatlogStore.chatlogs,
   async () => {
-    messages.value = [
-      messages.value[0],
+    useChatlogtore().messages = [
+      useChatlogtore().messages[0],
       ...(chatlogStore.chatlogs as ChatMessage[]),
     ];
   }

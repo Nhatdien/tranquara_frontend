@@ -1,6 +1,6 @@
 <template>
   <section class="">
-    <div @click="startJournaling" class="h-32 rounded-2xl border border-neutral-400">
+    <div class="h-32 rounded-2xl border border-neutral-400">
     </div>
     <p class="text-center mt-2">{{ template.title }}</p>
   </section>

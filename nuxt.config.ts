@@ -2,6 +2,14 @@ import { plugin } from "postcss";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
+  app: {
+    head: {
+      meta: [
+        { name: "viewport", content: "width=device-width, initial-scale=1.0, interactive-widget=resizes-content" }
+      ],
+      title: "TheraPrep",
+    }
+  },
   devtools: false,
   runtimeConfig: {
     public: {
@@ -13,7 +21,7 @@ export default defineNuxtConfig({
   },
   compatibilityDate: "2024-04-03",
   // devtools: { enabled: true },
-  modules: ["@pinia/nuxt", "@nuxt/image",'@nuxt/ui'],
+  modules: ["@pinia/nuxt", "@nuxt/image", '@nuxt/ui'],
   vite: {
     css: {
       preprocessorOptions: {
@@ -23,8 +31,8 @@ export default defineNuxtConfig({
       },
     },
   },
-  
-  image:{
+
+  image: {
 
   },
   css: ["~/assets/scss/main.scss"],

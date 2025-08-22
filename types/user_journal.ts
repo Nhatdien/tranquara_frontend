@@ -3,7 +3,7 @@ import { UserInformation } from "./user_information"
 export type JournalTemplate = {
     id: string
     title: string
-    content: string
+    content: string[]
     category: string
     greetings: string[]
     created_at: string
@@ -13,14 +13,17 @@ export type Journal = {
   id: string
   user_id: string
   template_id: string
-  status: "draft" | "active" | "completed"
   title: string
-  short_description: string
+  content: string
+  mood: string
   created_at: string
 }
 
 export type CreateJournalRequest = {
   template_id: string
+  title: string,
+  content: string,
+  mood: string,
 }
 
 export type UserJournalsResponse = {
@@ -32,13 +35,12 @@ export type JournalTemplateResponse = {
 }
 
 export type TemplateData = {
-    content: string;
+    content: string[];
     title: string;
     category: string;
   };
   
   export type InitConnectData = {
-    journal_id: string
     template_data: TemplateData;
     user_info: UserInformation;
   };

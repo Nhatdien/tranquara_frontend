@@ -14,7 +14,4 @@ import { Notebook } from "lucide-vue-next";
 
 const currentJournal = ref("");
 
-onMounted(() => {
-  currentJournal.value = localStorage.getItem("active_journal_id");
-});
 </script>

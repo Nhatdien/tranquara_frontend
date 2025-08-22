@@ -1,5 +1,9 @@
 <template>
   <section v-if="editor">
+    <editor-content
+    class="p-4 min-h-[40vh] max-h-[400px] rounded-2xl"
+  
+    :editor="editor" />
     <div class="border border-gray-400 p-4 overflow-x-scroll">
       <div class="button-group flex gap-x-2 max-w-[80vw]">
         <button
@@ -20,15 +24,7 @@
           :class="{ 'is-active': editor.isActive('strike') }">
           <Strikethrough/>
         </button>
-        <button
-          @click="editor.chain().focus().toggleCode().run()"
-          :disabled="!editor.can().chain().focus().toggleCode().run()"
-          :class="{ 'is-active': editor.isActive('code') }">
-          <Code />
-        </button>
-        <!-- <button @click="editor.chain().focus().unsetAllMarks().run()">
-          Clear marks
-        </button> -->
+
         <button @click="editor.chain().focus().clearNodes().run()">
          <RemoveFormatting/>
         </button>
@@ -82,12 +78,7 @@
           :class="{ 'is-active': editor.isActive('blockquote') }">
           <Quote />
         </button>
-        <button @click="editor.chain().focus().setHorizontalRule().run()">
-          <Minus />
-        </button>
-        <!-- <button @click="editor.chain().focus().setHardBreak().run()">
-          Hard break
-        </button> -->
+
         <button
           @click="editor.chain().focus().undo().run()"
           :disabled="!editor.can().chain().focus().undo().run()">
@@ -100,9 +91,6 @@
         </button>
       </div>
     </div>
-    <editor-content
-      class="prose border border-gray-400 p-4 h-[300px]"
-      :editor="editor" />
   </section>
 </template>
 
@@ -153,6 +141,10 @@ button {
   font-size: 0.875rem;
 }
 
+.tiptap.ProseMirror {
+  height: 100%;
+
+}
 .is-active {
   background-color: gray;
 }
