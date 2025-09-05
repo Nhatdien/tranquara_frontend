@@ -71,13 +71,14 @@ const currentTemplate = computed(() =>
 );
 
 const currentPreviewContent = computed(() => {
+  // The preview show the template content or the current journal parsed
   return generateJournalHtml(
-    [...(currentTemplate.value?.content || [])],
-    [...carouselItems.map((item) => item.currentNote)]
+    [...(currentTemplate.value?.content || [...carouselItems.value.map((item) => item.questionContent)] || [])],
+    [...carouselItems.value.map((item) => item.currentNote)]
   );
 });
 
-const carouselItems = reactive(
+const carouselItems = ref(
   currentTemplate.value?.content.map((question) => {
     return {
       questionContent: question,
@@ -87,7 +88,7 @@ const carouselItems = reactive(
 );
 
 const isEmptyJournal = computed(() =>
-  carouselItems.every(
+  carouselItems.value.every(
     (item) => item.currentNote === "" || item.currentNote === "<p></p>"
   )
 );
@@ -125,7 +126,7 @@ const nextNode = () => {
   //Reset the current journal
 
   userJournalStore().currentJournal = {} as Journal;
-  useChatlogtore().messages = []
+  useChatlogtore().messages = [];
 };
 
 const items = [
@@ -142,4 +143,13 @@ const items = [
     icon: "i-lucide-cog",
   },
 ] satisfies DropdownMenuItem[];
+
+onMounted(() => {
+  if (userJournalStore().currentJournal.id) {
+    carouselItems.value = parseJournalHtml(userJournalStore().currentJournal.content)
+    useChatlogtore().getChatlogs(userJournalStore().currentJournal.id)
+  }
+
+  console.log(useChatlogtore().messages)
+});
 </script>

@@ -8,6 +8,7 @@ export const userJournalStore = defineStore("user_journal", {
     state: () => ({
         templates: [] as JournalTemplate[],
         journals: [] as Journal[],
+        currentWritingContent: {} as {[key: string]: string},
         currentJournal: {} as Journal
     }),
 
@@ -49,6 +50,10 @@ export const userJournalStore = defineStore("user_journal", {
                 this.journals = this.journals.filter(j => j.id !== journalId)
             })
         },
+
+        updateCurrentWritingContent(key: string, value: string) {
+            this.currentWritingContent[key] = value
+        }
     },
         getters: {
             templateGroupedByCategory(): { [key: string]: JournalTemplate[] } {

@@ -15,9 +15,19 @@ const config = useRuntimeConfig();
 const userInfoStore = userInformationStore();
 
 onMounted(async () => {
-  await waitForToken()
-  userJournalStore().getAllTemplates()
-  userInfoStore.getMe();
+  // await waitForToken();
+  // userJournalStore().getAllTemplates();
+  // userInfoStore.getMe();
 });
-
 </script>
+<style>
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.2s;
+}
+.page-enter-from,
+.page-leave-to {
+  transform: scale(90%);
+  opacity: 0;
+}
+</style>

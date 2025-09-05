@@ -18,6 +18,12 @@ export const useChatlogtore = defineStore("chatlogs", {
         async getChatlogs(journalId: string) {
             return TranquaraSDK.getInstance().getChatLogs(journalId).then((response: ChatlogResponse) => {
                 this.chatlogs = response.chat_logs
+                this.messages = response.chat_logs?.map((log) => {
+                    return {
+                        "sender_type": log.sender_type,
+                        "message": log.sender_type === "user" ? JSON.parse(log.message)?.content || "" : log.message
+                    }
+                })
             })
         },
 

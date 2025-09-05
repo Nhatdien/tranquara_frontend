@@ -1,5 +1,5 @@
 <template>
-  <section class="h-[50vh]">
+  <section class="h-[70vh]">
     <div class="chat-header">🤖 Tranquara Bot</div>
     <transition-group
       name="message-pop"
@@ -74,12 +74,12 @@ const greetChat = computed(() => {
 });
 
 const chatBoxBottom = ref<HTMLDivElement | null>(null);
-function sendMessage() {
+async function sendMessage() {
   if (!input.value.trim()) return;
 
   if (useChatlogtore().messages.length <= 1 && props.mode === "new") {
     // Create new journal
-    userJournalStore().createJournal({
+    await userJournalStore().createJournal({
       title: "Journal",
       content: props.currentPreviewContent,
       template_id: props.templateId,
@@ -128,31 +128,18 @@ const createSocketConnection = () => {
 
 onMounted(async () => {
   await waitForToken();
-
-  // useChatlogtore().messages.push({ sender_type: "bot", message: greetChat.value });
   createSocketConnection();
 });
 
-watch(useChatlogtore().messages, async () => {
-  console.log("called");
+watch(() => useChatlogtore().messages, async () => {
   await nextTick(() => {
     const chatBoxValue = chatBoxBottom.value!;
     console.log(chatBoxValue);
     chatBoxValue.scrollIntoView();
   });
 
-  console.log("called");
-});
+}, {deep: true}) ;
 
-watch(
-  () => chatlogStore.chatlogs,
-  async () => {
-    useChatlogtore().messages = [
-      useChatlogtore().messages[0],
-      ...(chatlogStore.chatlogs as ChatMessage[]),
-    ];
-  }
-);
 </script>
 
 <style lang="scss" scoped>

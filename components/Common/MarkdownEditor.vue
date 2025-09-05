@@ -1,10 +1,9 @@
 <template>
   <section v-if="editor">
     <editor-content
-    class="p-4 min-h-[40vh] max-h-[400px] rounded-2xl"
-  
+    class=" min-h-[40vh] max-h-[400px] rounded-2xl"
     :editor="editor" />
-    <div class="border border-gray-400 p-4 overflow-x-scroll">
+    <!-- <div class="border border-gray-400 p-4 overflow-x-scroll">
       <div class="button-group flex gap-x-2 max-w-[80vw]">
         <button
           @click="editor.chain().focus().toggleBold().run()"
@@ -90,7 +89,7 @@
           <Redo />
         </button>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>
 
@@ -112,27 +111,33 @@ import {
   Heading5,
   Heading6,
   Quote,
-  Minus,
   Undo,
   Redo,
-  Code,
 } from "lucide-vue-next";
 
 const modelValue = defineModel()
+const emits = defineEmits(["onUpdate"])
 const editor = useEditor({
   editorProps: {
-    attributes: {},
+    attributes: {
+    
+    },
     transformPastedText(text) {
       return text.toUpperCase();
     },
     
   },
-  content: "",
+  content: modelValue.value || "",
   extensions: [StarterKit],
   onUpdate:  ({editor}) => {
     modelValue.value = editor.getHTML()
+    emits("onUpdate")
   }
 });
+
+onMounted(() => {
+  console.log(editor.value.content)
+})
 </script>
 <style scoped lang="scss">
 button {
