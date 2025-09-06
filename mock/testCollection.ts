@@ -302,6 +302,11 @@ export const testCollection = {
           "created_at": "2025-08-28T10:05:00Z",
           "content": [
             {
+              "type": "doc",
+              "header": "What is your goal for therapy",
+              "body": "<p>You should address your goal before a therapy, who you want to become after that.</p>"
+            },
+            {
               "type": "journal_prompt",
               "question_content": "What do I want to understand, change, or accept about myself through therapy?"
             },

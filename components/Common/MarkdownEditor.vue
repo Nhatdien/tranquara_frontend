@@ -135,6 +135,8 @@ const editor = useEditor({
   }
 });
 
+defineExpose({editor})
+
 onMounted(() => {
   console.log(editor.value.content)
 })

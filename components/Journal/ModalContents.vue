@@ -1,17 +1,21 @@
 <template>
   <section class="">
+    {{ currentIndex }}
     <UCarousel
       :watch-drag="true"
       ref="carousel"
       dots
       v-slot="{ item }"
       :items="carouselItems"
+      @select="(index: number) => (currentIndex = index)"
       :ui="{
         viewport: 'h-full',
       }">
       <div class="h-[40vh] max-h-[400px]">
         <component
           :is="componentMapping[item?.content?.type]"
+          :currentIndex
+          :index="carouselItems.indexOf(item)"
           :content="item?.content"></component>
       </div>
       <!-- <CommonMarkdownEditor v-model="item.currentNote"></CommonMarkdownEditor> -->
@@ -37,12 +41,13 @@ import CTA from "@/components/Slide/CTA.vue";
 import FurtherReading from "@/components/Slide/FutherReading.vue";
 import JournalPrompt from "@/components/Slide/JournalPrompt.vue";
 import SleepCheck from "~/components/Slide/SleepCheck.vue";
+import Index from "~/pages/index.vue";
+import { Editor } from "@tiptap/vue-3";
 
 const carousel = useTemplateRef("carousel");
-const isOpen = defineModel({ type: Boolean });
 const emits = defineEmits(["saveJournal", "closeModal"]);
-
-const { activeSlideGroup } = useSlideGroup();
+const currentIndex = ref(0);
+const { activeSlideGroup, saveJournal, closeSlideGroup } = useSlideGroup();
 
 const componentMapping = {
   doc: Document,
@@ -63,28 +68,32 @@ const carouselItems = ref(
 
 const nextNode = () => {
   if (!carousel.value?.emblaApi?.canScrollNext()) {
-    //The journal will be created if the journal is not empty or
+    // The journal will be created if the journal is not empty or
     // user have interact with the chatbot in that journal session
-    //   if (
-    //     !isEmptyJournal.value &&
-    //     isEmptyObject(userJournalStore().currentJournal)
-    //   ) {
-    //     emits("saveJournal", props.templateId);
-    //   }
-
-    //update the journal content to the latest content when user finish journaling
-    if (!isEmptyObject(userJournalStore().currentJournal)) {
+    if (
+      !isEmptyJournal(userJournalStore().currentWritingContent) &&
+      isEmptyObject(userJournalStore().currentJournal)
+    ) {
+      saveJournal({
+        template_id: useRoute().params.slideGroupId || "",
+        content: generateJournalHtml(userJournalStore().currentWritingContent),
+        mood: "neutral",
+        title: activeSlideGroup.value?.title || "",
+      });
     }
-    emits("closeModal");
+    closeSlideGroup();
   } else {
     carousel.value?.emblaApi?.scrollNext();
   }
 
   //Reset the current journal
-
-  userJournalStore().currentJournal = {} as Journal;
-  useChatlogtore().messages = [];
 };
 
-onMounted(() => {});
+onMounted(() => {
+  carouselItems.value.forEach((_) => {
+    useTiptapEditorStore().editors.push({});
+  });
+  console.log(useTiptapEditorStore().editors);
+  console.log( carouselItems.value.length);
+});
 </script>

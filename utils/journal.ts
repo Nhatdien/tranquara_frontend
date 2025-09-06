@@ -48,3 +48,7 @@ export const parseJournalHtml = (
 
   return result;
 };
+
+export const isEmptyJournal = (journalContent: {[key: string]: string}) => {
+  return Object.keys(journalContent).length < 1
+}

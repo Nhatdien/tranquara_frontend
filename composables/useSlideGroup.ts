@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import { testCollection } from "~/mock/testCollection";
 import { Journal, CreateJournalRequest } from "~/types/user_journal";
+import { useChatlogtore } from "#imports";
 
 export const useSlideGroup = () => {
   const route = useRoute()
@@ -23,18 +24,22 @@ export const useSlideGroup = () => {
 
   const closeSlideGroup = () => {
     useChatlogtore().chatlogs = [];
+    userJournalStore().currentWritingContent = {} 
     userJournalStore().currentJournal = {} as Journal
+    useTiptapEditorStore().editors = []
+
+    useRouter().back()
   };
 
-  const saveJournal = (journal: CreateJournalRequest, templateId?: string,) => {
-    if (templateId) {
-      console.log("journal saved with template", templateId);
+  const saveJournal = (journal: CreateJournalRequest, slideGroupId?: string,) => {
+    if (slideGroupId) {
+      console.log("journal saved with slideGroupId: ", slideGroupId);
     } else {
-      console.log("journal saved without any template");
+      console.log("journal saved without any slideGroupId: ");
     }
-    userJournalStore().createJournal({
-      ...journal,
-    });
+    // userJournalStore().createJournal({
+    //   ...journal,
+    // });
   };
 
 
