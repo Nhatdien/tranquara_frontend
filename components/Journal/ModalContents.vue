@@ -1,15 +1,20 @@
 <template>
-  <section class="">
-    {{ currentIndex }}
+  <section class="p-4">
+    <div class="flex justify-between w-full">
+      <ChevronLeft @click="prevNode" />
+      <X @click="closeSlideGroup"/>
+    </div>
     <UCarousel
       :watch-drag="true"
       ref="carousel"
+      class="mt-12"
       dots
       v-slot="{ item }"
       :items="carouselItems"
       @select="(index: number) => (currentIndex = index)"
       :ui="{
         viewport: 'h-full',
+        dot: 'w-6 h-1 rounded-none'
       }">
       <div class="h-[40vh] max-h-[400px]">
         <component
@@ -25,16 +30,16 @@
        - a button to make forward (user can still slide backward)
        - a button to edit text format
        - a button to open the chatbox with the chatbot to help with the journaling process -->
-    <div class="flex fixed justify-around w-[100vw] bottom-1/10">
+    <div class="flex fixed justify-between w-full bottom-8 right-4">
       <div></div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center">
         <UButton :variant="'soft'" @click="nextNode"><ChevronRight /></UButton>
       </div>
     </div>
   </section>
 </template>
 <script lang="ts" setup>
-import { ChevronRight, ALargeSmall, Eye } from "lucide-vue-next";
+import { ChevronRight, ChevronLeft, X } from "lucide-vue-next";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import Document from "@/components/Slide/Document.vue";
 import CTA from "@/components/Slide/CTA.vue";
@@ -89,11 +94,23 @@ const nextNode = () => {
   //Reset the current journal
 };
 
+const prevNode = () => {
+  if (!carousel.value?.emblaApi?.canScrollPrev()) {
+    // The journal will be created if the journal is not empty or
+    // user have interact with the chatbot in that journal session
+    closeSlideGroup();
+  } else {
+    carousel.value?.emblaApi?.scrollPrev();
+  }
+
+  //Reset the current journal
+};
+
 onMounted(() => {
   carouselItems.value.forEach((_) => {
     useTiptapEditorStore().editors.push({});
   });
   console.log(useTiptapEditorStore().editors);
-  console.log( carouselItems.value.length);
+  console.log(carouselItems.value.length);
 });
 </script>

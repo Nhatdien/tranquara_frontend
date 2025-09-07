@@ -1,12 +1,7 @@
 <template>
-    <div class="body-container">
-      <main class="main-content gap-x-4">
-        <slot />
-      </main>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
+  <main>
+    <slot />
+  </main>
+</template>
 
-  </script>
-  
+<script setup lang="ts"></script>
