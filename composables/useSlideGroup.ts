@@ -19,7 +19,7 @@ export const useSlideGroup = () => {
   }
 
   const openSlideGroup = (slideGroupId: string, collectionId: string) => {
-    navigateTo(`/library/collection/${collectionId}/${slideGroupId}`)
+    navigateTo(`/learn_and_prepare/collection/${collectionId}/${slideGroupId}`)
   };
 
   const closeSlideGroup = () => {

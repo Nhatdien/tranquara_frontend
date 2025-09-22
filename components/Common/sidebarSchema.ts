@@ -7,12 +7,12 @@ export const sidebarSchema = [
     {
         title: "Journaling",
         icon: "notebook",
-        link: "/library",
+        link: "/journaling",
     },
     {
         title: "Learn/Prepare",
         icon: "library",
-        link: "/settings",
+        link: "/learn_and_prepare",
     },
     {
         title: "Profile/Settings",

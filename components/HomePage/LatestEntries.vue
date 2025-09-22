@@ -36,7 +36,6 @@ const isOpen = ref(false);
 const activeTemplate = ref<any | null>(null);
 
 const openModal = (journal: Journal) => {
-  
   userJournalStore().currentJournal = journal
   isOpen.value = true;
 };

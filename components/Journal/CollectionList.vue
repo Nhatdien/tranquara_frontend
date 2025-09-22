@@ -3,7 +3,7 @@
       <div
         class="flex flex-col min-h-[125px] rounded-md border border-neutral-600 p-4 text-sm"
         v-for="collection in collections"
-        @click="navigateTo(`/library/collection/${collection.id}`)">
+        @click="navigateTo(`/learn_and_prepare/collection/${collection.id}`)">
         <p>{{ collection.title }}</p>
         <p class="text-neutral-500">{{ collection.description }}</p>
         <p class="self-end mt-auto">
