@@ -1,30 +1,39 @@
 <template>
   <section class="flex justify-between items-center w-full">
     <div class="flex flex-col justify-center items-start w-full gap-y-4">
-      <h1>Hi {{ $tranquaraSDK.config.current_username }} 👋</h1>
-      <div class="flex flex-col gap-4">
-        <UButton
-          variant="subtle"
-          class="flex flex-1 justify-between font-semibold cursor-pointer w-full"
-          size="xl">
-          <div class="w-full">
+      <h1>
+        Good {{ timeInDays(moment().toNow()) }}
+        {{ $tranquaraSDK.config.current_username }} 👋
+      </h1>
+      <div class="flex flex-col gap-4 w-full">
+        <UCard variant="soft" class="flex-1 shadow-2xl" size="xl">
+          <template #header>
+            <div class="flex justify-between items-center">
+              <span class="font-semibold">Your journey</span>
+            </div>
+          </template>
+          <div class="flex gap-8 items-center">
             <img
-              class="object-fill black-to-white"
+              class="object-fill bg-linear-155 from-primary-200 to-primary-500 max-w-24 rounded-full w-auto black-to-white"
               src="@/assets/img/journaling.png" />
+            <div class="w-full">
+              <p class="font-semibold text-lg">Journaling streak</p>
+              <span class="flex gap-1 items-center text-primary-700 font-bold"
+                ><Flame /> 7 days</span
+              >
+              <UProgress
+                v-model="progress"
+                size="md"
+                class="w-full my-2"
+                color="primary"
+                :show-value="false" />
+
+              <p class="text-sm text-gray-500">
+                3 more days to reach your goal
+              </p>
+            </div>
           </div>
-          <span class="text-center w-full p-2">Daily Reflection</span>
-        </UButton>
-        <UButton
-          variant="subtle"
-          class="flex flex-1 justify-between font-semibold cursor-pointer w-full"
-          size="xl">
-          <div class="w-full overflow-hidden">
-            <img
-              class="object-fill black-to-white"
-              src="@/assets/img/prepare_for_thera.png" />
-          </div>
-          <span class="text-center w-full p-2">Prepare for your therapy</span>
-        </UButton>
+        </UCard>
       </div>
     </div>
     <div class="flex items-center gap-4">
@@ -35,11 +44,12 @@
 
 <script setup lang="ts">
 import { useScreen } from "~/composables/useScreen"; // Assuming you have a useScreen composable
-import { Bell } from "lucide-vue-next";
+import { Flame } from "lucide-vue-next";
 import moment from "moment";
 
 const { $tranquaraSDK } = useNuxtApp();
 const isSearchActive = ref(false);
+const progress = ref(70);
 const screen = useScreen();
 
 const isMediumOrBelow = computed(() => !screen.isLargerThanMedium);
@@ -53,10 +63,6 @@ const isMediumOrBelow = computed(() => !screen.isLargerThanMedium);
 .flex.search-active .logo-section {
   transform: translateX(-300%);
   position: absolute;
-}
-
-.black-to-white {
-  filter: invert(100%);
 }
 
 .user-auth-section {

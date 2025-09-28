@@ -1,36 +1,41 @@
 <template>
-
-    <section class="quote-card flex flex-col items-center gap-4 ">
+  <UCard class="quote-card">
+    <section class="flex items-center gap-4">
+      <div class="self-start mt-2 px-4">
         <Quote class="quote-icon" fill="amber"></Quote>
-        Remember, every breath is a fresh start.
+      </div>
+      <div class="flex flex-col gap-2">
+        <p class="font-semibold">Today's Reflection</p>
+        <p>
+          "What small moment brought you peace yesterday, and how can you create
+          more of those today?
+        </p>
+        <UButton class="self-start font-bold px-4 py-2">
+          Start jounrling
+        </UButton>
+      </div>
     </section>
-
+  </UCard>
 </template>
 
 <script lang="ts" setup>
-import { Quote } from 'lucide-vue-next';
-
-
+import { Quote } from "lucide-vue-next";
 </script>
 
 <style lang="scss">
 .quote-card {
-    position: relative;
-    border: 1px solid var(--color-old-neutral-700);
-    box-shadow: 1px 1px 0.5rem 0.1rem var(--color-old-neutral-700);
-    padding: 1rem;
-    text-align: center;
-    border-radius: 0.375rem;
+  position: relative;
+  background-image: linear-gradient(
+    to left,
+    var(--ui-color-neutral-800) 0%,
+    var(--ui-bg) 100%
+  );
+  padding: 1rem;
+  border-radius: 0.375rem;
 
-    .quote-icon {
-        top: -0.5rem;
-        left: -0.5rem;
-        width: 2rem;
-        height: 2rem;
-        fill: #F2B900;
-        border: unset;
-        stroke-width: 0px;
-    }
+  .quote-icon {
+    fill: #f2b900;
+    stroke-width: 0px;
+  }
 }
-
 </style>

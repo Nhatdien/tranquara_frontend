@@ -1,21 +1,17 @@
 <template>
-  <UDrawer :handle="false" direction="right">
-    <UButton color="neutral" variant="ghost" trailing-icon="i-lucide-menu" />
-    <template #content>
-      <nav class="flex flex-col w-full p-2 gap-2 rounded-full justify-center">
-        <UButton
-          variant="ghost"
-          @click="navigateTo(sidebar.link)"
-          v-for="sidebar in sidebarSchema"
-          class="w-min p-3">
-          <div class="flex items-center gap-2">
-            <component class="" :is="componentMapping[sidebar.icon]" />
-            <p>{{ sidebar.title }}</p>
-          </div>
-        </UButton>
-      </nav>
-    </template>
-  </UDrawer>
+  <nav class="flex fixed bottom-0 left-0 w-full h-20 p-2 bg-[var(--ui-bg-elevated)]">
+    <UButton
+      variant="ghost"
+      @click="navigateTo(sidebar.link)"
+      v-for="sidebar in sidebarSchema"
+      :key="sidebar.link"
+      class="flex-1 p-3">
+      <div class="flex flex-col flex-1 justify-center items-center gap-2">
+        <component class="flex-1" :is="componentMapping[sidebar.icon]" />
+        <p>{{ sidebar.title }}</p>
+      </div>
+    </UButton>
+  </nav>
 </template>
 
 <script setup lang="ts">
@@ -28,7 +24,7 @@ const componentMapping = {
   house: House,
   user: User,
   notebook: Notebook,
-  library: Library
+  library: Library,
 } as { [key: string]: any };
 </script>
 

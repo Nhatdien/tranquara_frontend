@@ -1,11 +1,11 @@
 <template>
     <div
-      class="flex flex-col w-full gap-12">
+      class="flex flex-col w-full gap-8">
       <HomePageTopMenu />
       <CommonQuoteCard />
+      <HomePageTodayLearning />
+      <HomePageQuickLinks />
       <!-- <HomePageEmotionCharts class="flex-1" /> -->
-      <HomePageLatestEntries />
-      <JournalResumeJournaling />
     </div>
 </template> 
 

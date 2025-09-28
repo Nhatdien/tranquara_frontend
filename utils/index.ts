@@ -33,7 +33,22 @@ export function formatDate(date: string) {
   );
 }
 
-export async function waitForToken(callback: () => void = () => {}) {
+export function timeInDays(date: string) {
+  // function that returns current time as morning, afternoon, evening, night
+  const now = moment();
+  const hour = now.hour();
+
+  if (hour < 12) {
+    return "Morning";
+  } else if (hour < 18) {
+    return "Afternoon";
+  } else {
+    return "Evening";
+  }
+
+}
+
+export async function waitForToken(callback: () => void = () => { }) {
   return new Promise<void>((resolve, reject) => {
     const interval = setInterval(() => {
       if (UserService.getToken()) {

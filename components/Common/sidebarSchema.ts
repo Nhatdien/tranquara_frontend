@@ -10,12 +10,12 @@ export const sidebarSchema = [
         link: "/journaling",
     },
     {
-        title: "Learn/Prepare",
+        title: "Learn",
         icon: "library",
         link: "/learn_and_prepare",
     },
     {
-        title: "Profile/Settings",
+        title: "Profile",
         icon: "user",
         link: "/profile",
     },

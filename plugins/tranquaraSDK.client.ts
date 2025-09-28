@@ -15,10 +15,27 @@ export default defineNuxtPlugin((nuxtApp) => {
 
 
     // Initialize Keycloak and ensure it's ready
-   UserService.initKeycloak(() => {
+   UserService.initKeycloak(async () => {
       // Once Keycloak is initialized, update the SDK with the token and username
       tranquaraSDK.config.access_token = UserService.getToken();
       tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
+
+      const refreshInterval = setInterval(async () => {
+        let refreshed = false;
+        try {
+          UserService.updateToken((success: boolean) => {
+            refreshed = success;
+          }); // Refresh if token expires in 30 seconds
+          if (refreshed) {
+            tranquaraSDK.config.access_token = UserService.getToken();
+            tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
+          }
+        } catch (error) {
+          console.error("Failed to refresh token:", error);
+          clearInterval(refreshInterval); // Stop the interval if refreshing fails
+          UserService.doLogin(); // Redirect to login if token refresh fails
+        }
+      }, 10000); // Check every 10 seconds
     });
 
   TranquaraSDK.getInstance().onError = (error) => {

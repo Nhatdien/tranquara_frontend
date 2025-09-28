@@ -285,6 +285,132 @@ export const testCollection = {
       ]
     },
     {
+      "id": "88888888-8888-8888-8888-888888888888",
+      "title": "Mental health history",
+      "category": "mental_health",
+      "description": "Reflect on your personal mental health history, past treatments, and experiences to provide context for your growth.",
+      "cover_image": "https://example.com/mental-health-history-cover.png",
+      "created_at": "2025-09-07T10:30:00Z",
+      "type": "prepare",
+      "slide_groups": [
+        {
+          "id": "c11f33a4-12f3-44c2-9334-b4c5a3e15f60",
+          "collection_id": "88888888-8888-8888-8888-888888888888",
+          "title": "Previous diagnoses",
+          "description": "Reflect on any mental health diagnoses you’ve received in the past.",
+          "position": 1,
+          "created_at": "2025-09-07T10:31:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Have I ever been diagnosed with a mental health condition? If yes, what was it?" },
+            { "type": "journal_prompt", "question_content": "How did I feel about receiving this diagnosis?" },
+            { "type": "journal_prompt", "question_content": "Did the diagnosis change how I saw myself?" }
+          ]
+        },
+        {
+          "id": "e74de5fb-3d4c-4c7b-b98d-7c9c5453a415",
+          "collection_id": "88888888-8888-8888-8888-888888888888",
+          "title": "Past treatment",
+          "description": "Look back at your past therapy or treatment experiences.",
+          "position": 2,
+          "created_at": "2025-09-07T10:32:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What types of therapy or treatment have I tried before?" },
+            { "type": "journal_prompt", "question_content": "What approaches felt most helpful?" },
+            { "type": "journal_prompt", "question_content": "Were there treatments that didn’t work for me? Why?" }
+          ]
+        },
+        {
+          "id": "1afee0a9-780a-4038-8894-86e7a5085a10",
+          "collection_id": "88888888-8888-8888-8888-888888888888",
+          "title": "Medications",
+          "description": "Reflect on your experiences with medications for mental health.",
+          "position": 3,
+          "created_at": "2025-09-07T10:33:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Have I ever taken medication for mental health? If yes, which ones?" },
+            { "type": "journal_prompt", "question_content": "How did these medications affect me positively or negatively?" },
+            { "type": "journal_prompt", "question_content": "Am I currently taking any medications? How do I feel about that?" }
+          ]
+        },
+        {
+          "id": "9bc3a68a-d2f9-4b39-a836-6c8d4e7a9ecf",
+          "collection_id": "88888888-8888-8888-8888-888888888888",
+          "title": "History of emotional crisis",
+          "description": "Reflect on times when you experienced emotional crises and how you responded.",
+          "position": 4,
+          "created_at": "2025-09-07T10:34:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Have I experienced emotional crises in the past? What triggered them?" },
+            { "type": "journal_prompt", "question_content": "How did I cope during those times?" },
+            { "type": "journal_prompt", "question_content": "What support did I have, and what support did I need but didn’t have?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "99999999-9999-9999-9999-999999999999",
+      "title": "Lifestyle and support",
+      "category": "mental_health",
+      "description": "Reflect on your daily habits, routines, and sources of support that affect your well-being.",
+      "cover_image": "https://example.com/lifestyle-support-cover.png",
+      "created_at": "2025-09-07T10:40:00Z",
+      "type": "prepare",
+      "slide_groups": [
+        {
+          "id": "b82bff7e-b46a-49aa-8de2-b3dcbf7c9f25",
+          "collection_id": "99999999-9999-9999-9999-999999999999",
+          "title": "Sleep habits",
+          "description": "Explore your sleep patterns and their impact on your mental health.",
+          "position": 1,
+          "created_at": "2025-09-07T10:41:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What is my usual sleep schedule?" },
+            { "type": "journal_prompt", "question_content": "Do I feel rested when I wake up?" },
+            { "type": "journal_prompt", "question_content": "How does poor sleep affect my mood or focus?" }
+          ]
+        },
+        {
+          "id": "a9b53c8f-b7e5-4e62-9329-2a89435db6a9",
+          "collection_id": "99999999-9999-9999-9999-999999999999",
+          "title": "Diet and exercise",
+          "description": "Reflect on how food and physical activity affect your energy and mood.",
+          "position": 2,
+          "created_at": "2025-09-07T10:42:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "How would I describe my current diet?" },
+            { "type": "journal_prompt", "question_content": "Does exercise play a role in my life? How?" },
+            { "type": "journal_prompt", "question_content": "How do food and movement affect my energy levels and mood?" }
+          ]
+        },
+        {
+          "id": "e54fa3ab-bf90-4a8b-9c8b-13b92b16aa7d",
+          "collection_id": "99999999-9999-9999-9999-999999999999",
+          "title": "Social support",
+          "description": "Reflect on the people and communities that support your well-being.",
+          "position": 3,
+          "created_at": "2025-09-07T10:43:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Who are the people I can turn to when I need support?" },
+            { "type": "journal_prompt", "question_content": "Do I feel connected or isolated from others?" },
+            { "type": "journal_prompt", "question_content": "What kind of social interactions help me feel energized?" }
+          ]
+        },
+        {
+          "id": "ff48f2b9-d3c9-48d0-97e8-df5a73a9e3cf",
+          "collection_id": "99999999-9999-9999-9999-999999999999",
+          "title": "Daily routines",
+          "description": "Reflect on your everyday routines and how they support or challenge your mental health.",
+          "position": 4,
+          "created_at": "2025-09-07T10:44:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What does a typical day look like for me?" },
+            { "type": "journal_prompt", "question_content": "Which routines support my mental health?" },
+            { "type": "journal_prompt", "question_content": "Are there habits I want to change or add?" }
+          ]
+        }
+      ]
+    },
+    {
       "id": "44444444-4444-4444-4444-444444444444",
       "title": "Therapy Preparation",
       "category": "mental_health",
@@ -389,7 +515,7 @@ export const testCollection = {
       "description": "Simple daily prompts to help you reflect on your mornings and evenings with intention.",
       "cover_image": "https://example.com/daily-reflection-cover.png",
       "created_at": "2025-08-28T10:10:00Z",
-      "type": "prepare",
+      "type": "",
       "slide_groups": [
         {
           "id": "cd1e8dfe-2102-45f4-9256-a708a7577e0b",
@@ -418,6 +544,183 @@ export const testCollection = {
             { "type": "journal_prompt", "question_content": "What can I celebrate today?" },
             { "type": "journal_prompt", "question_content": "How am I different from yesterday?" },
             { "type": "journal_prompt", "question_content": "How can I wind down, release the day, and rest now?" }
+          ]
+        },
+
+        {
+          "id": "2c9d8b3e-8a18-4e27-b44f-d5df88f6f918",
+          "collection_id": "55555555-5555-5555-5555-555555555555",
+          "title": "Weekly",
+          "description": "Reflect on your week, track progress, and set intentions for the next one.",
+          "position": 3,
+          "created_at": "2025-09-07T10:20:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What were the top highlights of this week ?" },
+            { "type": "journal_prompt", "question_content": "What did I accomplish this week" },
+            { "type": "journal_prompt", "question_content": "What did I learn this week ?" },
+            { "type": "journal_prompt", "question_content": "What am I looking forward to next week ?" }
+          ]
+        },
+        {
+          "id": "8b49d29b-31e5-4896-9cc1-48d9e457fb1e",
+          "collection_id": "55555555-5555-5555-5555-555555555555",
+          "title": "Monthly",
+          "description": "Look back at your month to notice growth, accomplishments, and future focus.",
+          "position": 4,
+          "created_at": "2025-09-07T10:21:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What were the top highlights of this month ?" },
+            { "type": "journal_prompt", "question_content": "What did I accomplish this month" },
+            { "type": "journal_prompt", "question_content": "What did I learn this week ?" },
+            { "type": "journal_prompt", "question_content": "What am I looking forward to next week ?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "title": "Checkins",
+      "category": "self_care",
+      "description": "Guided prompts for daily and emotional check-ins to increase self-awareness and emotional balance.",
+      "cover_image": "https://example.com/checkins-cover.png",
+      "created_at": "2025-09-07T10:00:00Z",
+      "type": "",
+      "slide_groups": [
+        {
+          "id": "b9f2b2aa-2a3a-47df-9e0a-bc64eea3a345",
+          "collection_id": "66666666-6666-6666-6666-666666666666",
+          "title": "Daily",
+          "description": "Quick prompts to check in with yourself each day and notice your state of mind.",
+          "position": 1,
+          "created_at": "2025-09-07T10:10:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "How am I feeling today ?" },
+            { "type": "journal_prompt", "question_content": "What obstacles am I facing ?" },
+            { "type": "journal_prompt", "question_content": "What am I learning from these obstacles" },
+            { "type": "journal_prompt", "question_content": "Notes/Reflection" }
+          ]
+        },
+        {
+          "id": "0d42b2b4-7e3d-48b6-9242-d3f47a9181a0",
+          "collection_id": "66666666-6666-6666-6666-666666666666",
+          "title": "Emotional",
+          "description": "Reflect on your emotions to understand triggers, responses, and ways to support yourself.",
+          "position": 2,
+          "created_at": "2025-09-07T10:11:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What emotion am I feeling now ?" },
+            { "type": "journal_prompt", "question_content": "What might have trigger this emotion ?" },
+            { "type": "journal_prompt", "question_content": "How am I responding to this emotion ?" },
+            { "type": "journal_prompt", "question_content": "When was the last time i felt this way ?" },
+            { "type": "journal_prompt", "question_content": "How does this emotion affect my thoughs and behavior" },
+            { "type": "journal_prompt", "question_content": "What can I learn from this emotion ?" },
+            { "type": "journal_prompt", "question_content": "How can I support myselft through this emotion" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aaaa1111-aaaa-1111-aaaa-aaaaaaaa1111",
+      "title": "Productivity",
+      "category": "self_care",
+      "description": "Prompts to help you plan your day and make thoughtful decisions that align with your goals.",
+      "cover_image": "https://example.com/productivity-cover.png",
+      "created_at": "2025-09-07T10:50:00Z",
+      "type": "",
+      "slide_groups": [
+        {
+          "id": "bb11bb11-bb11-bb11-bb11-bbbbbbbb1111",
+          "collection_id": "aaaa1111-aaaa-1111-aaaa-aaaaaaaa1111",
+          "title": "Daily Plan",
+          "description": "Plan your day with focus and intention.",
+          "position": 1,
+          "created_at": "2025-09-07T10:51:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What are my top 3 priorities for today?" },
+            { "type": "journal_prompt", "question_content": "What small tasks can I complete to build momentum?" },
+            { "type": "journal_prompt", "question_content": "What challenges might I face today, and how can I handle them?" },
+            { "type": "journal_prompt", "question_content": "How will I take care of myself while staying productive?" }
+          ]
+        },
+        {
+          "id": "cc22cc22-cc22-cc22-cc22-cccccccc2222",
+          "collection_id": "aaaa1111-aaaa-1111-aaaa-aaaaaaaa1111",
+          "title": "Decision making",
+          "description": "Reflect on choices and how to make decisions that support your well-being and goals.",
+          "position": 2,
+          "created_at": "2025-09-07T10:52:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What decision am I currently struggling with?" },
+            { "type": "journal_prompt", "question_content": "What are the pros and cons of each option?" },
+            { "type": "journal_prompt", "question_content": "How will this decision affect me in the short term and long term?" },
+            { "type": "journal_prompt", "question_content": "Does this choice align with my values and goals?" }
+          ]
+        }
+      ]
+    },    
+    {
+      "id": "77777777-7777-7777-7777-777777777777",
+      "title": "Stress",
+      "category": "mental_health",
+      "description": "Reflections to help you recognize, understand, and manage stress from work, relationships, finances, and home life.",
+      "cover_image": "https://example.com/stress-cover.png",
+      "created_at": "2025-09-07T10:05:00Z",
+      "type": "",
+      "slide_groups": [
+        {
+          "id": "9b55bb1a-3a1f-4767-93d6-f1adf09c66f9",
+          "collection_id": "77777777-7777-7777-7777-777777777777",
+          "title": "Work stress",
+          "description": "Reflect on stress related to work or school and its impact on your well-being.",
+          "position": 1,
+          "created_at": "2025-09-07T10:15:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What’s been the most stressful part of work/school recently?" },
+            { "type": "journal_prompt", "question_content": "Are there deadlines, roles, or interactions that feel overwhelming?" },
+            { "type": "journal_prompt", "question_content": "How do I feel on Sunday night or Monday morning?" },
+            { "type": "journal_prompt", "question_content": "How does this stress show up in my mood, body, or behavior?" }
+          ]
+        },
+        {
+          "id": "3e7836b6-30b1-41d5-b8dd-d648ef2a72a3",
+          "collection_id": "77777777-7777-7777-7777-777777777777",
+          "title": "Relationship stress",
+          "description": "Explore how stress shows up in your relationships and how you respond to it.",
+          "position": 2,
+          "created_at": "2025-09-07T10:16:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Am I feeling emotionally safe and supported in my closest relationships?" },
+            { "type": "journal_prompt", "question_content": "Have I had recent arguments, miscommunications, or distance with someone I care about?" },
+            { "type": "journal_prompt", "question_content": "What patterns do I notice in my relationships under stress?" },
+            { "type": "journal_prompt", "question_content": "Do I avoid, explode, withdraw, or overcompensate?" }
+          ]
+        },
+        {
+          "id": "6f3e93ef-2a53-4902-9e8a-2f2c72ffb486",
+          "collection_id": "77777777-7777-7777-7777-777777777777",
+          "title": "Financial stress",
+          "description": "Reflect on the impact of money-related worries on your thoughts, feelings, and behaviors.",
+          "position": 3,
+          "created_at": "2025-09-07T10:17:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What current money-related worries do I have (debt, job security, bills)?" },
+            { "type": "journal_prompt", "question_content": "Do I feel shame, fear, anger, or pressure about money?" },
+            { "type": "journal_prompt", "question_content": "How does financial stress affect my sleep, mood, or self-worth?" },
+            { "type": "journal_prompt", "question_content": "Do I avoid looking at my bank account or feel consumed by it?" }
+          ]
+        },
+        {
+          "id": "af3c70a9-8bb2-4c4c-8d8a-f0f0e30e3ed0",
+          "collection_id": "77777777-7777-7777-7777-777777777777",
+          "title": "Home stress",
+          "description": "Explore how your home environment or living situation contributes to stress.",
+          "position": 4,
+          "created_at": "2025-09-07T10:18:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What aspects of my home or living situation cause me stress?" },
+            { "type": "journal_prompt", "question_content": "Do I feel at peace in my environment, or do I want to escape?" },
+            { "type": "journal_prompt", "question_content": "Are chores, caregiving roles, or shared space dynamics affecting me?" },
+            { "type": "journal_prompt", "question_content": "Is there a sense of control or helplessness about my home life?" }
           ]
         }
       ]
