@@ -100,7 +100,6 @@ export abstract class Base {
         .then((response: Response) => {
           if (response.status !== 200) {
             if (response.status === 401) {
- 
               throw new Error("401 Unauthorized");
             }
             else if (response.status >= 400) {

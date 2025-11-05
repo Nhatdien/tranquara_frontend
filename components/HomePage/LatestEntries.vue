@@ -59,7 +59,6 @@ const saveJournal = (journal: CreateJournalRequest, templateId?: string) => {
 };
 
 onMounted(async () => {
-  await waitForToken();
   userJournalStore().getJournals();
 });
 </script>

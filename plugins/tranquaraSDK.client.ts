@@ -1,5 +1,5 @@
-import UserService from "~/stores/auth/keycloak_service";
 import TranquaraSDK from "~/stores/tranquara_sdk";
+import { useAuthStore } from "~/stores/stores/auth";
 
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -13,42 +13,28 @@ export default defineNuxtPlugin((nuxtApp) => {
     current_username: "",
   });
 
+  const authStore = useAuthStore();
+  // Initialize Keycloak and ensure it's ready
+  authStore.initKeycloak().then(() => {
+    if (authStore.isAuthenticated && authStore.token) {
+      tranquaraSDK.config.access_token = authStore.token;
+      tranquaraSDK.config.current_username = authStore.user?.preferred_username || "";
+      console.log("TranquaraSDK configured with user:", tranquaraSDK.config.current_username);
 
-    // Initialize Keycloak and ensure it's ready
-   UserService.initKeycloak(async () => {
-      // Once Keycloak is initialized, update the SDK with the token and username
-      tranquaraSDK.config.access_token = UserService.getToken();
-      tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
-
-      const refreshInterval = setInterval(async () => {
-        let refreshed = false;
-        try {
-          UserService.updateToken((success: boolean) => {
-            refreshed = success;
-          }); // Refresh if token expires in 30 seconds
-          if (refreshed) {
-            tranquaraSDK.config.access_token = UserService.getToken();
-            tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
-          }
-        } catch (error) {
-          console.error("Failed to refresh token:", error);
-          clearInterval(refreshInterval); // Stop the interval if refreshing fails
-          UserService.doLogin(); // Redirect to login if token refresh fails
-        }
-      }, 10000); // Check every 10 seconds
-    });
-
-  TranquaraSDK.getInstance().onError = (error) => {
-    if (error.message.includes("Unauthorized")) {
-      UserService.doLogin();
     }
-  }
-
+    else {
+      TranquaraSDK.getInstance().onError = (error) => {
+        if (error.message.includes("Unauthorized")) {
+          // authStore.login();
+        }
+      }
+    }
+  });
 
 
   return {
     provide: {
-      keycloak: UserService,
+      authStore,
       tranquaraSDK,
     },
   };

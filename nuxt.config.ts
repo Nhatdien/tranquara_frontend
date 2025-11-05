@@ -14,7 +14,11 @@ export default defineNuxtConfig({
   },
   devtools: false,
   runtimeConfig: {
+
     public: {
+      keycloakUrl: "",
+      keycloakRealm: "",
+      keycloakClientId: "",
       baseURL: "",
       baseFrontendURL: "",
       websocketURL: "",

@@ -127,7 +127,6 @@ const createSocketConnection = () => {
 };
 
 onMounted(async () => {
-  await waitForToken();
   createSocketConnection();
 });
 

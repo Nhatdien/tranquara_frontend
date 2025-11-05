@@ -5,6 +5,7 @@
       <CommonQuoteCard />
       <HomePageTodayLearning />
       <HomePageQuickLinks />
+      <HomePageLatestEntries class="flex-1" />
       <!-- <HomePageEmotionCharts class="flex-1" /> -->
     </div>
 </template> 
