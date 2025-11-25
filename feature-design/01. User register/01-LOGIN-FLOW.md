@@ -7,10 +7,9 @@ Tranquara uses **Keycloak** for centralized authentication and identity manageme
 ### Tech Stack
 
 - **Authentication**: Keycloak (OpenID Connect / OAuth 2.0)
-- **Web Framework**: Nuxt 3 + Vue 3 (SSR/SPA hybrid)
+- **Web Framework**: Nuxt 3 + Vue 3 (currently use clientside render)
 - **Mobile Runtime**: Capacitor (native bridge for iOS/Android)
 - **State Management**: Pinia (Vue 3)
-- **HTTP Client**: ofetch (Nuxt 3 built-in)
 - **Backend**: Go + PostgreSQL (existing)
 - **Session Management**: Keycloak tokens (JWT) + Refresh tokens
 
@@ -37,7 +36,7 @@ sequenceDiagram
     participant App as Nuxt App
     participant KC as Keycloak
     participant API as Backend API
-    participant DB as PostgreSQL
+    participant DB as PostgreSQLV
 
     U->>App: Opens app for first time
     App->>U: Show welcome screen

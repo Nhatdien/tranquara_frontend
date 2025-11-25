@@ -140,9 +140,11 @@ _[JSON code implementation removed - to be added during development]_
 | Type | Location | Encryption |
 |------|----------|------------|
 | Tokens | Capacitor SecureStorage | OS-level (Keychain/Keystore) |
-| User Data | Capacitor Preferences | AES-256 (app-level) |
-| Journals | Capacitor Preferences | AES-256 (app-level) |
+| User Profile | Capacitor Preferences | AES-256 (app-level) |
+| Journals | SQLite (@capacitor-community/sqlite) | Optional SQLite encryption |
 | Settings | Capacitor Preferences | AES-256 (app-level) |
+
+> **Note**: Journals use SQLite instead of Capacitor Preferences due to high data volume and complex querying needs. See [Journal Feature docs](../02.%20Jounral%20Feature/) for details.
 
 ---
 
@@ -193,7 +195,7 @@ _[JSON code implementation removed - to be added during development]_
 **Before**:
 - Custom offline-first authentication
 - Temporary user IDs (`temp_`)
-- SQLite local database
+- Local SQLite database only
 - Complex sync logic
 
 **After** (Current):

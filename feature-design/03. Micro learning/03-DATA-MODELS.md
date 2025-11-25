@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document details the database schemas for the micro-learning feature, covering both **server-side (PostgreSQL)** and **client-side (SQLite/IndexedDB)** data models.
+This document details the database schemas for the micro-learning feature, covering both **server-side (PostgreSQL)** and **client-side (SQLite via @capacitor-community/sqlite)** data models.
 
 ---
 
@@ -223,9 +223,14 @@ _[SQL code implementation removed - to be added during development]_
 
 ---
 
-## 📱 Client-Side: SQLite / IndexedDB Schema
+## 📱 Client-Side: SQLite Schema (@capacitor-community/sqlite)
 
-### Mobile: SQLite Schema
+### Mobile & Web: SQLite Database
+
+**Storage**: SQLite database via `@capacitor-community/sqlite`
+- **Mobile (iOS/Android)**: Native SQLite
+- **Web**: SQL.js (WASM-based SQLite)
+- **Encryption**: Optional SQLite encryption available
 
 #### `local_collections`
 
@@ -259,35 +264,14 @@ _[SQL code implementation removed - to be added during development]_
 
 ---
 
-### Web: IndexedDB Schema
+### Web Platform Note
 
-#### `collections` Store
+**Web uses the same SQLite database** via SQL.js (WebAssembly):
+- Same schema as mobile (consistency)
+- Stored in browser's IndexedDB (for persistence)
+- Automatic migration from mobile ↔ web
 
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
-**Indexes:**
-- `type`
-- `category`
-
----
-
-#### `slide_groups` Store
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
-**Indexes:**
-- `collection_id`
-
----
-
-#### `progress` Store
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
-**Indexes:**
-- `user_id`
-- `[user_id, slide_group_id]` (compound, unique)
-- `synced`
+No separate IndexedDB schema needed - SQLite handles all platforms uniformly.
 
 ---
 

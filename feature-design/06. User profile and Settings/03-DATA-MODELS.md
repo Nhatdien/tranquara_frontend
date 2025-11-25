@@ -7,7 +7,7 @@ This document defines all database schemas, local storage structures, and data r
 ## Table of Contents
 
 1. [Database Schema (PostgreSQL)](#database-schema-postgresql)
-2. [Local Storage (SQLite/IndexedDB)](#local-storage-sqliteindexeddb)
+2. [Local Storage (Capacitor Preferences + IndexedDB)](#local-storage-capacitor-preferences--indexeddb)
 3. [Secure Storage (Keychain/Keystore)](#secure-storage-keychainKeystore)
 4. [Sample Queries](#sample-queries)
 5. [Indexes and Performance](#indexes-and-performance)
@@ -61,18 +61,20 @@ _[JSON code implementation removed - to be added during development]_
 
 ---
 
-## Local Storage (SQLite/IndexedDB)
+## Local Storage (Capacitor Preferences + IndexedDB)
 
-### Mobile (SQLite)
+### Mobile (Capacitor Preferences)
+
+**Storage**: Capacitor Preferences API (secure key-value storage)
 
 **Table: `settings_global`** (synced settings)
-_[SQL code implementation removed - to be added during development]_
+_[JSON code implementation removed - to be added during development]_
 
 **Table: `settings_local`** (device-specific, not synced)
-_[SQL code implementation removed - to be added during development]_
+_[JSON code implementation removed - to be added during development]_
 
 **Table: `ai_memory_cache`** (cached AI memory)
-_[SQL code implementation removed - to be added during development]_
+_[JSON code implementation removed - to be added during development]_
 
 ### Web (IndexedDB)
 
@@ -101,7 +103,7 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ### Android Keystore
 
-Same API as iOS via `expo-secure-store`, backed by Android Keystore system.
+Same API as iOS via Capacitor SecureStorage, backed by Android Keystore system.
 
 **Security Features**:
 - Hardware-backed encryption (if available)

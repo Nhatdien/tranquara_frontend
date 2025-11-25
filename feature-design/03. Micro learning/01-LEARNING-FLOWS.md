@@ -255,10 +255,10 @@ flowchart TD
 flowchart TD
     A[User Installs App] --> B[First Launch]
     B --> C[App Initialization]
-    C --> D[Check Local Storage<br/>SQLite/IndexedDB]
+    C --> D[Check Local SQLite DB]
     
     D --> E{Core Lessons Bundled?}
-    E -->|Yes in App Bundle| F[Copy Bundled Lessons<br/>to Local Database<br/>~20-30 lessons]
+    E -->|Yes in App Bundle| F[Copy Bundled Lessons<br/>to Local SQLite DB<br/>~20-30 lessons]
     E -->|Not Yet| G[Download Core Pack<br/>Background Sync]
     
     F --> H[Mark as Available Offline]
@@ -273,7 +273,7 @@ flowchart TD
     M --> N[Save to Local DB<br/>for Offline Access]
     
     L --> O[User Selects Lesson]
-    O --> P[Load Slides from<br/>Local SQLite/IndexedDB]
+    O --> P[Load Slides from<br/>Local SQLite DB]
     P --> Q[Lesson Plays Offline<br/>All Slides Available]
     
     Q --> R[User Completes Lesson]

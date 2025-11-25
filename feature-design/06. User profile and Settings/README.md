@@ -132,11 +132,15 @@ Users can:
 ## 🔧 Technology
 
 ### Frontend
-- **React Native**: `expo-notifications`, `expo-local-authentication`, `expo-secure-store`
-- **State Management**: Zustand (settings store, theme store)
-- **i18n**: `react-i18next` for multi-language support
-- **Security**: `bcryptjs` for PIN hashing (client-side)
-- **Storage**: SQLite (mobile), IndexedDB (web), Keychain/Keystore (secure)
+- **Framework**: Nuxt 3 + Vue 3 + Capacitor
+- **Capacitor Plugins**: 
+  - `@capacitor/local-notifications` - Notification scheduling
+  - `@capacitor/biometric-auth` - Biometric authentication
+  - `@capacitor/secure-storage` - Encrypted storage (use Preferences with encryption)
+  - `@capacitor/preferences` - Local storage
+- **State Management**: Pinia (settings store, theme store)
+- **i18n**: `@nuxtjs/i18n` for multi-language support
+- **Security**: `bcryptjs` for PIN hashing
 
 ### Backend
 - **API**: Go (Gin framework) for REST endpoints

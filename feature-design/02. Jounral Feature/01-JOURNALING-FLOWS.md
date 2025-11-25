@@ -131,7 +131,7 @@ flowchart TD
     A[User viewing Entry] --> B[Tap Delete button]
     B --> C[Confirmation Alert:<br/>Delete permanently?]
     C --> D{User confirms?}
-    D -->|Yes| E[Delete entry from<br/>local SQLite]
+    D -->|Yes| E[Delete entry from<br/>local SQLite DB]
     D -->|No| F[Cancel - return to entry]
     E --> G{Online?}
     G -->|Yes| H[Sync deletion to backend]
@@ -233,9 +233,9 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[User Offline] --> B[Start Journal Session]
-    B --> C[All slides load from<br/>local SQLite]
+    B --> C[All slides load from<br/>local SQLite DB]
     C --> D[User completes slides]
-    D --> E[Responses saved to<br/>local SQLite]
+    D --> E[Responses saved to<br/>local SQLite DB]
     E --> F[Entry marked needs_sync = 1]
     F --> G{User goes Online?}
     G -->|Yes| H[Background sync starts]

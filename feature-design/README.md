@@ -86,28 +86,46 @@ When providing context to AI assistants:
 
 ### Technology Stack
 
-- **Frontend**: React Native (Expo) + NativeWind (TailwindCSS)
-- **Backend**: Node.js / Golang (planned migration)
+**Frontend**:
+- **Framework**: Nuxt 3 (Vue 3) + Capacitor
+- **Mobile**: iOS & Android via Capacitor
+- **Web**: SSR/SPA with Nuxt 3
+- **Styling**: TailwindCSS + NativeWind principles
+- **State**: Pinia
+- **Storage**: Capacitor Preferences + SecureStorage
+
+**Backend**:
+- **Core Service**: Golang (tranquara_core_service)
 - **AI Service**: Python (FastAPI) + HuggingFace models
-- **Database**: 
-  - PostgreSQL (user data, journals, streaks)
-  - Drizzle ORM
-  - Qdrant vector store (Python service)
-- **Queue**: RabbitMQ (async processing between services)
-- **Authentication**: FIDO/Passkey-based passwordless auth
+
+**Database**: 
+- PostgreSQL (user data, journals, streaks, lessons)
+- Qdrant vector store (semantic search for lessons/journals)
+
+**Infrastructure**:
+- **Queue**: RabbitMQ (async AI processing)
+- **Authentication**: Keycloak (OAuth 2.0 / OpenID Connect)
+  - Email/password + social login (Apple, Google)
+- **Cache**: Redis (session management)
 
 ### System Architecture
 
 ```
 ┌─────────────┐      ┌──────────────┐      ┌─────────────┐
 │   Mobile    │◄────►│   Backend    │◄────►│     AI      │
-│  (Expo RN)  │      │   (Go/Node)  │      │  (FastAPI)  │
+│ (Nuxt+Cap)  │      │     (Go)     │      │  (FastAPI)  │
 └─────────────┘      └──────────────┘      └─────────────┘
-                            │                      │
-                            ▼                      ▼
-                     ┌─────────────┐        ┌──────────┐
-                     │ PostgreSQL  │        │  Qdrant  │
-                     └─────────────┘        └──────────┘
+       │                    │                      │
+       │                    ▼                      ▼
+       │             ┌─────────────┐        ┌──────────┐
+       │             │ PostgreSQL  │        │  Qdrant  │
+       │             └─────────────┘        └──────────┘
+       │                    │
+       │                    ▼
+       │             ┌─────────────┐
+       └────────────►│  Keycloak   │
+                     │   (Auth)    │
+                     └─────────────┘
 ```
 
 ### User Journey Flow

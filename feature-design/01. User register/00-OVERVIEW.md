@@ -111,7 +111,7 @@ Provide secure, flexible authentication for Tranquara using email/password or so
 - **Social OAuth**: Apple Sign-In, Google Sign-In (Keycloak manages OAuth flows)
 - **JWT Tokens**: Access token (15 min), Refresh token (30 days), RSA-256 signature
 - **Password Reset**: Keycloak-managed reset flow with secure email token (1 hour expiry)
-- **Local Data Encryption**: AES-256 encryption for all cached data (user profile, journals, settings)
+- **Local Data Encryption**: AES-256 for Capacitor Preferences (user profile, settings); Optional SQLite encryption for journals
 - **Encryption Key Storage**: Capacitor SecureStorage (iOS Keychain, Android Keystore)
 - **App Lock (Optional)**: PIN hashed with SHA-256, Face ID uses device secure enclave
 - **Token Storage**: Capacitor SecureStorage (OS-level encryption)

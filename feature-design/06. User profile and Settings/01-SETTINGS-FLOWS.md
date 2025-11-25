@@ -503,7 +503,7 @@ graph TD
     E -->|Cancel| F[Return to Settings]
     E -->|Confirm| G[Clear Session Token]
     G --> H[Clear Access Token<br/>from Memory]
-    H --> I[Keep Local Data<br/>SQLite/IndexedDB intact]
+    H --> I[Keep Local Data<br/>Capacitor storage intact]
     I --> J[Reset Navigation Stack]
     J --> K[Redirect to<br/>Welcome/Login Screen]
     K --> L[Show Toast:<br/>'Logged out successfully']

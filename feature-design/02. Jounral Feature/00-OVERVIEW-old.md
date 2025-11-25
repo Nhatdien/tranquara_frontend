@@ -10,7 +10,7 @@ Provide an AI-assisted journaling experience that helps users express emotions, 
 - **Priority**: High
 - **Target Release**: v1.0
 - **Dependencies**: 
-  - User Authentication (completed)
+  - User Authentication
   - AI Service (Python FastAPI + HuggingFace)
   - Vector Database (Qdrant)
   - RabbitMQ for async processing

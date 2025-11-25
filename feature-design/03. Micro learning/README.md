@@ -11,7 +11,7 @@
 | **[00-OVERVIEW.md](./00-OVERVIEW.md)** | Feature purpose, user value, and design decisions |
 | **[01-LEARNING-FLOWS.md](./01-LEARNING-FLOWS.md)** | User journeys with Mermaid diagrams for all flows |
 | **[02-TECHNICAL-SPEC.md](./02-TECHNICAL-SPEC.md)** | Architecture, offline bundling, AI recommendations, search |
-| **[03-DATA-MODELS.md](./03-DATA-MODELS.md)** | Database schemas (PostgreSQL + SQLite/IndexedDB) |
+| **[03-DATA-MODELS.md](./03-DATA-MODELS.md)** | Database schemas (PostgreSQL + SQLite via @capacitor-community/sqlite) |
 
 ---
 
@@ -50,7 +50,7 @@ Users get:
 - **Progress Tracking**: `user_learned_lessons`, `lesson_progress_metrics`
 - **Search**: PostgreSQL full-text + Qdrant vector search (semantic fallback)
 - **AI Recommendations**: Python AI service + Qdrant (opt-in only, manual trigger)
-- **Offline**: Core lessons bundled with app, synced via SQLite/IndexedDB
+- **Offline**: Core lessons bundled with app, synced via SQLite (`@capacitor-community/sqlite`)
 - **Content Format**: JSONB slide schemas (reuses journaling slide types)
 
 ---

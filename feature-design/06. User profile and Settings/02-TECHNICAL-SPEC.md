@@ -27,45 +27,56 @@ This document provides implementation details for the Settings feature, includin
 ```
 Settings Feature
 │
-├── UI Layer (React Native/Web)
-│   ├── SettingsScreen.tsx          - Main settings container
-│   ├── AccountSection.tsx           - Name, email, join date
-│   ├── NotificationSettings.tsx     - Morning/evening reminders
-│   ├── SecuritySettings.tsx         - PIN, biometric, auto-lock
-│   ├── PersonalizationSettings.tsx  - Theme, language, font
-│   ├── AIPrivacySettings.tsx        - AI toggle, Your Story, memory viewer
-│   ├── DataManagementSettings.tsx   - Export, import, delete
-│   └── AIMemoryScreen.tsx           - Full-screen AI memory view
+├── UI Layer (Nuxt 3 + Vue 3 + Capacitor)
+│   ├── SettingsScreen.vue          - Main settings container
+│   ├── AccountSection.vue           - Name, email, join date
+│   ├── NotificationSettings.vue     - Morning/evening reminders
+│   ├── SecuritySettings.vue         - PIN, biometric, auto-lock
+│   ├── PersonalizationSettings.vue  - Theme, language, font
+│   ├── AIPrivacySettings.vue        - AI toggle, Your Story, memory viewer
+│   ├── DataManagementSettings.vue   - Export, import, delete
+│   └── AIMemoryScreen.vue           - Full-screen AI memory view
 │
-├── State Management (Zustand/Context)
+├── State Management (Pinia)
 │   ├── useSettingsStore.ts          - Global settings state
 │   ├── useThemeStore.ts             - Theme state + system detection
 │   └── useNotificationStore.ts      - Notification permissions + schedule
 │
-├── Services
-│   ├── SettingsService.ts           - CRUD for settings
-│   ├── SyncService.ts               - Background sync to cloud
-│   ├── NotificationService.ts       - Schedule/cancel notifications
-│   ├── SecurityService.ts           - PIN hashing, biometric auth
-│   ├── ExportService.ts             - Generate JSON exports
-│   ├── ImportService.ts             - Validate and merge imports
-│   └── AIMemoryService.ts           - Fetch/clear AI memory
+├── Services (Composables)
+│   ├── useSettingsService.ts        - CRUD for settings
+│   ├── useSyncService.ts            - Background sync to cloud
+│   ├── useNotificationService.ts    - Schedule/cancel notifications (Capacitor Local Notifications)
+│   ├── useSecurityService.ts        - PIN hashing, biometric auth (Capacitor Biometric)
+│   ├── useExportService.ts          - Generate JSON exports
+│   ├── useImportService.ts          - Validate and merge imports
+│   └── useAIMemoryService.ts        - Fetch/clear AI memory
 │
-└── Storage
-    ├── LocalStorage (SQLite/IndexedDB)
+└── Storage (Capacitor)
+    ├── Capacitor Preferences (Local Storage)
     │   ├── settings_global            - Synced settings (theme, language)
     │   ├── settings_local             - Device-specific (notification times)
     │   └── ai_memory_cache            - Cached AI memory
     │
-    └── SecureStore (Keychain/Keystore)
+    └── Capacitor SecureStorage (Encrypted)
         ├── pin_hash                   - Hashed PIN
         ├── biometric_enabled          - Boolean flag
-        └── access_token               - User session token
+        ├── keycloak_access_token      - Keycloak JWT (15min)
+        └── keycloak_refresh_token     - Keycloak refresh token (30d)
 ```
 
 ---
 
 ## Settings Sync Strategy
+
+### Storage Architecture Note
+
+**Settings uses Capacitor Preferences (NOT SQLite)** because:
+- ✅ Small data volume (< 1KB of key-value pairs)
+- ✅ Simple read/write operations (no complex queries)
+- ✅ Low frequency updates (user changes settings occasionally)
+- ✅ Perfect for key-value storage
+
+**For comparison**: Journal entries and lessons use SQLite (`@capacitor-community/sqlite`) due to high data volume and complex querying needs.
 
 ### Global vs Device-Specific Settings
 
@@ -127,8 +138,8 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 ```
 
 **Platform-Specific**:
-- **iOS**: Respects system theme via `Appearance.getColorScheme()`
-- **Android**: Respects system theme via `Appearance.getColorScheme()`
+- **iOS**: Respects system theme via Capacitor Preferences
+- **Android**: Respects system theme via Capacitor Preferences
 - **Web**: Respects system theme via `window.matchMedia('(prefers-color-scheme: dark)')`
 
 ---
@@ -137,18 +148,20 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ### Platform Implementation
 
-**iOS (Local Notifications)**:
+**Capacitor Local Notifications Plugin** (Cross-platform):
 _[TYPESCRIPT code implementation removed - to be added during development]_
 
-**Android (WorkManager)**:
-_[KOTLIN code implementation removed - to be added during development]_
+**Platform-Specific Notes**:
+- **iOS**: Uses UNUserNotificationCenter
+- **Android**: Uses NotificationCompat with AlarmManager
+- **Web**: Uses Web Notifications API (requires permission)
 
 **Weekly Summary Notification**:
 _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ### Notification Permissions
 
-**Check and Request**:
+**Check and Request** (Capacitor):
 _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ---
@@ -162,8 +175,13 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ### Biometric Authentication
 
-**iOS/Android (LocalAuthentication)**:
+**Capacitor Biometric Plugin** (iOS/Android):
 _[TYPESCRIPT code implementation removed - to be added during development]_
+
+**Platform Support**:
+- **iOS**: Face ID / Touch ID
+- **Android**: Fingerprint / Face Unlock
+- **Web**: WebAuthn (future enhancement)
 
 ### App Lock Flow
 
@@ -316,9 +334,27 @@ GET    /api/account/deletion-status   - Check deletion status
 
 ## Third-Party Libraries
 
-### Frontend
+### Frontend (Nuxt 3 + Capacitor)
 
-_[JSON code implementation removed - to be added during development]_
+**Core Framework**:
+- `nuxt`: ^3.x - Meta-framework for Vue 3
+- `vue`: ^3.x - Progressive JavaScript framework
+- `@capacitor/core`: ^6.x - Native bridge
+- `@capacitor/ios`: ^6.x - iOS platform
+- `@capacitor/android`: ^6.x - Android platform
+
+**Capacitor Plugins**:
+- `@capacitor/preferences`: ^6.x - Local storage
+- `@capacitor/secure-storage`: ^6.x - Encrypted storage (use Preferences with encryption wrapper)
+- `@capacitor/local-notifications`: ^6.x - Notification scheduling
+- `@capacitor/biometric-auth`: ^1.x - Biometric authentication
+- `@capacitor/filesystem`: ^6.x - File export/import
+- `@capacitor/share`: ^6.x - System share dialog
+
+**State & UI**:
+- `pinia`: ^2.x - State management
+- `@nuxtjs/tailwindcss`: ^6.x - Styling
+- `@nuxtjs/color-mode`: ^3.x - Theme management
 
 ### Backend
 

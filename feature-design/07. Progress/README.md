@@ -90,10 +90,11 @@ Users get:
 
 ## 🔧 Technology
 
+- **Frontend**: Nuxt 3 + Vue 3 + Capacitor
 - **Backend API**: Go (tranquara_core_service)
 - **Database**: PostgreSQL (aggregated metrics tables)
 - **Real-Time**: WebSocket (primary) or polling (fallback)
-- **Charts**: `react-native-chart-kit` (mobile), `recharts` (web)
+- **Charts**: `chart.js` + `vue-chartjs` (cross-platform)
 - **Export**: Server-side PDF generation (Go + gofpdf) or frontend screenshot
 - **Caching**: Redis (5-minute TTL for metric summaries)
 - **Metric Calculation**: RabbitMQ + Python AI service (sentiment/emotion extraction)

@@ -35,11 +35,12 @@ Users can:
 
 ### Technology
 
-- **Frontend**: React Native with chat UI components
+- **Frontend**: Nuxt 3 + Vue 3 + Capacitor with chat UI components
+- **Local Storage**: SQLite via `@capacitor-community/sqlite` (encrypted journal entries, offline-first)
 - **AI Service**: Python FastAPI + HuggingFace models
 - **Vector Store**: Qdrant for semantic search
 - **Queue**: RabbitMQ for async AI processing
-- **Database**: PostgreSQL (`user_journals`, `ai_guider_chatlog`, `user_streaks`)
+- **Database**: PostgreSQL (`user_journals`, `ai_guider_chatlog`, `user_streaks`) - cloud sync
 
 ---
 

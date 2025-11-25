@@ -11,7 +11,7 @@ This document details the technical implementation of the Progress feature, incl
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Mobile/Web Frontend                       │
-│                  (Expo/React Native + Web)                   │
+│              (Nuxt 3 + Vue 3 + Capacitor)                    │
 │                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │ Progress     │  │ Charts       │  │ Export       │      │
@@ -146,7 +146,7 @@ Backend: POST /api/lessons/:id/complete
 
 _[GO code implementation removed - to be added during development]_
 
-**Frontend (React Native)**:
+**Frontend (Nuxt 3 + Capacitor)**:
 
 _[TYPESCRIPT code implementation removed - to be added during development]_
 
@@ -225,7 +225,7 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ### Sentiment Trend Line Chart
 
-**Library**: Use `react-native-chart-kit` or `recharts` (web)
+**Library**: Use `chart.js` with `vue-chartjs` (cross-platform)
 
 **Data Format**:
 
@@ -233,13 +233,13 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 **Component**:
 
-_[TSX code implementation removed - to be added during development]_
+_[VUE code implementation removed - to be added during development]_
 
 ---
 
 ### Topic Distribution Radar Chart
 
-**Library**: `react-native-chart-kit` (radar chart)
+**Library**: `chart.js` with `vue-chartjs` (radar chart)
 
 **Data**:
 
@@ -258,6 +258,20 @@ _[TSX code implementation removed - to be added during development]_
 **Backend** (Go):
 
 _[GO code implementation removed - to be added during development]_
+
+**Frontend** (Nuxt 3):
+
+**Progress metrics cached using Capacitor Preferences** (small data, infrequent updates):
+- Cache key: `progress_metrics_{period}` (e.g., `progress_metrics_30d`)
+- TTL: 5 minutes
+- Cache invalidation: On new journal entry or lesson completion
+
+**Note**: Progress feature uses **Capacitor Preferences for caching** (NOT SQLite) because:
+- Small data size (< 10KB JSON response)
+- Simple read/write (no complex queries)
+- Short TTL (5 minutes)
+
+For actual journal/lesson data, see Journal and Micro Learning features which use SQLite.
 
 ---
 
@@ -291,4 +305,24 @@ _[SQL code implementation removed - to be added during development]_
 
 ---
 
-**Last Updated**: November 23, 2025
+## 📦 Third-Party Libraries
+
+### Frontend (Nuxt 3 + Capacitor)
+
+**Charting**:
+- `chart.js`: ^4.x - Chart rendering engine
+- `vue-chartjs`: ^5.x - Vue 3 wrapper for Chart.js
+
+**Export**:
+- `html2canvas`: ^1.x - Screenshot generation
+- `jspdf`: ^2.x - PDF generation (optional)
+- `@capacitor/filesystem`: ^6.x - File saving
+- `@capacitor/share`: ^6.x - Share dialog
+
+**WebSocket**:
+- `socket.io-client`: ^4.x - Real-time updates
+- Built-in `WebSocket` API for simple use cases
+
+---
+
+**Last Updated**: November 25, 2025

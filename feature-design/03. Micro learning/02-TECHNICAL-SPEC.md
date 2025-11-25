@@ -11,7 +11,7 @@ This document details the technical implementation of the micro-learning feature
 ```mermaid
 ┌─────────────────────────────────────────────────────────────┐
 │                    Mobile/Web Frontend                       │
-│                  (Expo/React Native + Web)                   │
+│              (Nuxt 3 + Vue 3 + Capacitor)                    │
 │                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │ Lesson       │  │ Search       │  │ Progress     │      │
@@ -23,7 +23,7 @@ This document details the technical implementation of the micro-learning feature
           │                 │                 │
 ┌─────────▼─────────────────▼─────────────────▼───────────────┐
 │                   Local Storage Layer                        │
-│              SQLite (Mobile) / IndexedDB (Web)              │
+│          SQLite Database (@capacitor-community/sqlite)       │
 │                                                              │
 │  - Bundled core lessons (20-30)                            │
 │  - User progress (user_learned_lessons)                    │
@@ -72,7 +72,7 @@ This document details the technical implementation of the micro-learning feature
 
 ### Bundled Content Approach
 
-**Core lessons included in app bundle at installation time.**
+**Core lessons included in app bundle at installation time, stored in local SQLite database.**
 
 #### Bundle Composition
 
@@ -84,7 +84,8 @@ app-bundle/
 │       └── slide_groups.json     # Pre-seeded lesson content
 ├── illustrations/
 │   └── lesson_*.png              # Lesson cover images
-└── ...
+└── database/
+    └── lessons.db                # Pre-populated SQLite database
 ```
 
 **Example: `collections.json`**
@@ -98,17 +99,21 @@ _[JSON code implementation removed - to be added during development]_
 #### Installation Flow
 
 1. **App First Launch**:
-   - Check local database (`lessons` table in SQLite/IndexedDB)
-   - If empty → Load from bundled JSON files
-   - Insert into local database with `bundled: true` flag
+   - Initialize SQLite database via `@capacitor-community/sqlite`
+   - Check if bundled lessons exist in local DB
+   - If empty → Import from bundled `lessons.db` or JSON files
+   - Mark imported lessons with `bundled: true` flag
 
-2. **Database Schema for Local Storage**:
+2. **Storage Strategy**:
+   - **SQLite Database**: Full lesson content, slide groups, user progress, sync queue
+   - **Capacitor Preferences**: Simple settings (last_sync_timestamp, user preferences)
+   - **Capacitor Filesystem**: Downloaded images, offline assets
 
-_[SQL code implementation removed - to be added during development]_
+_[Code implementation removed - to be added during development]_
 
 3. **Bundle Size Optimization**:
    - Target: **20-30 core lessons** (~5-10MB total)
-   - Compress JSON (gzip)
+   - Pre-populate SQLite database (faster than JSON parsing)
    - Lazy-load images (download on first view)
    - Prioritize essential categories:
      - Journaling Basics (5 lessons)
@@ -341,4 +346,37 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ---
 
-**Last Updated**: November 22, 2025
+## 📦 Third-Party Libraries
+
+### Frontend (Nuxt 3 + Capacitor)
+
+**Core Storage**:
+- `@capacitor-community/sqlite`: ^6.x - Local SQLite database (lessons, progress, sync queue)
+- `@capacitor/preferences`: ^6.x - Simple settings and metadata
+- `@capacitor/filesystem`: ^6.x - Downloaded assets
+
+**UI & Animation**:
+- `swiper`: ^11.x - Swipeable lesson cards
+- `@vueuse/core`: ^10.x - Composition utilities
+
+**Search & Filtering**:
+- `fuse.js`: ^7.x - Client-side fuzzy search (fallback)
+
+### Backend (Go)
+
+**PostgreSQL Full-Text Search**:
+- Built-in `to_tsvector()` and `ts_rank()`
+
+**Vector Search**:
+- `qdrant-client`: Go SDK for semantic search
+
+### AI Service (Python)
+
+**Embeddings & NLP**:
+- `sentence-transformers`: ^2.x - Generate embeddings
+- `qdrant-client`: ^1.x - Vector database client
+- `transformers`: ^4.x - HuggingFace models
+
+---
+
+**Last Updated**: November 25, 2025

@@ -26,7 +26,7 @@ Provide an AI-assisted journaling experience that helps users express emotions, 
 
 - **Dependencies**:   - AI Service (Python FastAPI + HuggingFace)
 
-  - User Authentication (✅ Completed)  - Vector Database (Qdrant)
+- **Target Release**: v1.0  - Vector Database (Qdrant)
 
   - AI Service (Python FastAPI + HuggingFace)  - RabbitMQ for async processing
 
@@ -34,7 +34,7 @@ Provide an AI-assisted journaling experience that helps users express emotions, 
 
   - RabbitMQ for async processing## 🎨 User Value
 
-  - Offline-First Storage (SQLite + PostgreSQL sync)
+  - Offline-First Storage (SQLite via @capacitor-community/sqlite + PostgreSQL sync)
 
 - **Emotional clarity**: AI-guided prompts help users articulate feelings
 
@@ -245,11 +245,11 @@ Provide an AI-assisted journaling experience that helps users express emotions, 
 
 ## 🚨 Privacy & Security
 
-- Journal entries encrypted at rest (local SQLite + PostgreSQL)
+- Journal entries encrypted at rest (SQLite via @capacitor-community/sqlite + PostgreSQL)
 - AI processing happens server-side (not shared with third parties)
 - Users can delete journal entries permanently
 - No journal data used for model training without explicit consent
-- Offline-first: All data stored locally, synced to cloud when user connects
+- Offline-first: All data stored locally in encrypted SQLite, synced to cloud when user connects
 - Users control data visibility (never shared with therapists without explicit permission)
 
 ---
