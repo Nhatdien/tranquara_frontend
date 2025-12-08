@@ -1,53 +1,22 @@
 <template>
-  <div class="body-container">
-    <section
-      class="flex justify-between items-center p-4 fixed top-0 bg-[var(--ui-bg)] z-3 w-full border-b border-gray-400 cursor-pointer">
-      <div
-        class="flex gap-2 items-center"
-        @click="gotoHome">
-        <Logo :width="32" :height="32" />
-        <p class="text-2xl font-bold">
-          Thera<span class="text-primary-300">Prep</span>
-        </p>
-      </div>
-      <div class="flex justify-center item-center gap-4">
-        <Bell class="w-6 h-6 mt-1 text-gray-600 hover:text-gray-400 cursor-pointer" />
-        
-        <!-- Logout Button -->
-        <UButton
-          color="error"
-          variant="soft"
-          size="xs"
-          icon="i-heroicons-arrow-right-on-rectangle"
-          @click="handleLogout"
-        >
-          Logout
-        </UButton>
-        
-        <div class="h-8 w-8 rounded-full border"></div>
-      </div>
-      <Sidebar></Sidebar>
-    </section>
-    <main class="main-content gap-x-4">
+  <div class="min-h-screen bg-[var(--ui-bg)] flex flex-col">
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto">
       <slot />
     </main>
+    
+    <!-- Bottom Navigation -->
+    <BottomNavigation />
   </div>
 </template>
 
 <script setup lang="ts">
-import TopMenu from "~/components/HomePage/TopMenu.vue";
-import Sidebar from "~/components/Common/Sidebar.vue";
-import Logo from "~/assets/img/Logo.vue";
-import { Bell } from "lucide-vue-next";
-import { useAuthStore } from "~/stores/stores/auth_store";
-
-const authStore = useAuthStore();
-
-const gotoHome = () => {
-  navigateTo("/")
-}
-
-const handleLogout = async () => {
-  await authStore.logout();
-}
+import BottomNavigation from "~/components/Common/BottomNavigation.vue";
 </script>
+
+<style scoped>
+/* Ensure content doesn't get hidden behind bottom nav */
+main {
+  padding-bottom: 4rem; /* 64px for bottom nav */
+}
+</style>

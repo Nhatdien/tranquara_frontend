@@ -11,14 +11,24 @@ import { Auth } from "./auth";
 
 class TranquaraSDK extends Base {
   constructor(config?: null | Config) {
-    super(config!);
+    // Ensure config is always defined with default values
+    super(config || {
+      base_url: "",
+      current_username: "",
+      base_frontend_url: "",
+      websocket_url: "",
+      access_token: "",
+      client_id: "",
+    });
   }
 
   private static _instance: TranquaraSDK;
 
   public static getInstance(config?: null | Config): TranquaraSDK {
-    const result = this._instance || (this._instance = new this(config));
-    return result;
+    if (!this._instance) {
+      this._instance = new this(config);
+    }
+    return this._instance;
   }
 
 }

@@ -3,10 +3,10 @@
     <!-- Register Card -->
     <UCard class="shadow-2xl">
       <template #header>
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h2 class="text-2xl font-semibold text-highlighted">
           Create Account
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p class="text-sm text-muted mt-1">
           Join TheraPrep today
         </p>
       </template>
@@ -62,7 +62,7 @@
               class="w-full text-base py-4"
             />
             <template #hint>
-              <span class="text-xs text-gray-500">
+              <span class="text-xs text-muted">
                 Your unique identifier on TheraPrep
               </span>
             </template>
@@ -91,7 +91,7 @@
               </template>
             </UInput>
             <template #hint>
-              <span class="text-xs text-gray-500">
+              <span class="text-xs text-muted">
                 At least 8 characters
               </span>
             </template>
@@ -146,10 +146,10 @@
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+            <div class="w-full border-t"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">
+            <span class="px-2 bg-elevated text-muted">
               Already have an account?
             </span>
           </div>

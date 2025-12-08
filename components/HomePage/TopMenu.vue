@@ -28,7 +28,7 @@
                 color="primary"
                 :show-value="false" />
 
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-muted">
                 3 more days to reach your goal
               </p>
             </div>

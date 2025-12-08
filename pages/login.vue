@@ -3,10 +3,10 @@
     <!-- Login Card -->
     <UCard class="shadow-2xl">
       <template #header>
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h2 class="text-2xl font-semibold text-highlighted">
           Welcome Back
         </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p class="text-sm text-muted mt-1">
           Sign in to continue your journey
         </p>
       </template>
@@ -92,10 +92,10 @@
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-300 dark:border-gray-700"></div>
+            <div class="w-full border-t"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">
+            <span class="px-2 bg-elevated text-muted">
               Don't have an account?
             </span>
           </div>

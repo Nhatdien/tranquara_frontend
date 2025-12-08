@@ -62,7 +62,16 @@ export abstract class Base {
   };
 
   constructor(config: Config) {
-    this.config = config;
+    // Ensure config is always properly set with defaults
+    this.config = {
+      base_url: config?.base_url || "",
+      current_username: config?.current_username || "",
+      base_frontend_url: config?.base_frontend_url || "",
+      websocket_url: config?.websocket_url || "",
+      access_token: config?.access_token || "",
+      client_id: config?.client_id || "",
+      keycloakURL: config?.keycloakURL || "",
+    };
   }
 
 
