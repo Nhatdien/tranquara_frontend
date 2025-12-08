@@ -27,3 +27,5 @@ logs
 buildImage.sh
 android
 capacitor.config.ts
+
+./feature-design

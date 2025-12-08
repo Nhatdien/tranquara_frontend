@@ -7,6 +7,7 @@ export type Config = {
   websocket_url?: string;
   access_token?: string;
   client_id?: string;
+  keycloakURL?: string; // Add Keycloak URL to config
 };
 
 const readResponseBody = async (response: Response) => {

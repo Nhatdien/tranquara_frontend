@@ -1,9 +1,12 @@
-import UserService from "~/stores/auth/keycloak_service";
+import AuthService from "~/stores/auth/auth_service";
+import { useAuthStore } from "~/stores/stores/auth_store";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 
-
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   const config = nuxtApp.$config;
+  const authStore = useAuthStore();
+
+  // Initialize the SDK
   const tranquaraSDK = TranquaraSDK.getInstance({
     base_url: config.public.baseURL,
     base_frontend_url: config.public.baseFrontendURL,
@@ -13,42 +16,49 @@ export default defineNuxtPlugin((nuxtApp) => {
     current_username: "",
   });
 
-
-    // Initialize Keycloak and ensure it's ready
-   UserService.initKeycloak(async () => {
-      // Once Keycloak is initialized, update the SDK with the token and username
-      tranquaraSDK.config.access_token = UserService.getToken();
-      tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
-
-      const refreshInterval = setInterval(async () => {
-        let refreshed = false;
-        try {
-          UserService.updateToken((success: boolean) => {
-            refreshed = success;
-          }); // Refresh if token expires in 30 seconds
-          if (refreshed) {
-            tranquaraSDK.config.access_token = UserService.getToken();
-            tranquaraSDK.config.current_username = UserService.getTokenParsed()?.preferred_username;
-          }
-        } catch (error) {
-          console.error("Failed to refresh token:", error);
-          clearInterval(refreshInterval); // Stop the interval if refreshing fails
-          UserService.doLogin(); // Redirect to login if token refresh fails
-        }
-      }, 10000); // Check every 10 seconds
-    });
-
-  TranquaraSDK.getInstance().onError = (error) => {
-    if (error.message.includes("Unauthorized")) {
-      UserService.doLogin();
+  // Get initial token if user is authenticated
+  if (authStore.isAuthenticated) {
+    const token = await AuthService.getAccessToken();
+    const user = AuthService.getUserProfile();
+    
+    if (token && user) {
+      tranquaraSDK.config.access_token = token;
+      tranquaraSDK.config.current_username = user.preferred_username || "";
     }
   }
 
+  // Watch for auth state changes and update SDK token
+  // This is more efficient than polling - updates happen reactively
+  watch(
+    () => authStore.isAuthenticated,
+    async (isAuthenticated) => {
+      if (isAuthenticated) {
+        const token = await AuthService.getAccessToken();
+        const user = AuthService.getUserProfile();
+        
+        if (token && user) {
+          tranquaraSDK.config.access_token = token;
+          tranquaraSDK.config.current_username = user.preferred_username || "";
+        }
+      } else {
+        // Clear SDK token when logged out
+        tranquaraSDK.config.access_token = "";
+        tranquaraSDK.config.current_username = "";
+      }
+    }
+  );
 
+  // Handle SDK errors (e.g., 401 Unauthorized)
+  TranquaraSDK.getInstance().onError = (error) => {
+    if (error.message.includes("Unauthorized")) {
+      // Clear auth state and redirect to login
+      authStore.logout();
+    }
+  };
 
   return {
     provide: {
-      keycloak: UserService,
+      authService: AuthService,
       tranquaraSDK,
     },
   };

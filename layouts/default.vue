@@ -12,6 +12,18 @@
       </div>
       <div class="flex justify-center item-center gap-4">
         <Bell class="w-6 h-6 mt-1 text-gray-600 hover:text-gray-400 cursor-pointer" />
+        
+        <!-- Logout Button -->
+        <UButton
+          color="error"
+          variant="soft"
+          size="xs"
+          icon="i-heroicons-arrow-right-on-rectangle"
+          @click="handleLogout"
+        >
+          Logout
+        </UButton>
+        
         <div class="h-8 w-8 rounded-full border"></div>
       </div>
       <Sidebar></Sidebar>
@@ -27,8 +39,15 @@ import TopMenu from "~/components/HomePage/TopMenu.vue";
 import Sidebar from "~/components/Common/Sidebar.vue";
 import Logo from "~/assets/img/Logo.vue";
 import { Bell } from "lucide-vue-next";
+import { useAuthStore } from "~/stores/stores/auth_store";
+
+const authStore = useAuthStore();
 
 const gotoHome = () => {
   navigateTo("/")
+}
+
+const handleLogout = async () => {
+  await authStore.logout();
 }
 </script>
