@@ -2,7 +2,7 @@
   <section class="space-y-3 pb-6">
     <!-- Entry Cards -->
     <div 
-      v-for="journal in userJournalStore().journals" 
+      v-for="journal in userJournalStore()?.journals" 
       :key="journal.id"
       @click="() => openModal(journal)"
       class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented transition border"
@@ -23,9 +23,9 @@
       </h3>
 
       <!-- Mood Tag -->
-      <div class="flex flex-wrap gap-2 mb-3" v-if="journal.mood">
+      <div class="flex flex-wrap gap-2 mb-3" v-if="journal.mood_label">
         <span class="px-3 py-1 bg-accented rounded-full text-xs text-default flex items-center gap-1">
-          {{ journal.mood }}
+          {{ journal.mood_label }}
         </span>
       </div>
 
@@ -57,7 +57,7 @@
 
     <!-- Modal for viewing/editing -->
     <UModal
-      :title="userJournalStore().currentJournal.title"
+      :title="userJournalStore().currentJournal?.title"
       v-model:open="isOpen"
       v-on:after:leave="closeModal"
       fullscreen
@@ -75,19 +75,19 @@
 </template>
 
 <script setup lang="ts">
-import { CreateJournalRequest, Journal } from '~/types/user_journal';
+import { CreateJournalRequest, LocalJournal } from '~/types/user_journal';
 import { ChevronRight } from 'lucide-vue-next';
 
 const isOpen = ref(false);
 const activeTemplate = ref<any | null>(null);
 
-const openModal = (journal: Journal) => {
+const openModal = (journal: LocalJournal) => {
   userJournalStore().currentJournal = journal
   isOpen.value = true;
 };
 
 const closeModal = () => {
-  userJournalStore().currentJournal = {} as Journal
+  userJournalStore().currentJournal = null
   useChatlogtore().$reset
   isOpen.value = false;
 };

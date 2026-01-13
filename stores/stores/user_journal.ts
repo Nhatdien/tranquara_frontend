@@ -1,82 +1,463 @@
 import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
-import { CreateJournalRequest, Journal, JournalTemplate, JournalTemplateResponse, UserJournalsResponse } from "~/types/user_journal";
-import tranquaraSDKClient from "~/plugins/tranquaraSDK.client";
+import { 
+  CreateJournalRequest, 
+  Journal, 
+  JournalTemplate, 
+  JournalTemplateResponse, 
+  UserJournalsResponse,
+  LocalJournal,
+  LocalTemplate 
+} from "~/types/user_journal";
+import SQLiteService from "~/services/sqlite/sqlite_service";
+import JournalsRepository from "~/services/sqlite/journals_repository";
+import TemplatesRepository from "~/services/sqlite/templates_repository";
+import SyncService from "~/services/sync/sync_service";
+import SyncQueue from "~/services/sync/sync_queue";
+import NetworkMonitor from "~/services/sync/network_monitor";
+import KeycloakService from "../auth/keycloak_service";
 
 
 export const userJournalStore = defineStore("user_journal", {
-    state: () => ({
-        templates: [] as JournalTemplate[],
-        journals: [] as Journal[],
-        currentWritingContent: {} as {[key: string]: string},
-        currentJournal: {} as Journal
-    }),
+  state: () => ({
+    templates: [] as LocalTemplate[],
+    journals: [] as LocalJournal[],
+    currentWritingContent: {} as { [key: string]: string },
+    currentJournal: null as LocalJournal | null,
+    isInitialized: false,
+    isSyncing: false,
+    isOnline: false,
+  }),
 
-    actions: {
-        async getAllTemplates() {
-            return TranquaraSDK.getInstance().getAllTemplates().then((response: JournalTemplateResponse) => {
-                this.templates = response.templates
-            })
-        },
+  actions: {
+    /**
+     * Initialize SQLite database and load cached data
+     * Should be called after user logs in
+     */
+    async initializeDatabase() {
+      if (this.isInitialized) {
+        console.log('[JournalStore] Already initialized');
+        return;
+      }
 
-        async getJournalById(journalId: string) {
-            return TranquaraSDK.getInstance().getJournalById(journalId).then((response: Journal) => {
-                this.currentJournal = response
-            })
-        },
-
-        async getJournals() {
-            return TranquaraSDK.getInstance().getJournals().then((response: UserJournalsResponse) => {
-                this.journals = response.user_journals
-            })
-        },
-
-        async createJournal(journal: CreateJournalRequest) {
-            return TranquaraSDK.getInstance().createJournal(journal).then((response: Journal) => {
-                this.journals.push(response)
-                this.currentJournal = response
-            })
-        },
-
-        async updateJournal(journal: Journal) {
-            return TranquaraSDK.getInstance().updateJournal(journal).then((response: Journal) => {
-                const index = this.journals.findIndex(j => j.id === response.id)
-                if (index !== -1) this.journals[index] = response
-            })
-        },
-
-        async deleteJournal(journalId: string) {
-            return TranquaraSDK.getInstance().deleteJournal(journalId).then(() => {
-                this.journals = this.journals.filter(j => j.id !== journalId)
-            })
-        },
-
-        updateCurrentWritingContent(key: string, value: string) {
-            this.currentWritingContent[key] = value
+      try {
+        const userId = KeycloakService.getUserUUid();
+        if (!userId) {
+          throw new Error('User not authenticated');
         }
+
+        console.log('[JournalStore] Initializing database...');
+
+        // Initialize SQLite
+        await SQLiteService.initialize();
+
+        // Initialize network monitor
+        await NetworkMonitor.initialize();
+        this.isOnline = NetworkMonitor.isConnected();
+
+        // Subscribe to network changes
+        NetworkMonitor.subscribe((isOnline) => {
+          this.isOnline = isOnline;
+          console.log('[JournalStore] Network status:', isOnline ? 'online' : 'offline');
+        });
+
+        // Initialize sync service
+        await SyncService.initialize(userId);
+
+        // Load templates from cache
+        await this.loadTemplatesFromLocal();
+
+        // Load journals from local SQLite
+        await this.loadJournalsFromLocal();
+
+        // If online, sync with server
+        if (this.isOnline) {
+          await this.syncWithServer();
+        }
+
+        this.isInitialized = true;
+        console.log('[JournalStore] Initialized successfully');
+      } catch (error) {
+        console.error('[JournalStore] Initialization error:', error);
+        throw error;
+      }
     },
-        getters: {
-            templateGroupedByCategory(): { [key: string]: JournalTemplate[] } {
-                const groupedTemplate = this.templates.reduce((acc, template) => {
-                    if (!acc[template.category]) {
-                        acc[template.category] = [template]
-                    }
-                    else {
-                        acc[template.category].push(template)
-                    }
 
-                    return acc
-                }, {} as { [key: string]: JournalTemplate[] })
+    /**
+     * Load templates from local SQLite cache
+     */
+    async loadTemplatesFromLocal() {
+      try {
+        const templates = await TemplatesRepository.getAll();
+        this.templates = templates;
+        console.log(`[JournalStore] Loaded ${templates.length} templates from cache`);
 
-                const keys = Object.keys(groupedTemplate);
-                keys.sort()
-
-                const reorderedObject = {} as typeof groupedTemplate;
-                for (const key of keys) {
-                    reorderedObject[key] = groupedTemplate[key];
-                }
-
-                return reorderedObject
-            }
+        // Check if cache is stale and refresh if online
+        const isStale = await TemplatesRepository.isCacheStale();
+        if (isStale && this.isOnline) {
+          console.log('[JournalStore] Template cache is stale - refreshing from server');
+          await this.refreshTemplatesFromServer();
         }
-    })
+      } catch (error) {
+        console.error('[JournalStore] Error loading templates:', error);
+        // If cache fails and we're online, fetch from server
+        if (this.isOnline) {
+          await this.refreshTemplatesFromServer();
+        }
+      }
+    },
+
+    /**
+     * Refresh templates from server and update cache
+     */
+    async refreshTemplatesFromServer() {
+      try {
+        const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
+        
+        // Cache in SQLite
+        await TemplatesRepository.cacheAll(response.templates);
+        
+        // Update store state
+        this.templates = await TemplatesRepository.getAll();
+        
+        console.log('[JournalStore] Templates refreshed from server');
+      } catch (error) {
+        console.error('[JournalStore] Error refreshing templates:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get all templates (offline-first from cache)
+     */
+    async getAllTemplates() {
+      if (this.templates.length === 0) {
+        await this.loadTemplatesFromLocal();
+      }
+      return this.templates;
+    },
+
+    /**
+     * Load journals from local SQLite
+     */
+    async loadJournalsFromLocal() {
+      try {
+        const userId = KeycloakService.getUserUUid();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        const journals = await JournalsRepository.getAllByUserId(userId);
+        this.journals = journals;
+        console.log(`[JournalStore] Loaded ${journals.length} journals from local storage`);
+      } catch (error) {
+        console.error('[JournalStore] Error loading journals:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get single journal by ID (offline-first from SQLite)
+     */
+    async getJournalById(journalId: string) {
+      try {
+        const journal = await JournalsRepository.getById(journalId);
+        if (journal) {
+          this.currentJournal = journal;
+          return journal;
+        }
+
+        // Try by server ID if not found by client ID
+        const journalByServerId = await JournalsRepository.getByServerId(journalId);
+        if (journalByServerId) {
+          this.currentJournal = journalByServerId;
+          return journalByServerId;
+        }
+
+        throw new Error('Journal not found');
+      } catch (error) {
+        console.error('[JournalStore] Error getting journal:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get all journals (offline-first from SQLite)
+     */
+    async getJournals() {
+      await this.loadJournalsFromLocal();
+      return this.journals;
+    },
+
+    /**
+     * Create new journal (offline-first: write to SQLite immediately)
+     */
+    async createJournal(journal: CreateJournalRequest) {
+      try {
+        const userId = KeycloakService.getUserUUid();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        // Create in local SQLite immediately
+        const newJournal = await JournalsRepository.create({
+          user_id: userId,
+          collection_id: journal.collection_id,
+          title: journal.title,
+          content: journal.content,
+          content_html: journal.content_html,
+          mood_score: journal.mood_score,
+          mood_label: journal.mood_label,
+        });
+
+        // Update store state
+        this.journals.unshift(newJournal);
+        this.currentJournal = newJournal;
+
+        // Add to sync queue
+        SyncQueue.addToQueue(newJournal);
+
+        // Attempt sync if online
+        if (this.isOnline) {
+          this.triggerBackgroundSync();
+        }
+
+        console.log('[JournalStore] Journal created locally:', newJournal.id);
+        return newJournal;
+      } catch (error) {
+        console.error('[JournalStore] Error creating journal:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Update journal (offline-first: write to SQLite immediately)
+     */
+    async updateJournal(journal: Partial<LocalJournal> & { id: string }) {
+      try {
+        // Update in local SQLite
+        const updated = await JournalsRepository.update(journal.id, journal);
+        
+        if (!updated) {
+          throw new Error('Journal not found');
+        }
+
+        // Update store state
+        const index = this.journals.findIndex((j) => j.id === updated.id);
+        if (index !== -1) {
+          this.journals[index] = updated;
+        }
+
+        if (this.currentJournal?.id === updated.id) {
+          this.currentJournal = updated;
+        }
+
+        // Add to sync queue
+        SyncQueue.addToQueue(updated);
+
+        // Attempt sync if online
+        if (this.isOnline) {
+          this.triggerBackgroundSync();
+        }
+
+        console.log('[JournalStore] Journal updated locally:', updated.id);
+        return updated;
+      } catch (error) {
+        console.error('[JournalStore] Error updating journal:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Delete journal (offline-first: soft delete in SQLite)
+     */
+    async deleteJournal(journalId: string) {
+      try {
+        // Soft delete in local SQLite
+        await JournalsRepository.delete(journalId);
+
+        // Update store state
+        this.journals = this.journals.filter((j) => j.id !== journalId);
+
+        if (this.currentJournal?.id === journalId) {
+          this.currentJournal = null;
+        }
+
+        // Sync deletion if online
+        if (this.isOnline) {
+          this.triggerBackgroundSync();
+        }
+
+        console.log('[JournalStore] Journal deleted locally:', journalId);
+      } catch (error) {
+        console.error('[JournalStore] Error deleting journal:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Sync all pending journals with server
+     */
+    async syncWithServer() {
+      if (this.isSyncing) {
+        console.log('[JournalStore] Sync already in progress');
+        return;
+      }
+
+      if (!this.isOnline) {
+        console.log('[JournalStore] Offline - skipping sync');
+        return;
+      }
+
+      try {
+        this.isSyncing = true;
+        const userId = KeycloakService.getUserUUid();
+        
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        console.log('[JournalStore] Starting sync with server...');
+
+        // Trigger sync service
+        const result = await SyncService.syncAll(userId);
+
+        console.log('[JournalStore] Sync completed:', result);
+
+        // Reload journals from local storage to reflect synced state
+        await this.loadJournalsFromLocal();
+
+        return result;
+      } catch (error) {
+        console.error('[JournalStore] Sync error:', error);
+        throw error;
+      } finally {
+        this.isSyncing = false;
+      }
+    },
+
+    /**
+     * Trigger background sync (non-blocking)
+     */
+    triggerBackgroundSync() {
+      const userId = KeycloakService.getUserUUid();
+      if (!userId) return;
+
+      // Don't await - let it run in background
+      SyncService.syncAll(userId).catch((error) => {
+        console.error('[JournalStore] Background sync error:', error);
+      });
+    },
+
+    /**
+     * Search journals by text
+     */
+    async searchJournals(searchText: string) {
+      try {
+        const userId = KeycloakService.getUserUUid();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        return await JournalsRepository.search(userId, searchText);
+      } catch (error) {
+        console.error('[JournalStore] Search error:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get journals by collection
+     */
+    async getJournalsByCollection(collectionId: string) {
+      try {
+        const userId = KeycloakService.getUserUUid();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        return await JournalsRepository.getByCollectionId(userId, collectionId);
+      } catch (error) {
+        console.error('[JournalStore] Error getting journals by collection:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get sync statistics
+     */
+    getSyncStats() {
+      return SyncService.getStats();
+    },
+
+    /**
+     * Clear all local data (for logout)
+     */
+    async clearLocalData() {
+      try {
+        await SQLiteService.clearAllData();
+        await SQLiteService.close();
+        
+        this.journals = [];
+        this.templates = [];
+        this.currentJournal = null;
+        this.isInitialized = false;
+        
+        SyncService.stopAutoSync();
+        NetworkMonitor.unsubscribeAll();
+        
+        console.log('[JournalStore] Local data cleared');
+      } catch (error) {
+        console.error('[JournalStore] Error clearing local data:', error);
+      }
+    },
+
+    /**
+     * Update current writing content (for autosave)
+     */
+    updateCurrentWritingContent(key: string, value: string) {
+      this.currentWritingContent[key] = value;
+    },
+  },
+
+  getters: {
+    /**
+     * Group templates by category
+     */
+    templateGroupedByCategory(): { [key: string]: LocalTemplate[] } {
+      const groupedTemplate = this.templates.reduce((acc, template) => {
+        const category = template.category || 'Uncategorized';
+        if (!acc[category]) {
+          acc[category] = [template];
+        } else {
+          acc[category].push(template);
+        }
+        return acc;
+      }, {} as { [key: string]: LocalTemplate[] });
+
+      const keys = Object.keys(groupedTemplate);
+      keys.sort();
+
+      const reorderedObject = {} as typeof groupedTemplate;
+      for (const key of keys) {
+        reorderedObject[key] = groupedTemplate[key];
+      }
+
+      return reorderedObject;
+    },
+
+    /**
+     * Get pending sync count
+     */
+    pendingSyncCount(): number {
+      return this.journals.filter((j) => j.needs_sync === 1).length;
+    },
+
+    /**
+     * Check if database is ready
+     */
+    isDatabaseReady(): boolean {
+      return this.isInitialized && SQLiteService.isReady();
+    },
+  },
+});
