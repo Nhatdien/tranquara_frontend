@@ -123,9 +123,11 @@
 
 <script setup lang="ts">
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useAuthStore } from "~/stores/stores/auth_store";
 import type { LocalJournal } from "~/types/user_journal";
 
 const journalStore = userJournalStore();
+const authStore = useAuthStore();
 const searchQuery = ref('');
 const selectedCollection = ref<string | null>(null);
 const isLoading = ref(true);
@@ -134,8 +136,20 @@ const searchResults = ref<LocalJournal[]>([]);
 // Load journals on mount
 onMounted(async () => {
   try {
-    // Database already initialized by 02.database.client.ts plugin
+    // Wait for auth to be ready
+    if (!authStore.isAuthenticated) {
+      console.log('[History] User not authenticated, skipping journal load');
+      isLoading.value = false;
+      return;
+    }
+    
+    // Ensure database is initialized before loading journals
+    if (!journalStore.isInitialized) {
+      console.log('[History] Database not initialized, initializing...');
+      await journalStore.initializeDatabase();
+    }
     await journalStore.getJournals();
+    console.log('[History] Journals loaded:', journalStore.journals.length);
   } catch (error) {
     console.error('Error loading journals:', error);
   } finally {

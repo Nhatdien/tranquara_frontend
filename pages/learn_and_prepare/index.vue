@@ -1,19 +1,22 @@
 <template>
   <section>
     <!-- Sync Status Banner -->
-    <div v-if="!journalStore.isOnline" class="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-2">
+    <div
+      v-if="!journalStore.isOnline"
+      class="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-2">
       <Icon name="i-lucide-wifi-off" class="w-5 h-5 text-yellow-500" />
-      <span class="text-sm text-yellow-500">Working offline - templates from cache</span>
+      <span class="text-sm text-yellow-500"
+        >Working offline - templates from cache</span
+      >
     </div>
 
     <!-- Refresh Button -->
     <div v-if="journalStore.isOnline" class="mb-4 flex justify-end">
-      <UButton 
-        @click="refreshTemplates" 
+      <UButton
+        @click="refreshTemplates"
         :loading="isRefreshing"
         variant="ghost"
-        size="sm"
-      >
+        size="sm">
         <Icon name="i-lucide-refresh-cw" class="w-4 h-4 mr-2" />
         Refresh Templates
       </UButton>
@@ -24,25 +27,7 @@
       <Icon name="i-lucide-loader" class="w-8 h-8 animate-spin text-primary" />
     </div>
 
-    <!-- Templates Tabs -->
-    <UTabs
-      v-else
-      :items="items"
-      :default-value="activeValue"
-      v-model="activeValue"
-      variant="link"
-      :ui="{ trigger: 'grow' }"
-      class="gap-4 w-full">
-
-      <template #learn>
-        <JournalCollectionList :collections="learnCollections" />
-      </template>
-
-      <template #prepare>
-        <JournalCollectionList :collections="prepareCollections" />
-      </template>
-    </UTabs>
-
+    <JournalCollectionList :collections="allCollections" />
   </section>
 </template>
 
@@ -53,17 +38,17 @@ import type { TabsItem } from "@nuxt/ui";
 const journalStore = userJournalStore();
 const isLoading = ref(true);
 const isRefreshing = ref(false);
-const activeValue = ref('0');
+const activeValue = ref("0");
 
 // Load templates on mount
 onMounted(async () => {
   try {
     // Database already initialized by 02.database.client.ts plugin
-    console.log('calling get templates');
-    
+    console.log("calling get templates");
+
     await journalStore.getAllTemplates();
   } catch (error) {
-    console.error('Error loading templates:', error);
+    console.error("Error loading templates:", error);
   } finally {
     isLoading.value = false;
   }
@@ -75,23 +60,22 @@ const refreshTemplates = async () => {
   try {
     await journalStore.refreshTemplatesFromServer();
   } catch (error) {
-    console.error('Error refreshing templates:', error);
+    console.error("Error refreshing templates:", error);
   } finally {
     isRefreshing.value = false;
   }
 };
 
 // Filter templates by category
-const learnCollections = computed(() => {
-  return journalStore.templates.filter(template => 
-    template.category?.toLowerCase() === 'learn'
-  );
+const allCollections = computed(() => {
+  return journalStore.templates;
 });
 
 const prepareCollections = computed(() => {
-  return journalStore.templates.filter(template => 
-    template.category?.toLowerCase() === 'prepare' || 
-    template.category?.toLowerCase() === 'therapy preparation'
+  return journalStore.templates.filter(
+    (template) =>
+      template.category?.toLowerCase() === "prepare" ||
+      template.category?.toLowerCase() === "therapy preparation",
   );
 });
 

@@ -1,18 +1,17 @@
 <template>
   <div>
     <div class="mb-4">
-      <h2 class="text-left">{{ content?.question_content }}</h2>
+      <h2 class="text-left">{{ content?.question || content?.question_content }}</h2>
       <blockquote class="text-neutral-300 text-sm">
-        {{ content?.question_description }}
+        {{ content?.content || content?.question_description }}
       </blockquote>
     </div>
-    {{ currentNote }}
     <CommonMarkdownEditor
       ref="editor"
       @on-update="
         () =>
           userJournalStore().updateCurrentWritingContent(
-            content?.question_content,
+            content?.question || content?.question_content,
             currentNote
           )
       "

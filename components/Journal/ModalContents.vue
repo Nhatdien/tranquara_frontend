@@ -18,7 +18,7 @@
       }">
       <div class="h-[40vh] max-h-[400px]">
         <component
-          :is="componentMapping[item?.content?.type]"
+          :is="renderSlide(item?.content?.type)"
           :currentIndex
           :index="carouselItems.indexOf(item)"
           :content="item?.content"></component>
@@ -46,24 +46,39 @@ import CTA from "@/components/Slide/CTA.vue";
 import FurtherReading from "@/components/Slide/FutherReading.vue";
 import JournalPrompt from "@/components/Slide/JournalPrompt.vue";
 import SleepCheck from "~/components/Slide/SleepCheck.vue";
+import MoodSlide from "~/components/Slide/MoodSlide.vue";
 import Index from "~/pages/index.vue";
 import { Editor } from "@tiptap/vue-3";
 
+const props = defineProps(['templateId']);
 const carousel = useTemplateRef("carousel");
 const emits = defineEmits(["saveJournal", "closeModal"]);
 const currentIndex = ref(0);
-const { activeSlideGroup, saveJournal, closeSlideGroup } = useSlideGroup();
 
-const componentMapping = {
+// Use the prop instead of route params
+const { activeSlideGroup, saveJournal, closeSlideGroup } = useSlideGroup({ 
+  collectionId: props.templateId 
+});
+
+
+const componentMapping: any = {
   doc: Document,
   journal_prompt: JournalPrompt,
   further_reading: FurtherReading,
   cta: CTA,
   sleep_check: SleepCheck,
-};
+  mood_check: MoodSlide,
+  emotion_log: MoodSlide, // Map standard type to component
+}
+
+const renderSlide = (type: string) => {
+  return componentMapping[type] || componentMapping.journal_prompt;
+}
+
 
 const carouselItems = ref(
-  activeSlideGroup?.value?.content?.map((slide: any) => {
+  // Support both 'slides' (new type) and 'content' (legacy/mock)
+  (activeSlideGroup?.value?.slides || (activeSlideGroup?.value as any)?.content || [])?.map((slide: any) => {
     return {
       content: slide as any,
       currentNote: "",
@@ -76,13 +91,14 @@ const nextNode = () => {
     // The journal will be created if the journal is not empty or
     // user have interact with the chatbot in that journal session
     if (
-      !isEmptyJournal(userJournalStore().currentWritingContent) &&
-      isEmptyObject(userJournalStore().currentJournal)
+      !isEmptyJournal(userJournalStore().currentWritingContent as any) &&
+      !userJournalStore().currentJournal
     ) {
       saveJournal({
-        template_id: useRoute().params.slideGroupId || "",
+        collection_id: props.templateId || "",
         content: generateJournalHtml(userJournalStore().currentWritingContent),
-        mood: "neutral",
+        mood_score: userJournalStore().currentMoodScore,
+        mood_label: userJournalStore().currentMoodLabel,
         title: activeSlideGroup.value?.title || "",
       });
     }
@@ -107,10 +123,12 @@ const prevNode = () => {
 };
 
 onMounted(() => {
-  carouselItems.value.forEach((_) => {
+  // Init empty objects for editor store if needed (TipTap Store logic seems to require this)
+  carouselItems.value.forEach((_item) => {
+    // This usage of editors.push({}) seems to cause type errors, 
+    // suppressing for now if it works at runtime or use proper type
+    // @ts-ignore
     useTiptapEditorStore().editors.push({});
   });
-  console.log(useTiptapEditorStore().editors);
-  console.log(carouselItems.value.length);
 });
 </script>

@@ -5,6 +5,8 @@ import TranquaraSDK from "~/stores/tranquara_sdk";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const config = nuxtApp.$config;
+  console.log('[TranquaraSDK Plugin] Runtime Config baseURL:', config.public.baseURL);
+  console.log('[TranquaraSDK Plugin] Full Runtime Config:', config.public);
   const authStore = useAuthStore();
 
   // Initialize the SDK

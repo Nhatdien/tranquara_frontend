@@ -27,6 +27,9 @@ class TranquaraSDK extends Base {
   public static getInstance(config?: null | Config): TranquaraSDK {
     if (!this._instance) {
       this._instance = new this(config);
+    } else if (config) {
+      // Allow updating config if instance exists and config is provided
+      this._instance.config = { ...this._instance.config, ...config };
     }
     return this._instance;
   }

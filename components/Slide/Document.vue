@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h2 class="mb-2">{{ content?.header }}</h2>
-        <p v-html="content.body"></p>
+        <h2 class="mb-2">{{ content?.title || content?.header }}</h2>
+        <p v-html="content?.content || content?.body"></p>
     </div>
 
 </template>

@@ -30,6 +30,8 @@ export const userJournalStore = defineStore("user_journal", {
     templates: [] as LocalTemplate[],
     journals: [] as LocalJournal[],
     currentWritingContent: {} as { [key: string]: string },
+    currentMoodScore: 2 as number, // 0-4 scale (matches EmotionSlider)
+    currentMoodLabel: "Okay" as string,
     currentJournal: null as LocalJournal | null,
     isInitialized: false,
     isSyncing: false,
@@ -130,18 +132,34 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async refreshTemplatesFromServer() {
       try {
-        const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
+        const response: any = await TranquaraSDK.getInstance().getAllTemplates();
+        
+        let templatesToCache: any[] = [];
+
+        // Safely extract templates array from response
+        if (Array.isArray(response)) {
+          templatesToCache = response;
+        } else if (response && Array.isArray(response.templates)) {
+          templatesToCache = response.templates;
+        } else if (response && Array.isArray(response.data)) {
+           templatesToCache = response.data;
+        } else {
+          console.warn('[JournalStore] Unexpected response format for templates:', response);
+          return;
+        }
         
         // Cache in SQLite
-        await TemplatesRepository.cacheAll(response.templates);
-        
-        // Update store state
-        this.templates = await TemplatesRepository.getAll();
-        
-        console.log('[JournalStore] Templates refreshed from server');
+        if (templatesToCache.length > 0) {
+            await TemplatesRepository.cacheAll(templatesToCache);
+            // Update store state
+            this.templates = await TemplatesRepository.getAll();
+            console.log('[JournalStore] Templates refreshed from server');
+        } else {
+            console.log('[JournalStore] No templates found to cache');
+        }
       } catch (error) {
         console.error('[JournalStore] Error refreshing templates:', error);
-        throw error;
+        // Do not re-throw, allows app to continue offline
       }
     },
 
@@ -226,9 +244,16 @@ export const userJournalStore = defineStore("user_journal", {
      * Get all journals (offline-first from SQLite)
      */
     async getJournals() {
+      console.log('[JournalStore] getJournals called - isInitialized:', this.isInitialized, 'SQLiteReady:', SQLiteService.isReady());
+      
       if (!this.isInitialized || !SQLiteService.isReady()) {
-        console.log('[JournalStore] Database not ready - cannot load journals');
-        return this.journals;
+        console.log('[JournalStore] Database not ready - attempting initialization...');
+        try {
+          await this.initializeDatabase();
+        } catch (error) {
+          console.error('[JournalStore] Failed to initialize database:', error);
+          return this.journals;
+        }
       }
       await this.loadJournalsFromLocal();
       return this.journals;
@@ -457,12 +482,28 @@ export const userJournalStore = defineStore("user_journal", {
       }
     },
 
-    /**
-     * Update current writing content (for autosave)
-     */
     updateCurrentWritingContent(key: string, value: string) {
-      this.currentWritingContent[key] = value;
+        this.currentWritingContent[key] = value;
     },
+
+    /**
+     * Update current mood
+     */
+    updateMood(score: number, label: string) {
+        this.currentMoodScore = score;
+        this.currentMoodLabel = label;
+    },
+
+    /**
+     * Clear current writing session
+     */
+    clearCurrentSession() {
+      this.currentWritingContent = {};
+      this.currentMoodScore = 2; // 0-4 scale default
+      this.currentMoodLabel = "Okay";
+      this.currentJournal = null;
+    },
+
   },
 
   getters: {

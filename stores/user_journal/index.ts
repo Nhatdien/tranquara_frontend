@@ -2,7 +2,8 @@ import { Base } from "../base";
 import { JournalTemplate, JournalTemplateResponse, Journal, UserJournalsResponse, CreateJournalRequest, LocalJournal } from "~/types/user_journal";
 
 export class UserJournals extends Base {
-    async getAllTemplates(): Promise<JournalTemplateResponse> {
+    async getAllTemplates(): Promise<JournalTemplateResponse> {        
+        // Keeping the typo matching the backend
         return this.fetch(`${this.config.base_url}/tempalte-gallary`)
     }
 

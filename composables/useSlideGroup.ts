@@ -1,21 +1,59 @@
 import { computed } from "vue";
-import { testCollection } from "~/mock/testCollection";
-import { Journal, CreateJournalRequest } from "~/types/user_journal";
-import { useChatlogtore } from "#imports";
+import { userJournalStore } from "~/stores/stores/user_journal";
+import { Journal, CreateJournalRequest, SlideGroup } from "~/types/user_journal";
 
-export const useSlideGroup = () => {
+export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: string }) => {
   const route = useRoute()
+  const store = userJournalStore();
+
+  const collectionId = computed(() => props?.collectionId || route.params.id as string);
+  const slideGroupId = computed(() => props?.slideGroupId || route.params.slideGroupId as string);
+
   const currentCollecton = computed(() =>
-    testCollection.collections.find((colleciton) => colleciton.id === route.params.id)
+    store.templates.find((template) => template.id === collectionId.value)
   )
-  const activeSlideGroup = computed(() =>
-    currentCollecton?.value?.slide_groups.find((slideGroup) => slideGroup.id === route.params.slideGroupId)
-  )
+
+  const activeSlideGroup = computed(() => {
+    if (!currentCollecton.value) return undefined;
+    
+    // Check if we need to parse slide_groups if coming from sqlite as string
+    let groups: SlideGroup[] = [];
+    if (typeof currentCollecton.value.slide_groups === 'string') {
+      try {
+        groups = JSON.parse(currentCollecton.value.slide_groups);
+      } catch (e) {
+        console.error("Error parsing slide_groups:", e);
+        groups = [];
+      }
+    } else {
+      groups = currentCollecton.value.slide_groups || [];
+    }
+
+    // If specific slide group ID is provided, find it
+    if (slideGroupId.value) {
+      return groups.find((group) => group.id === slideGroupId.value);
+    }
+    
+    // Default to first group if no ID text (common for modals)
+    return groups[0];
+  })
 
   const findSlideGroup = (collectionId: string, slideGroupId: string) => {
-    const collection = testCollection.collections.find((colleciton) => colleciton.id === collectionId)
+    const collection = store.templates.find((template) => template.id === collectionId)
+    if (!collection) return undefined;
 
-    return collection?.slide_groups.find((slideGroup) => slideGroup.id === slideGroupId)
+    let groups: SlideGroup[] = [];
+    if (typeof collection.slide_groups === 'string') {
+      try {
+         groups = JSON.parse(collection.slide_groups);
+      } catch (e) {
+         groups = [];
+      }
+    } else {
+      groups = collection.slide_groups || [];
+    }
+
+    return groups.find((group) => group.id === slideGroupId)
   }
 
   const openSlideGroup = (slideGroupId: string, collectionId: string) => {
@@ -25,21 +63,37 @@ export const useSlideGroup = () => {
   const closeSlideGroup = () => {
     useChatlogtore().chatlogs = [];
     userJournalStore().currentWritingContent = {} 
-    userJournalStore().currentJournal = {} as Journal
+    userJournalStore().currentJournal = null
     useTiptapEditorStore().editors = []
 
     useRouter().back()
   };
 
-  const saveJournal = (journal: CreateJournalRequest, slideGroupId?: string,) => {
-    if (slideGroupId) {
-      console.log("journal saved with slideGroupId: ", slideGroupId);
-    } else {
-      console.log("journal saved without any slideGroupId: ");
+  const saveJournal = async (journal: CreateJournalRequest, slideGroupId?: string) => {
+    try {
+      console.log("[saveJournal] Saving journal:", journal, "slideGroupId:", slideGroupId);
+      
+      // Ensure database is initialized before saving
+      if (!store.isInitialized) {
+        console.log("[saveJournal] Database not initialized, initializing...");
+        await store.initializeDatabase();
+      }
+      
+      const newJournal = await userJournalStore().createJournal({
+        collection_id: slideGroupId || journal.collection_id,
+        title: journal.title,
+        content: journal.content,
+        content_html: journal.content_html,
+        mood_score: journal.mood_score || 0,
+        mood_label: journal.mood_label || "neutral"
+      });
+
+      console.log("[saveJournal] Journal saved:", newJournal.id);
+      return newJournal;
+    } catch (error) {
+      console.error("[saveJournal] Error saving journal:", error);
+      throw error;
     }
-    // userJournalStore().createJournal({
-    //   ...journal,
-    // });
   };
 
 

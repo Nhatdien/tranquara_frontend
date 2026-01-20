@@ -77,9 +77,11 @@
 <script setup lang="ts">
 import { CreateJournalRequest, LocalJournal } from '~/types/user_journal';
 import { ChevronRight } from 'lucide-vue-next';
+import { useAuthStore } from '~/stores/stores/auth_store';
 
 const isOpen = ref(false);
 const activeTemplate = ref<any | null>(null);
+const authStore = useAuthStore();
 
 const openModal = (journal: LocalJournal) => {
   userJournalStore().currentJournal = journal
@@ -117,7 +119,22 @@ const getContentPreview = (content: string) => {
 };
 
 onMounted(async () => {
-  await waitForToken();
-  userJournalStore().getJournals();
+  try {
+    // Wait for auth to be ready
+    if (!authStore.isAuthenticated) {
+      console.log('[LatestEntries] User not authenticated, skipping journal load');
+      return;
+    }
+    
+    // Ensure database is initialized before loading journals
+    if (!userJournalStore().isInitialized) {
+      console.log('[LatestEntries] Database not initialized, initializing...');
+      await userJournalStore().initializeDatabase();
+    }
+    await userJournalStore().getJournals();
+    console.log('[LatestEntries] Journals loaded:', userJournalStore().journals.length);
+  } catch (error) {
+    console.error('[LatestEntries] Error loading journals:', error);
+  }
 });
 </script>

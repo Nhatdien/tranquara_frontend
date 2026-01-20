@@ -2,7 +2,7 @@
   <section>
     <div
       class="mt-8"
-      v-for="(templates, category) in tempalteByCategory"
+      v-for="(templates, category) in templatesByCategory"
       :key="category">
       <h2>{{ category }}</h2>
       <div class="flex flex-col gap-4 items-center mt-4 overflow-x-scroll">
@@ -41,6 +41,20 @@ const journalStore = userJournalStore();
 const isOpen = ref(false);
 const activeTemplate = ref<any | null>(null);
 
+const templatesByCategory = computed(() => {
+  const templates = journalStore.templates;
+  const groups: Record<string, typeof templates> = {};
+  
+  templates.forEach((t: any) => {
+    const cat = t.category || 'Uncategorized';
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(t);
+  });
+  
+  return groups;
+});
+
+
 const openModal = (template: any) => {
   activeTemplate.value = template;
   isOpen.value = true;
@@ -62,7 +76,7 @@ const saveJournal = (journal: CreateJournalRequest, templateId?: string, ) => {
   });
 };
 
-const tempalteByCategory = computed(
-  () => journalStore.templateGroupedByCategory
-);
+// const tempalteByCategory = computed(
+//   () => journalStore.templateGroupedByCategory
+// );
 </script>

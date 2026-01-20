@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS user_journals (
   title TEXT,
   content TEXT NOT NULL,
   content_html TEXT,
-  mood_score INTEGER CHECK (mood_score >= 1 AND mood_score <= 10),
+  mood_score INTEGER CHECK (mood_score >= 0 AND mood_score <= 10),
   mood_label TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
@@ -23,12 +23,17 @@ CREATE TABLE IF NOT EXISTS user_journals (
   is_deleted INTEGER DEFAULT 0
 );`;
 
-export const CREATE_USER_JOURNALS_INDEXES = `
-CREATE INDEX IF NOT EXISTS idx_journals_user_id ON user_journals(user_id);
-CREATE INDEX IF NOT EXISTS idx_journals_needs_sync ON user_journals(needs_sync);
-CREATE INDEX IF NOT EXISTS idx_journals_created_at ON user_journals(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_journals_server_id ON user_journals(server_id);
-`;
+export const CREATE_USER_JOURNALS_INDEX_USER_ID = `
+CREATE INDEX IF NOT EXISTS idx_journals_user_id ON user_journals(user_id);`;
+
+export const CREATE_USER_JOURNALS_INDEX_NEEDS_SYNC = `
+CREATE INDEX IF NOT EXISTS idx_journals_needs_sync ON user_journals(needs_sync);`;
+
+export const CREATE_USER_JOURNALS_INDEX_CREATED_AT = `
+CREATE INDEX IF NOT EXISTS idx_journals_created_at ON user_journals(created_at DESC);`;
+
+export const CREATE_USER_JOURNALS_INDEX_SERVER_ID = `
+CREATE INDEX IF NOT EXISTS idx_journals_server_id ON user_journals(server_id);`;
 
 // Journal Templates (Collections) cache table schema
 export const CREATE_JOURNAL_TEMPLATES_TABLE = `
@@ -44,10 +49,11 @@ CREATE TABLE IF NOT EXISTS journal_templates (
   cached_at TEXT NOT NULL
 );`;
 
-export const CREATE_JOURNAL_TEMPLATES_INDEXES = `
-CREATE INDEX IF NOT EXISTS idx_templates_category ON journal_templates(category);
-CREATE INDEX IF NOT EXISTS idx_templates_active ON journal_templates(is_active);
-`;
+export const CREATE_JOURNAL_TEMPLATES_INDEX_CATEGORY = `
+CREATE INDEX IF NOT EXISTS idx_templates_category ON journal_templates(category);`;
+
+export const CREATE_JOURNAL_TEMPLATES_INDEX_ACTIVE = `
+CREATE INDEX IF NOT EXISTS idx_templates_active ON journal_templates(is_active);`;
 
 // Sync Queue metadata table (optional - for advanced queue tracking)
 export const CREATE_SYNC_QUEUE_TABLE = `
@@ -71,9 +77,13 @@ export const DB_NAME = 'tranquara_journals.db';
  */
 export const INITIALIZATION_SCRIPTS = [
   CREATE_USER_JOURNALS_TABLE,
-  CREATE_USER_JOURNALS_INDEXES,
+  CREATE_USER_JOURNALS_INDEX_USER_ID,
+  CREATE_USER_JOURNALS_INDEX_NEEDS_SYNC,
+  CREATE_USER_JOURNALS_INDEX_CREATED_AT,
+  CREATE_USER_JOURNALS_INDEX_SERVER_ID,
   CREATE_JOURNAL_TEMPLATES_TABLE,
-  CREATE_JOURNAL_TEMPLATES_INDEXES,
+  CREATE_JOURNAL_TEMPLATES_INDEX_CATEGORY,
+  CREATE_JOURNAL_TEMPLATES_INDEX_ACTIVE,
   CREATE_SYNC_QUEUE_TABLE,
 ];
 

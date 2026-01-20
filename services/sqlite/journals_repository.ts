@@ -19,6 +19,13 @@ export class JournalsRepository {
   }
 
   /**
+   * Save database to IndexedDB store after write operations (web only)
+   */
+  private async persistToStore(): Promise<void> {
+    await SQLiteService.saveToStore();
+  }
+
+  /**
    * Insert new journal entry
    * Auto-generates client ID and timestamps
    */
@@ -57,6 +64,9 @@ export class JournalsRepository {
       newJournal.synced_at || null,
       newJournal.is_deleted,
     ]);
+
+    // Persist to IndexedDB (web platform)
+    await this.persistToStore();
 
     console.log('[JournalsRepo] Created journal:', newJournal.id);
     return newJournal;
@@ -176,6 +186,9 @@ export class JournalsRepository {
       id,
     ]);
 
+    // Persist to IndexedDB (web platform)
+    await this.persistToStore();
+
     console.log('[JournalsRepo] Updated journal:', id);
     return updated;
   }
@@ -196,6 +209,7 @@ export class JournalsRepository {
     `;
 
     await db.run(query, [new Date().toISOString(), id]);
+    await this.persistToStore();
     console.log('[JournalsRepo] Soft deleted journal:', id);
   }
 
@@ -207,6 +221,7 @@ export class JournalsRepository {
     
     const query = `DELETE FROM user_journals WHERE id = ?;`;
     await db.run(query, [id]);
+    await this.persistToStore();
     console.log('[JournalsRepo] Hard deleted journal:', id);
   }
 
@@ -247,6 +262,7 @@ export class JournalsRepository {
     `;
 
     await db.run(query, [serverId, new Date().toISOString(), clientId]);
+    await this.persistToStore();
     console.log('[JournalsRepo] Marked as synced:', clientId, '→', serverId);
   }
 
@@ -313,6 +329,9 @@ export class JournalsRepository {
 
       console.log('[JournalsRepo] Inserted from server:', serverJournal.id);
     }
+
+    // Persist all changes to IndexedDB (web platform)
+    await this.persistToStore();
   }
 
   /**

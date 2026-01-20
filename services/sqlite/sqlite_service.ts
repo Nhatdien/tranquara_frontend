@@ -77,15 +77,70 @@ export class SQLiteService {
 
       // Open database
       await this.db.open();
+      console.log('[SQLite] Database opened');
+
+      // Check if tables exist, if not force migration
+      const tablesExist = await this.checkTablesExist();
+      if (!tablesExist) {
+        console.log('[SQLite] Tables do not exist - resetting version and running migrations');
+        await this.db.execute('PRAGMA user_version = 0;');
+      }
 
       // Run migrations
       await this.runMigrations();
+
+      // Verify tables were created
+      const tablesCreated = await this.checkTablesExist();
+      if (!tablesCreated) {
+        throw new Error('Tables were not created after migrations');
+      }
+
+      // Save to IndexedDB on web platform by closing and reopening the connection
+      if (this.platform === 'web') {
+        try {
+          // Close the connection to persist to IndexedDB
+          await this.sqliteConnection.closeConnection(DB_NAME, false);
+          console.log('[SQLite] Connection closed to persist to IndexedDB');
+          
+          // Reopen the connection
+          this.db = await this.sqliteConnection.createConnection(
+            DB_NAME,
+            false,
+            'no-encryption',
+            DB_VERSION,
+            false
+          );
+          await this.db.open();
+          console.log('[SQLite] Connection reopened');
+        } catch (saveError) {
+          console.warn('[SQLite] Could not persist to store:', saveError);
+        }
+      }
 
       this.isInitialized = true;
       console.log('[SQLite] Database initialized successfully');
     } catch (error) {
       console.error('[SQLite] Initialization error:', error);
       throw new Error(`Failed to initialize SQLite database: ${error}`);
+    }
+  }
+
+  /**
+   * Check if required tables exist
+   */
+  private async checkTablesExist(): Promise<boolean> {
+    if (!this.db) return false;
+    
+    try {
+      const result = await this.db.query(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='user_journals';"
+      );
+      const exists = (result.values?.length || 0) > 0;
+      console.log('[SQLite] user_journals table exists:', exists);
+      return exists;
+    } catch (error) {
+      console.error('[SQLite] Error checking tables:', error);
+      return false;
     }
   }
 
@@ -106,21 +161,56 @@ export class SQLiteService {
       for (let version = currentVersion + 1; version <= DB_VERSION; version++) {
         const migrationScripts = MIGRATIONS[version];
         if (migrationScripts) {
-          console.log(`[SQLite] Applying migration v${version}...`);
+          console.log(`[SQLite] Applying migration v${version}... (${migrationScripts.length} scripts)`);
           
-          for (const script of migrationScripts) {
-            await this.db.execute(script);
+          for (let i = 0; i < migrationScripts.length; i++) {
+            const script = migrationScripts[i];
+            console.log(`[SQLite] Running script ${i + 1}/${migrationScripts.length}...`);
+            try {
+              await this.db.execute(script);
+              console.log(`[SQLite] Script ${i + 1} completed`);
+            } catch (scriptError) {
+              console.error(`[SQLite] Script ${i + 1} failed:`, script.substring(0, 100), scriptError);
+              throw scriptError;
+            }
           }
 
           // Update version
           await this.db.execute(`PRAGMA user_version = ${version};`);
+          console.log(`[SQLite] Migration v${version} completed`);
         }
       }
 
-      console.log('[SQLite] Migrations completed');
+      console.log('[SQLite] All migrations completed');
     } catch (error) {
       console.error('[SQLite] Migration error:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Save database to IndexedDB store (required for web platform persistence)
+   * Uses close/reopen pattern as saveToStore API has issues with connection tracking
+   */
+  public async saveToStore(): Promise<void> {
+    if (this.platform === 'web' && this.db && this.isInitialized) {
+      try {
+        // Close connection to persist to IndexedDB
+        await this.sqliteConnection.closeConnection(DB_NAME, false);
+        
+        // Reopen the connection
+        this.db = await this.sqliteConnection.createConnection(
+          DB_NAME,
+          false,
+          'no-encryption',
+          DB_VERSION,
+          false
+        );
+        await this.db.open();
+        console.log('[SQLite] Database persisted to IndexedDB');
+      } catch (error) {
+        console.error('[SQLite] Error persisting to store:', error);
+      }
     }
   }
 
