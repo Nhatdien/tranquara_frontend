@@ -11,7 +11,11 @@ import SQLiteService from './sqlite_service';
 
 export class JournalsRepository {
   private getDb(): SQLiteDBConnection {
-    return SQLiteService.getConnection();
+    const service = SQLiteService;
+    if (!service.isReady()) {
+      throw new Error('Database not initialized');
+    }
+    return service.getConnection();
   }
 
   /**

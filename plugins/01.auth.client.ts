@@ -22,7 +22,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   // Set up smart token refresh
   // Refresh when token is about to expire (30 seconds before expiry)
-  if (process.client) {
+  if (import.meta.client) {
     setInterval(async () => {
       if (authStore.isAuthenticated) {
         // This will auto-refresh if token is expired or about to expire

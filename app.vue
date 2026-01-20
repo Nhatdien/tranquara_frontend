@@ -10,6 +10,7 @@
 import { userJournalStore } from "./stores/stores/user_journal";
 import TranquaraSDK from "./stores/tranquara_sdk";
 import { useWebSocket } from "@vueuse/core";
+import { Capacitor } from "@capacitor/core";
 
 const config = useRuntimeConfig();
 const userInfoStore = userInformationStore();

@@ -15,8 +15,15 @@ import TemplatesRepository from "~/services/sqlite/templates_repository";
 import SyncService from "~/services/sync/sync_service";
 import SyncQueue from "~/services/sync/sync_queue";
 import NetworkMonitor from "~/services/sync/network_monitor";
-import KeycloakService from "../auth/keycloak_service";
+import { useAuthStore } from "./auth_store";
 
+// Helper function to get current user ID from auth store
+const getUserId = (): string | undefined => {
+  const authStore = useAuthStore();
+  const userId = authStore.getUserUUID;
+  console.log('[getUserId] userId from authStore:', userId);
+  return userId || undefined;
+};
 
 export const userJournalStore = defineStore("user_journal", {
   state: () => ({
@@ -41,8 +48,14 @@ export const userJournalStore = defineStore("user_journal", {
       }
 
       try {
-        const userId = KeycloakService.getUserUUid();
-        if (!userId) {
+        // Get user ID and token from auth store
+        const userId = getUserId();
+        const authStore = useAuthStore();
+        const token = await authStore.getAccessToken();
+        
+        console.log('[JournalStore] initializeDatabase - userId:', userId, 'hasToken:', !!token);
+        
+        if (!userId || !token) {
           throw new Error('User not authenticated');
         }
 
@@ -88,6 +101,11 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async loadTemplatesFromLocal() {
       try {
+        if (!SQLiteService.isReady()) {
+          console.log('[JournalStore] Database not ready - skipping template load');
+          return;
+        }
+
         const templates = await TemplatesRepository.getAll();
         this.templates = templates;
         console.log(`[JournalStore] Loaded ${templates.length} templates from cache`);
@@ -131,6 +149,24 @@ export const userJournalStore = defineStore("user_journal", {
      * Get all templates (offline-first from cache)
      */
     async getAllTemplates() {
+      // If database not initialized, try to load from server only
+      if (!this.isInitialized || !SQLiteService.isReady()) {
+        console.log('[JournalStore] Database not ready - loading templates from server');
+        console.log(this.isOnline);
+        
+        if (this.isOnline) {
+          try {
+            const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
+            this.templates = response.templates as any[];
+            return this.templates;
+          } catch (error) {
+            console.error('[JournalStore] Error loading templates from server:', error);
+            return [];
+          }
+        }
+        return [];
+      }
+
       if (this.templates.length === 0) {
         await this.loadTemplatesFromLocal();
       }
@@ -142,7 +178,12 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async loadJournalsFromLocal() {
       try {
-        const userId = KeycloakService.getUserUUid();
+        if (!SQLiteService.isReady()) {
+          console.log('[JournalStore] Database not ready - skipping journal load');
+          return;
+        }
+
+        const userId = getUserId();
         if (!userId) {
           throw new Error('User not authenticated');
         }
@@ -185,6 +226,10 @@ export const userJournalStore = defineStore("user_journal", {
      * Get all journals (offline-first from SQLite)
      */
     async getJournals() {
+      if (!this.isInitialized || !SQLiteService.isReady()) {
+        console.log('[JournalStore] Database not ready - cannot load journals');
+        return this.journals;
+      }
       await this.loadJournalsFromLocal();
       return this.journals;
     },
@@ -194,7 +239,7 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async createJournal(journal: CreateJournalRequest) {
       try {
-        const userId = KeycloakService.getUserUUid();
+        const userId = getUserId();
         if (!userId) {
           throw new Error('User not authenticated');
         }
@@ -311,7 +356,7 @@ export const userJournalStore = defineStore("user_journal", {
 
       try {
         this.isSyncing = true;
-        const userId = KeycloakService.getUserUUid();
+        const userId = getUserId();
         
         if (!userId) {
           throw new Error('User not authenticated');
@@ -340,7 +385,7 @@ export const userJournalStore = defineStore("user_journal", {
      * Trigger background sync (non-blocking)
      */
     triggerBackgroundSync() {
-      const userId = KeycloakService.getUserUUid();
+      const userId = getUserId();
       if (!userId) return;
 
       // Don't await - let it run in background
@@ -354,7 +399,7 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async searchJournals(searchText: string) {
       try {
-        const userId = KeycloakService.getUserUUid();
+        const userId = getUserId();
         if (!userId) {
           throw new Error('User not authenticated');
         }
@@ -371,7 +416,7 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async getJournalsByCollection(collectionId: string) {
       try {
-        const userId = KeycloakService.getUserUUid();
+        const userId = getUserId();
         if (!userId) {
           throw new Error('User not authenticated');
         }

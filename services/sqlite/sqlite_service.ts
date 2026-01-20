@@ -42,11 +42,21 @@ export class SQLiteService {
     }
 
     try {
-      console.log('[SQLite] Initializing database...');
+      console.log('[SQLite] Initializing database...', this.platform);
 
       // Initialize SQLite plugin (required for web platform)
       if (this.platform === 'web') {
+        // Wait for jeep-sqlite custom element to be defined
+        await customElements.whenDefined('jeep-sqlite');
+        console.log('[SQLite] jeep-sqlite element is defined');
+        
+        const jeepSqliteEl = document.querySelector('jeep-sqlite');
+        if (!jeepSqliteEl) {
+          throw new Error('jeep-sqlite element not found in DOM');
+        }
+        
         await this.sqliteConnection.initWebStore();
+        console.log('[SQLite] initWebStore completed');
       }
 
       // Create/open database connection

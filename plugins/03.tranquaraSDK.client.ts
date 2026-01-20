@@ -17,6 +17,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     current_username: "",
   });
 
+  // Don't initialize database on plugin load - wait for Keycloak to be ready
+  // Database will be initialized by pages when they need it
+  
   // Get initial token if user is authenticated
   if (authStore.isAuthenticated) {
     const token = await AuthService.getAccessToken();
@@ -26,14 +29,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       tranquaraSDK.config.access_token = token;
       tranquaraSDK.config.current_username = user.preferred_username || "";
       
-      // Initialize database for authenticated user
-      try {
-        const journalStore = userJournalStore();
-        await journalStore.initializeDatabase();
-        console.log('[Plugin] Database initialized for authenticated user');
-      } catch (error) {
-        console.error('[Plugin] Error initializing database:', error);
-      }
+      console.log('[Plugin] SDK configured for authenticated user');
+      // Don't initialize database here - let pages do it when mounted
     }
   }
 
@@ -50,14 +47,8 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           tranquaraSDK.config.access_token = token;
           tranquaraSDK.config.current_username = user.preferred_username || "";
           
-          // Initialize database when user logs in
-          try {
-            const journalStore = userJournalStore();
-            await journalStore.initializeDatabase();
-            console.log('[Plugin] Database initialized after login');
-          } catch (error) {
-            console.error('[Plugin] Error initializing database:', error);
-          }
+          console.log('[Plugin] SDK configured after login');
+          // Don't initialize database here - let pages do it when they need it
         }
       } else {
         // Clear SDK token and local data when logged out

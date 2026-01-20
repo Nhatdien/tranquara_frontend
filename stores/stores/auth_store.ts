@@ -33,17 +33,27 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     /**
      * Initialize auth state from stored tokens
+     * Note: Does NOT sync to backend during plugin initialization to avoid race conditions
+     * Backend sync happens after all plugins are loaded
      */
     async initialize() {
       this.loading = true;
       try {
         const hasTokens = await TranquaraSDK.getInstance().loadTokens();
-        if (hasTokens && TranquaraSDK.getInstance().isAuthenticated()) {
-          this.user = TranquaraSDK.getInstance().getUserProfile();
+        console.log('[AuthStore] Tokens loaded:', hasTokens);
+        
+        const isAuth = TranquaraSDK.getInstance().isAuthenticated();
+        console.log('[AuthStore] Is authenticated:', isAuth);
+        
+        if (hasTokens && isAuth) {
+          const profile = TranquaraSDK.getInstance().getUserProfile();
+          console.log('[AuthStore] User profile:', profile);
+          
+          this.user = profile;
           this.isAuthenticated = true;
 
-          // Sync user to backend database
-          await this.syncUserToBackend();
+          // Don't sync to backend here - let it happen after all plugins are loaded
+          console.log('Auth initialized from stored tokens');
         }
       } catch (error) {
         console.error('Auth initialization error:', error);

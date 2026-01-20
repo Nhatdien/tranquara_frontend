@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
 import { UserInformation, UserInformationResponse, OnboardingRequestPayload } from "~/types/user_information";
-import tranquaraSDKClient from "~/plugins/tranquaraSDK.client";
+import tranquaraSDKClient from "~/plugins/05.tranquaraSDK.client";
 
 
 export const userInformationStore = defineStore("user_info", {
