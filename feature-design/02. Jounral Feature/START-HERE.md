@@ -155,15 +155,17 @@ tranquara_frontend/
 - [ ] Emotion log slide component
 - [ ] AI "Go Deeper" button
 - [ ] WebSocket integration
-- [ ] Sync status UI
+- [ ] Bi-directional sync implementation
+- [ ] Sync status UI indicators
 
 **Week 4:**
 - [ ] Complete sync service
 - [ ] RabbitMQ consumer (Go)
 - [ ] Draft/resume functionality
 - [ ] Conflict resolution
+- [ ] Sync status dashboard in settings
 
-**Deliverable:** Full AI-assisted journaling with sync
+**Deliverable:** Full AI-assisted journaling with transparent sync
 
 ---
 
@@ -173,8 +175,9 @@ tranquara_frontend/
 
 - [ ] Streak tracking
 - [ ] Error handling
-- [ ] Edge case testing
+- [ ] Edge case testing  
 - [ ] Performance optimization
+- [ ] Sync status mini-indicators throughout app
 - [ ] Documentation updates
 
 **Deliverable:** v1.0 ready to ship

@@ -110,7 +110,7 @@ const selectedMoodEmoji = computed(() => {
   if (v <= 1) return "😔";
   if (v <= 2) return "😐";
   if (v <= 3) return "🙂";
-  return "";
+  return "😃";
 });
 
 const computedMoodLabel = computed(() => {

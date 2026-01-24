@@ -4,7 +4,9 @@
     <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
       <UButton variant="ghost" icon="i-lucide-arrow-left" @click="router.back()" />
       <h1 class="text-xl font-bold truncate max-w-[200px]">{{ journal.title || 'Untitled Journal' }}</h1>
-      <UButton variant="ghost" icon="i-lucide-more-vertical" />
+      <UDropdownMenu :items="menuItems" :ui="{ content: 'w-40' }">
+        <UButton variant="ghost" icon="i-lucide-more-vertical" />
+      </UDropdownMenu>
     </header>
 
     <!-- Content Scrollable -->
@@ -25,10 +27,24 @@
 
       <!-- Journal Content -->
       <div class="prose dark:prose-invert max-w-none journal-content">
-        <div v-html="journal.content"></div>
+        <div v-html="journal.content_html || journal.content"></div>
       </div>
 
     </main>
+
+    <!-- Delete Confirmation Modal -->
+    <UModal v-model:open="showDeleteConfirm">
+      <template #content>
+        <div class="p-6">
+          <h3 class="text-lg font-semibold mb-2">Delete Journal</h3>
+          <p class="text-muted mb-6">Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+          <div class="flex gap-3">
+            <UButton variant="outline" block @click="showDeleteConfirm = false">Cancel</UButton>
+            <UButton color="error" block @click="deleteJournal" :loading="isDeleting">Delete</UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
   <div v-else class="flex items-center justify-center h-full">
      <Icon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-primary" />
@@ -38,11 +54,33 @@
 <script setup lang="ts">
 import { userJournalStore } from "~/stores/stores/user_journal";
 import type { LocalJournal } from "~/types/user_journal";
+import type { DropdownMenuItem } from '@nuxt/ui';
 
 const route = useRoute();
 const router = useRouter();
 const store = userJournalStore();
 const journal = ref<LocalJournal | null>(null);
+const showDeleteConfirm = ref(false);
+const isDeleting = ref(false);
+
+// Dropdown menu items
+const menuItems: DropdownMenuItem[][] = [
+  [
+    {
+      label: 'Edit',
+      icon: 'i-lucide-edit',
+      onSelect: () => editJournal()
+    }
+  ],
+  [
+    {
+      label: 'Delete',
+      icon: 'i-lucide-trash-2',
+      color: 'error',
+      onSelect: () => confirmDelete()
+    }
+  ]
+];
 
 onMounted(async () => {
   const id = route.params.id as string;
@@ -69,13 +107,41 @@ const formatDate = (dateString: string) => {
     minute: '2-digit'
   });
 };
+
+const editJournal = () => {
+  if (journal.value) {
+    navigateTo(`/journaling/${journal.value.id}`);
+  }
+};
+
+const confirmDelete = () => {
+  showDeleteConfirm.value = true;
+};
+
+const deleteJournal = async () => {
+  if (!journal.value) return;
+  
+  try {
+    isDeleting.value = true;
+    await store.deleteJournal(journal.value.id);
+    router.push('/history');
+  } catch (error) {
+    console.error("Error deleting journal:", error);
+    isDeleting.value = false;
+  }
+};
 </script>
 
-<style>
-.journal-content .journal-question {
-  @apply font-bold text-lg mb-2 text-gray-800 dark:text-gray-100;
+<style scoped>
+.journal-content :deep(.journal-question) {
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  margin-bottom: 0.5rem;
 }
-.journal-content .journal-answer {
-  @apply text-base text-gray-600 dark:text-gray-300 mb-6 leading-relaxed;
+.journal-content :deep(.journal-answer) {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 </style>

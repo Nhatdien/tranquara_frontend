@@ -15,7 +15,8 @@
 4. [Data Flow](#data-flow)
 5. [Data Models](#data-models)
 6. [Implementation Steps](#implementation-steps)
-7. [Acceptance Criteria](#acceptance-criteria)
+7. [Sync Status Dashboard](#sync-status-dashboard)
+8. [Acceptance Criteria](#acceptance-criteria)
 
 ---
 
@@ -768,5 +769,410 @@ graph TB
 - **Data Integrity**: Mood data and AI interactions always linked to journal context
 - **Offline Performance**: No complex JOIN queries, faster reads
 - **Future-Proof**: TipTap extensibility allows new slide types without schema changes
+
+---
+
+## 📡 Sync Status Dashboard
+
+> **Priority**: 🟡 Medium - Enhances user transparency and sync troubleshooting
+> **Dependencies**: Core bi-directional sync implementation
+> **Location**: User Settings/Profile page
+
+### Overview
+
+The Sync Status Dashboard provides users with complete visibility into their journal synchronization status, helping them understand when their data is up-to-date across devices and troubleshoot sync issues.
+
+### User Requirements
+
+**User Stories:**
+- As a user, I want to see when my journals were last synced so I know my data is up-to-date
+- As a user, I want to see if any journals are pending upload so I know they're not yet backed up
+- As a user, I want to manually trigger sync when I need immediate backup
+- As a user, I want to see my online/offline status so I understand why sync might not be working
+- As a user, I want to see sync errors so I can troubleshoot or contact support
+
+### Dashboard Components
+
+#### A. Sync Status Store
+```typescript
+// stores/stores/sync_status.ts
+export const useSyncStatusStore = defineStore('sync_status', {
+  state: () => ({
+    // Connection status
+    isOnline: false,
+    isConnected: false, // Actual server connectivity
+    
+    // Sync timing
+    lastSyncTime: null as string | null,
+    lastSyncAttempt: null as string | null,
+    syncInProgress: false,
+    
+    // Progress tracking
+    totalJournals: 0,
+    syncedJournals: 0,
+    pendingUploads: 0,
+    pendingDownloads: 0,
+    
+    // Error handling
+    lastSyncError: null as string | null,
+    syncWarnings: [] as string[],
+    
+    // Statistics
+    totalDataSize: 0, // in KB
+    syncFrequency: 'auto' as 'auto' | 'manual',
+    syncSuccessRate: 100, // percentage
+  }),
+  
+  getters: {
+    syncProgress(): number {
+      if (this.totalJournals === 0) return 100;
+      return Math.round((this.syncedJournals / this.totalJournals) * 100);
+    },
+    
+    statusColor(): string {
+      if (this.syncInProgress) return 'blue';
+      if (this.lastSyncError) return 'red';
+      if (this.pendingUploads > 0) return 'yellow';
+      return this.isOnline ? 'green' : 'gray';
+    },
+    
+    statusText(): string {
+      if (this.syncInProgress) return 'Syncing...';
+      if (this.lastSyncError) return 'Sync Error';
+      if (!this.isOnline) return 'Offline';
+      if (this.pendingUploads > 0) return 'Pending Upload';
+      return 'Up to Date';
+    }
+  },
+  
+  actions: {
+    updateSyncStatus(status: Partial<SyncStatus>) {
+      Object.assign(this, status);
+    },
+    
+    async manualSync() {
+      // Trigger manual sync via SyncService
+      const syncService = SyncService.getInstance();
+      await syncService.forceSyncAll();
+    },
+    
+    clearError() {
+      this.lastSyncError = null;
+    }
+  }
+})
+```
+
+#### B. Settings Page Dashboard UI
+```vue
+<!-- In pages/profile.vue or new pages/sync-status.vue -->
+<template>
+  <div class="sync-dashboard">
+    <!-- Header with Overall Status -->
+    <div class="status-header">
+      <div class="flex items-center gap-3">
+        <UBadge 
+          :color="syncStore.statusColor" 
+          variant="subtle"
+          size="lg"
+        >
+          <Icon :name="syncStatusIcon" class="w-4 h-4 mr-2" />
+          {{ syncStore.statusText }}
+        </UBadge>
+        
+        <UButton 
+          v-if="!syncStore.isOnline"
+          variant="ghost"
+          size="sm"
+          @click="checkConnectivity"
+        >
+          Retry Connection
+        </UButton>
+      </div>
+      
+      <div class="text-sm text-gray-500">
+        Last sync: {{ formatSyncTime(syncStore.lastSyncTime) }}
+      </div>
+    </div>
+
+    <!-- Sync Progress -->
+    <div class="sync-progress" v-if="syncStore.totalJournals > 0">
+      <div class="flex justify-between text-sm mb-2">
+        <span>Sync Progress</span>
+        <span>{{ syncStore.syncedJournals }}/{{ syncStore.totalJournals }} journals</span>
+      </div>
+      
+      <UProgress 
+        :value="syncStore.syncProgress" 
+        :color="syncStore.statusColor"
+        size="md"
+      />
+      
+      <div class="flex gap-4 mt-3 text-sm">
+        <div v-if="syncStore.pendingUploads > 0" class="flex items-center gap-1">
+          <Icon name="upload" class="w-4 h-4 text-yellow-500" />
+          <span>{{ syncStore.pendingUploads }} to upload</span>
+        </div>
+        
+        <div v-if="syncStore.pendingDownloads > 0" class="flex items-center gap-1">
+          <Icon name="download" class="w-4 h-4 text-blue-500" />
+          <span>{{ syncStore.pendingDownloads }} to download</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sync Actions -->
+    <div class="sync-actions">
+      <UButton 
+        @click="syncStore.manualSync()" 
+        :loading="syncStore.syncInProgress"
+        :disabled="!syncStore.isOnline"
+        color="primary"
+        variant="solid"
+      >
+        <Icon name="refresh" class="w-4 h-4 mr-2" />
+        {{ syncStore.syncInProgress ? 'Syncing...' : 'Sync Now' }}
+      </UButton>
+      
+      <UButton 
+        @click="openSyncSettings"
+        variant="outline"
+      >
+        <Icon name="settings" class="w-4 h-4 mr-2" />
+        Sync Settings
+      </UButton>
+    </div>
+
+    <!-- Error Display -->
+    <UAlert 
+      v-if="syncStore.lastSyncError"
+      color="red"
+      variant="subtle"
+      :closable="true"
+      @close="syncStore.clearError()"
+    >
+      <template #title>Sync Error</template>
+      {{ syncStore.lastSyncError }}
+      
+      <template #actions>
+        <UButton 
+          variant="ghost" 
+          size="sm"
+          @click="syncStore.manualSync()"
+        >
+          Retry
+        </UButton>
+      </template>
+    </UAlert>
+
+    <!-- Sync Statistics -->
+    <div class="sync-stats">
+      <h4 class="font-medium mb-3">Sync Statistics</h4>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="stat-item">
+          <div class="text-2xl font-bold text-primary">
+            {{ syncStore.syncSuccessRate }}%
+          </div>
+          <div class="text-sm text-gray-500">Success Rate</div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="text-2xl font-bold text-primary">
+            {{ formatDataSize(syncStore.totalDataSize) }}
+          </div>
+          <div class="text-sm text-gray-500">Data Synced</div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="text-2xl font-bold text-primary">
+            {{ syncStore.totalJournals }}
+          </div>
+          <div class="text-sm text-gray-500">Total Journals</div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="text-2xl font-bold text-primary">
+            {{ formatSyncFrequency(syncStore.syncFrequency) }}
+          </div>
+          <div class="text-sm text-gray-500">Sync Mode</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection Details -->
+    <div class="connection-details">
+      <h4 class="font-medium mb-3">Connection Status</h4>
+      
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <span>Internet Connection</span>
+          <UBadge :color="syncStore.isOnline ? 'green' : 'red'">
+            {{ syncStore.isOnline ? 'Connected' : 'Offline' }}
+          </UBadge>
+        </div>
+        
+        <div class="flex justify-between items-center">
+          <span>Server Connection</span>
+          <UBadge :color="syncStore.isConnected ? 'green' : 'red'">
+            {{ syncStore.isConnected ? 'Connected' : 'Unable to reach server' }}
+          </UBadge>
+        </div>
+        
+        <div class="flex justify-between items-center">
+          <span>Authentication</span>
+          <UBadge :color="authStore.isAuthenticated ? 'green' : 'red'">
+            {{ authStore.isAuthenticated ? 'Valid' : 'Invalid token' }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+#### C. Mini Sync Indicators Throughout App
+
+**1. Navigation Bar Indicator**
+```vue
+<!-- In layouts/default.vue header -->
+<div class="sync-mini-indicator">
+  <Icon 
+    v-if="syncStore.syncInProgress" 
+    name="loading" 
+    class="w-4 h-4 animate-spin text-blue-500" 
+  />
+  <Icon 
+    v-else-if="syncStore.pendingUploads > 0" 
+    name="upload-cloud" 
+    class="w-4 h-4 text-yellow-500" 
+  />
+  <Icon 
+    v-else-if="syncStore.lastSyncError" 
+    name="alert-circle" 
+    class="w-4 h-4 text-red-500" 
+  />
+  <Icon 
+    v-else-if="syncStore.isOnline" 
+    name="check-circle" 
+    class="w-4 h-4 text-green-500" 
+  />
+  <Icon 
+    v-else 
+    name="wifi-off" 
+    class="w-4 h-4 text-gray-400" 
+  />
+</div>
+```
+
+**2. Journal Card Sync Status**
+```vue
+<!-- In components/HomePage/LatestEntries.vue and pages/history.vue -->
+<div class="journal-card relative">
+  <!-- Existing journal card content -->
+  
+  <!-- Sync status badge -->
+  <UBadge 
+    v-if="journal.needs_sync" 
+    color="yellow" 
+    size="xs" 
+    class="absolute top-2 right-2"
+  >
+    <Icon name="upload" class="w-3 h-3 mr-1" />
+    Not synced
+  </UBadge>
+  
+  <UBadge 
+    v-else-if="journal.synced_at" 
+    color="green" 
+    size="xs" 
+    class="absolute top-2 right-2"
+  >
+    <Icon name="check" class="w-3 h-3 mr-1" />
+    Synced
+  </UBadge>
+</div>
+```
+
+**3. Toast Notifications**
+```vue
+<!-- Auto-triggered by sync events -->
+<script setup>
+// In sync service or store watchers
+const toast = useToast();
+
+// Success notification
+toast.add({
+  title: 'Sync Complete',
+  description: `${syncedCount} journals synced successfully`,
+  color: 'green',
+  timeout: 3000
+});
+
+// Error notification  
+toast.add({
+  title: 'Sync Failed',
+  description: 'Check your connection and try again',
+  color: 'red',
+  timeout: 5000
+});
+</script>
+```
+
+### Implementation Integration
+
+**1. SyncService Integration**
+```typescript
+// In services/sync/sync_service.ts
+private updateSyncStatus(status: Partial<SyncStatus>) {
+  const syncStore = useSyncStatusStore();
+  syncStore.updateSyncStatus(status);
+  
+  // Emit events for toast notifications
+  if (status.lastSyncError) {
+    this.notifyError(status.lastSyncError);
+  } else if (status.syncedJournals > 0) {
+    this.notifySuccess(`${status.syncedJournals} journals synced`);
+  }
+}
+```
+
+**2. Network Monitor Integration**
+```typescript
+// In services/sync/network_monitor.ts
+onStatusChange(callback: (isOnline: boolean) => void) {
+  const syncStore = useSyncStatusStore();
+  
+  // Update store when network status changes
+  callback((isOnline) => {
+    syncStore.isOnline = isOnline;
+    if (isOnline) {
+      // Trigger connectivity check to server
+      this.checkServerConnectivity();
+    }
+  });
+}
+```
+
+### Accessibility & UX Considerations
+
+- **Screen Reader Support**: All status indicators have proper ARIA labels
+- **Color Independence**: Icons accompany all color-coded status indicators
+- **Progressive Enhancement**: Core sync functionality works without dashboard
+- **Performance**: Status updates are debounced to prevent UI thrashing
+- **Error Recovery**: Clear error messages with suggested actions
+
+### External References
+
+**UI Component Documentation:**
+- [Nuxt UI Badge](https://ui.nuxt.com/components/badge) - Status indicators and labels
+- [Nuxt UI Progress](https://ui.nuxt.com/components/progress) - Sync progress bars
+- [Nuxt UI Alert](https://ui.nuxt.com/components/alert) - Error notifications
+- [Nuxt UI Toast](https://ui.nuxt.com/components/toast) - Success/error notifications
+
+**Sync Status Best Practices:**
+- [Progressive Web App Patterns](https://web.dev/patterns/) - Offline-first design patterns
+- [Network Information API](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API) - Connection type detection
+- [Background Sync Best Practices](https://web.dev/background-sync/) - Service worker sync patterns
 
 ---

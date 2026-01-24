@@ -4,7 +4,7 @@
     <div 
       v-for="journal in userJournalStore()?.journals" 
       :key="journal.id"
-      @click="() => openModal(journal)"
+      @click="() => openEntry(journal)"
       class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented transition border"
     >
       <!-- Header: Category & Time -->
@@ -54,23 +54,6 @@
         </template>
       </UButton>
     </div>
-
-    <!-- Modal for viewing/editing -->
-    <UModal
-      :title="userJournalStore().currentJournal?.title"
-      v-model:open="isOpen"
-      v-on:after:leave="closeModal"
-      fullscreen
-    >
-      <template #body>
-        <JournalJournalingModalContent           
-          v-model="isOpen"
-          :template-id="activeTemplate?.id"
-          @saveJournal="saveJournal"
-          @closeModal="closeModal" 
-        />
-      </template>
-    </UModal>
   </section>
 </template>
 
@@ -79,30 +62,11 @@ import { CreateJournalRequest, LocalJournal } from '~/types/user_journal';
 import { ChevronRight } from 'lucide-vue-next';
 import { useAuthStore } from '~/stores/stores/auth_store';
 
-const isOpen = ref(false);
-const activeTemplate = ref<any | null>(null);
 const authStore = useAuthStore();
 
-const openModal = (journal: LocalJournal) => {
-  userJournalStore().currentJournal = journal
-  isOpen.value = true;
-};
-
-const closeModal = () => {
-  userJournalStore().currentJournal = null
-  useChatlogtore().$reset
-  isOpen.value = false;
-};
-
-const saveJournal = (journal: CreateJournalRequest, templateId?: string) => {
-  if (templateId) {
-    console.log("journal saved with template", templateId);
-  } else {
-    console.log("journal saved without any template");
-  }
-  userJournalStore().createJournal({
-    ...journal,
-  });
+const openEntry = (journal: LocalJournal) => {
+  userJournalStore().currentJournal = journal;
+  navigateTo(`/learn_and_prepare/journal/${journal.id}`);
 };
 
 const formatTime = (dateString: string) => {
@@ -113,8 +77,11 @@ const formatTime = (dateString: string) => {
 
 const getContentPreview = (content: string) => {
   if (!content) return '';
+
+  console.log(content);
+  
   // Strip HTML tags and get first 150 characters
-  const stripped = content.replace(/<[^>]*>/g, '');
+  const stripped = content;
   return stripped.length > 150 ? stripped.substring(0, 150) + '...' : stripped;
 };
 

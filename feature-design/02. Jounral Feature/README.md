@@ -9,6 +9,8 @@
 | File/Folder | Description |
 |-------------|-------------|
 | **[00-OVERVIEW.md](./00-OVERVIEW.md)** | Feature purpose, AI behavior, and design decisions |
+| **[IMPLEMENTATION-GUIDE-NEW.md](./IMPLEMENTATION-GUIDE-NEW.md)** | Complete implementation guide with sync status dashboard |
+| **[START-HERE.md](./START-HERE.md)** | Implementation roadmap and getting started guide |
 | **[AI assist journaling.md](./AI%20assist%20journaling.md)** | AI chat assistant specifications |
 | **[Metrics for journal progress.md](./Metrics%20for%20journal%20progress.md)** | Progress tracking and analytics |
 | **[Content type schemas design.md](./Content%20type%20schemas%20design.md)** | Slide and template content structures |
@@ -32,6 +34,7 @@ Users can:
 - Input via text or voice
 - Track emotional patterns and streaks
 - View progress metrics and insights
+- **Monitor sync status and data synchronization across devices**
 
 ### Technology
 
