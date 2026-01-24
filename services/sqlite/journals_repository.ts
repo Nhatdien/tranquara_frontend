@@ -360,6 +360,148 @@ export class JournalsRepository {
   }
 
   /**
+   * Sync journals from server (batch operation)
+   * Merges server journals with local SQLite database
+   * - New journals (not in local): Insert
+   * - Existing journals (by server_id): Update if server is newer
+   * - Local-only journals (no server_id): Keep as-is (pending upload)
+   * 
+   * @param serverJournals - Array of journals from server API
+   * @param userId - Current user ID
+   * @returns Sync statistics
+   */
+  async syncFromServer(serverJournals: any[], userId: string): Promise<{
+    inserted: number;
+    updated: number;
+    skipped: number;
+  }> {
+    const db = this.getDb();
+    
+    const stats = {
+      inserted: 0,
+      updated: 0,
+      skipped: 0,
+    };
+
+    console.log(`[JournalsRepo] Syncing ${serverJournals.length} journals from server...`);
+
+    for (const serverJournal of serverJournals) {
+      try {
+        // Skip if journal doesn't belong to this user
+        if (serverJournal.user_id !== userId) {
+          console.log('[JournalsRepo] Skipping journal from different user:', serverJournal.id);
+          stats.skipped++;
+          continue;
+        }
+
+        // Check if journal exists locally by server_id
+        const existing = await this.getByServerId(serverJournal.id);
+
+        if (existing) {
+          // Compare timestamps - only update if server is newer
+          const serverTime = new Date(serverJournal.updated_at).getTime();
+          const localTime = new Date(existing.updated_at).getTime();
+
+          if (serverTime > localTime) {
+            // Server version is newer - update local
+            const updateQuery = `
+              UPDATE user_journals SET
+                title = ?, content = ?, content_html = ?,
+                mood_score = ?, mood_label = ?, collection_id = ?,
+                updated_at = ?, needs_sync = 0, synced_at = ?
+              WHERE id = ?;
+            `;
+
+            await db.run(updateQuery, [
+              serverJournal.title || null,
+              serverJournal.content,
+              serverJournal.content_html || null,
+              serverJournal.mood_score || null,
+              serverJournal.mood_label || null,
+              serverJournal.collection_id || null,
+              serverJournal.updated_at,
+              new Date().toISOString(),
+              existing.id,
+            ]);
+
+            console.log('[JournalsRepo] Updated from server:', existing.id, '(server was newer)');
+            stats.updated++;
+          } else {
+            // Local version is newer or same - skip (will be uploaded later)
+            console.log('[JournalsRepo] Local version is newer, skipping:', existing.id);
+            stats.skipped++;
+          }
+        } else {
+          // New journal from server - insert
+          const insertQuery = `
+            INSERT INTO user_journals (
+              id, server_id, user_id, collection_id, title, content, content_html,
+              mood_score, mood_label, created_at, updated_at, needs_sync, synced_at, is_deleted
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0);
+          `;
+
+          await db.run(insertQuery, [
+            this.generateClientId(),
+            serverJournal.id,
+            serverJournal.user_id,
+            serverJournal.collection_id || null,
+            serverJournal.title || null,
+            serverJournal.content,
+            serverJournal.content_html || null,
+            serverJournal.mood_score || null,
+            serverJournal.mood_label || null,
+            serverJournal.created_at,
+            serverJournal.updated_at,
+            new Date().toISOString(),
+          ]);
+
+          console.log('[JournalsRepo] Inserted from server:', serverJournal.id);
+          stats.inserted++;
+        }
+      } catch (error) {
+        console.error('[JournalsRepo] Error syncing journal:', serverJournal.id, error);
+        stats.skipped++;
+      }
+    }
+
+    // Persist all changes to IndexedDB (web platform)
+    await this.persistToStore();
+
+    console.log('[JournalsRepo] Server sync complete:', stats);
+    return stats;
+  }
+
+  /**
+   * Get count of journals pending sync
+   */
+  async getPendingSyncCount(userId: string): Promise<number> {
+    const db = this.getDb();
+    
+    const query = `
+      SELECT COUNT(*) as count FROM user_journals 
+      WHERE user_id = ? AND needs_sync = 1;
+    `;
+    
+    const result = await db.query(query, [userId]);
+    return result.values?.[0]?.count || 0;
+  }
+
+  /**
+   * Get all server IDs for existing journals (for deduplication check)
+   */
+  async getAllServerIds(userId: string): Promise<string[]> {
+    const db = this.getDb();
+    
+    const query = `
+      SELECT server_id FROM user_journals 
+      WHERE user_id = ? AND server_id IS NOT NULL AND is_deleted = 0;
+    `;
+    
+    const result = await db.query(query, [userId]);
+    return result.values?.map(row => row.server_id) || [];
+  }
+
+  /**
    * Helper: Map SQLite row to LocalJournal type
    */
   private mapRowToJournal(row: any): LocalJournal {

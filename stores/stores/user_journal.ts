@@ -216,6 +216,139 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     /**
+     * Download and merge journals from server into local SQLite
+     * This is the "pull" part of bi-directional sync
+     * 
+     * @returns Sync statistics (inserted, updated, skipped counts)
+     */
+    async syncDownloadFromServer(): Promise<{
+      inserted: number;
+      updated: number;
+      skipped: number;
+      error?: string;
+    }> {
+      const defaultResult = { inserted: 0, updated: 0, skipped: 0 };
+
+      try {
+        const userId = getUserId();
+        if (!userId) {
+          console.log('[JournalStore] No user ID - skipping server download');
+          return { ...defaultResult, error: 'User not authenticated' };
+        }
+
+        if (!this.isOnline) {
+          console.log('[JournalStore] Offline - skipping server download');
+          return { ...defaultResult, error: 'Device is offline' };
+        }
+
+        console.log('[JournalStore] Downloading journals from server...');
+
+        // Fetch journals from server
+        const response: any = await TranquaraSDK.getInstance().getJournals();
+        
+        // Handle different response formats
+        let serverJournals: any[] = [];
+        if (Array.isArray(response)) {
+          serverJournals = response;
+        } else if (response && Array.isArray(response.user_journals)) {
+          serverJournals = response.user_journals;
+        } else if (response && Array.isArray(response.journals)) {
+          serverJournals = response.journals;
+        } else if (response && Array.isArray(response.data)) {
+          serverJournals = response.data;
+        }
+
+        console.log(`[JournalStore] Received ${serverJournals.length} journals from server`);
+
+        if (serverJournals.length === 0) {
+          console.log('[JournalStore] No journals on server');
+          return defaultResult;
+        }
+
+        // Merge server journals into local SQLite
+        const syncStats = await JournalsRepository.syncFromServer(serverJournals, userId);
+
+        console.log('[JournalStore] Server download complete:', syncStats);
+        return syncStats;
+
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        console.error('[JournalStore] Error downloading from server:', error);
+        return { ...defaultResult, error: errorMsg };
+      }
+    },
+
+    /**
+     * Full bi-directional sync:
+     * 1. Download journals from server (pull)
+     * 2. Upload pending journals to server (push)
+     * 3. Reload local journals
+     * 
+     * @returns Combined sync result
+     */
+    async fullBiDirectionalSync(): Promise<{
+      download: { inserted: number; updated: number; skipped: number; error?: string };
+      upload: { synced: number; failed: number; error?: string };
+    }> {
+      const result = {
+        download: { inserted: 0, updated: 0, skipped: 0 } as any,
+        upload: { synced: 0, failed: 0 } as any,
+      };
+
+      if (this.isSyncing) {
+        console.log('[JournalStore] Sync already in progress');
+        return result;
+      }
+
+      if (!this.isOnline) {
+        console.log('[JournalStore] Offline - skipping full sync');
+        result.download.error = 'Device is offline';
+        result.upload.error = 'Device is offline';
+        return result;
+      }
+
+      try {
+        this.isSyncing = true;
+        const userId = getUserId();
+
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        console.log('[JournalStore] Starting full bi-directional sync...');
+
+        // Step 1: Download from server (pull)
+        console.log('[JournalStore] Step 1: Downloading from server...');
+        result.download = await this.syncDownloadFromServer();
+
+        // Step 2: Upload pending to server (push)
+        console.log('[JournalStore] Step 2: Uploading pending journals...');
+        const uploadResult = await SyncService.syncAll(userId);
+        result.upload = {
+          synced: uploadResult.syncedCount,
+          failed: uploadResult.failedCount,
+          error: uploadResult.errors.length > 0 ? uploadResult.errors.join(', ') : undefined,
+        };
+
+        // Step 3: Reload local journals to reflect all changes
+        console.log('[JournalStore] Step 3: Reloading local journals...');
+        await this.loadJournalsFromLocal();
+
+        console.log('[JournalStore] Full bi-directional sync complete:', result);
+        return result;
+
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        console.error('[JournalStore] Full sync error:', error);
+        result.download.error = result.download.error || errorMsg;
+        result.upload.error = result.upload.error || errorMsg;
+        return result;
+      } finally {
+        this.isSyncing = false;
+      }
+    },
+
+    /**
      * Get single journal by ID (offline-first from SQLite)
      */
     async getJournalById(journalId: string) {
@@ -241,9 +374,16 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     /**
-     * Get all journals (offline-first from SQLite)
+     * Get all journals (offline-first with optional server sync)
+     * 
+     * Strategy:
+     * 1. Load from local SQLite immediately (fast, works offline)
+     * 2. If online and not recently synced, fetch from server in background
+     * 3. Merge server data and reload local journals
+     * 
+     * @param forceServerSync - Force download from server even if recently synced
      */
-    async getJournals() {
+    async getJournals(forceServerSync = false) {
       console.log('[JournalStore] getJournals called - isInitialized:', this.isInitialized, 'SQLiteReady:', SQLiteService.isReady());
       
       if (!this.isInitialized || !SQLiteService.isReady()) {
@@ -255,7 +395,29 @@ export const userJournalStore = defineStore("user_journal", {
           return this.journals;
         }
       }
+
+      // Step 1: Load local journals immediately (instant response)
       await this.loadJournalsFromLocal();
+
+      // Step 2: If online, sync with server (non-blocking for better UX)
+      if (this.isOnline && !this.isSyncing) {
+        const authStore = useAuthStore();
+        if (authStore.isAuthenticated) {
+          // Run server sync in background (don't block UI)
+          this.syncDownloadFromServer()
+            .then(async (result) => {
+              if (result.inserted > 0 || result.updated > 0) {
+                console.log('[JournalStore] Server sync added new data, reloading...');
+                // Reload local journals to include server data
+                await this.loadJournalsFromLocal();
+              }
+            })
+            .catch((error) => {
+              console.error('[JournalStore] Background server sync failed:', error);
+            });
+        }
+      }
+
       return this.journals;
     },
 
@@ -366,7 +528,8 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     /**
-     * Sync all pending journals with server
+     * Sync all pending journals with server (bi-directional)
+     * Downloads from server + uploads pending local changes
      */
     async syncWithServer() {
       if (this.isSyncing) {
@@ -380,29 +543,17 @@ export const userJournalStore = defineStore("user_journal", {
       }
 
       try {
-        this.isSyncing = true;
-        const userId = getUserId();
-        
-        if (!userId) {
-          throw new Error('User not authenticated');
-        }
+        console.log('[JournalStore] Starting bi-directional sync with server...');
 
-        console.log('[JournalStore] Starting sync with server...');
+        // Use full bi-directional sync
+        const result = await this.fullBiDirectionalSync();
 
-        // Trigger sync service
-        const result = await SyncService.syncAll(userId);
-
-        console.log('[JournalStore] Sync completed:', result);
-
-        // Reload journals from local storage to reflect synced state
-        await this.loadJournalsFromLocal();
+        console.log('[JournalStore] Bi-directional sync completed:', result);
 
         return result;
       } catch (error) {
         console.error('[JournalStore] Sync error:', error);
         throw error;
-      } finally {
-        this.isSyncing = false;
       }
     },
 
@@ -413,8 +564,8 @@ export const userJournalStore = defineStore("user_journal", {
       const userId = getUserId();
       if (!userId) return;
 
-      // Don't await - let it run in background
-      SyncService.syncAll(userId).catch((error) => {
+      // Use full bi-directional sync in background
+      this.fullBiDirectionalSync().catch((error) => {
         console.error('[JournalStore] Background sync error:', error);
       });
     },
