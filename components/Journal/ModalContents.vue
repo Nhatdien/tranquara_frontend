@@ -16,7 +16,7 @@
         viewport: 'h-full',
         dot: 'w-6 h-1 rounded-none'
       }">
-      <div class="h-[40vh] max-h-[400px]">
+      <div class="h-[70vh] max-h-[700px]">
         <component
           :is="renderSlide(item?.content?.type)"
           :currentIndex

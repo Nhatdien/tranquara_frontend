@@ -55,11 +55,8 @@
       <template #content>
         <div class="p-6">
           <h3 class="text-lg font-semibold mb-4 text-center">How are you feeling?</h3>
-          <div class="flex justify-center mb-6">
-            <EmotionSlider v-model="moodScore" />
-          </div>
-          <p class="text-center text-lg font-medium mb-4">{{ computedMoodLabel }}</p>
-          <UButton block @click="confirmMood">Confirm</UButton>
+          <EmotionSliderV2 v-model="moodScore" />
+          <UButton block class="mt-4" @click="confirmMood">Confirm</UButton>
         </div>
       </template>
     </UModal>
@@ -69,7 +66,7 @@
 <script setup lang="ts">
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useAuthStore } from "~/stores/stores/auth_store";
-import EmotionSlider from "~/components/Common/EmotionSlider.vue";
+import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 
 const router = useRouter();
 const journalStore = userJournalStore();
@@ -78,7 +75,7 @@ const authStore = useAuthStore();
 // Form state
 const title = ref("");
 const content = ref("");
-const moodScore = ref(2); // 0-4 scale (EmotionSlider uses this range)
+const moodScore = ref(5); // 1-10 scale (new EmotionSliderV2)
 const moodLabel = ref("Okay");
 const showMoodPicker = ref(false);
 const editorRef = ref<any>(null);
@@ -106,20 +103,29 @@ const hasContent = computed(() => {
 
 const selectedMoodEmoji = computed(() => {
   const v = moodScore.value;
-  if (v <= 0) return "😢";
-  if (v <= 1) return "😔";
-  if (v <= 2) return "😐";
-  if (v <= 3) return "🙂";
+  if (v <= 2) return "😢";
+  if (v <= 4) return "😔";
+  if (v <= 6) return "😐";
+  if (v <= 8) return "🙂";
   return "😃";
 });
 
+// Mood labels for 1-10 scale
+const moodLabels: Record<number, string> = {
+  1: 'Terrible',
+  2: 'Very Bad',
+  3: 'Bad',
+  4: 'Poor',
+  5: 'Okay',
+  6: 'Fine',
+  7: 'Good',
+  8: 'Very Good',
+  9: 'Great',
+  10: 'Fantastic',
+};
+
 const computedMoodLabel = computed(() => {
-  const v = moodScore.value;
-  if (v <= 0) return "Terrible";
-  if (v <= 1) return "Bad";
-  if (v <= 2) return "Okay";
-  if (v <= 3) return "Good";
-  return "Fantastic";
+  return moodLabels[moodScore.value] || 'Okay';
 });
 
 // Methods

@@ -127,45 +127,50 @@ tranquara_frontend/
 
 ## 📋 Implementation Phases
 
-### Phase 1 - Foundation (Weeks 1-2) 🏗️
+### Phase 1 - Foundation (Weeks 1-2) 🏗️ ✅ COMPLETED
 
 **Goal:** Offline-first infrastructure
 
 **Week 1:**
-- [ ] Install SQLite plugin
-- [ ] Create database schema
-- [ ] Build Collections API (Go backend)
-- [ ] Cache collections locally
+- [x] Install SQLite plugin
+- [x] Create database schema
+- [x] Build Collections API (Go backend)
+- [x] Cache collections locally
 
 **Week 2:**
-- [ ] Refactor journal store (use SQLite)
-- [ ] Integrate token management
-- [ ] Test offline flows
-- [ ] Verify auto-save
+- [x] Refactor journal store (use SQLite)
+- [x] Integrate token management
+- [x] Test offline flows
+- [x] Verify auto-save
+- [x] Bi-directional sync implementation
+- [x] Sync status UI indicators (SyncBadge, SyncStatusBanner)
+- [x] Sync status dashboard in settings
+- [x] Auto-sync on app start
 
-**Deliverable:** Users can journal offline, data syncs when online
+**Deliverable:** ✅ Users can journal offline, data syncs when online
 
 ---
 
-### Phase 2 - Core Features (Weeks 3-4) ⚙️
+### Phase 2 - Core Features (Weeks 3-4) ⚙️ 🔄 IN PROGRESS
 
-**Goal:** Complete journaling experience
+**Goal:** Complete journaling experience with AI assistance
 
 **Week 3:**
-- [ ] Emotion log slide component
-- [ ] AI "Go Deeper" button
-- [ ] WebSocket integration
-- [ ] Bi-directional sync implementation
-- [ ] Sync status UI indicators
+- [ ] Emotion log slide component (mood slider 1-10)
+- [ ] AI "Go Deeper" button (HTTP POST, not WebSocket chat)
+- [ ] Sleep check slide component
 
 **Week 4:**
-- [ ] Complete sync service
-- [ ] RabbitMQ consumer (Go)
-- [ ] Draft/resume functionality
-- [ ] Conflict resolution
-- [ ] Sync status dashboard in settings
+- [ ] Streak tracking
+- [ ] Error handling improvements
+- [ ] Edge case testing
 
-**Deliverable:** Full AI-assisted journaling with transparent sync
+**Simplified Scope (v1.0):**
+- ❌ ~~Draft/resume functionality~~ - Deferred to v1.1
+- ❌ ~~WebSocket AI chat~~ - Using simple HTTP "Go Deeper" button instead
+- ❌ ~~Complex conflict resolution UI~~ - Using last-write-wins strategy
+
+**Deliverable:** Full AI-assisted journaling with "Go Deeper" prompts
 
 ---
 
@@ -173,11 +178,8 @@ tranquara_frontend/
 
 **Goal:** Production-ready
 
-- [ ] Streak tracking
-- [ ] Error handling
-- [ ] Edge case testing  
 - [ ] Performance optimization
-- [ ] Sync status mini-indicators throughout app
+- [ ] Documentation updates
 - [ ] Documentation updates
 
 **Deliverable:** v1.0 ready to ship
@@ -232,24 +234,27 @@ tranquara_frontend/
 
 ## 🐛 Known Issues & Gaps
 
-### Critical Gaps (Phase 1 Will Fix)
+### ✅ Resolved (Phase 1 Complete)
 
-1. **No SQLite database** - Code ready, but DB not initialized yet
-2. **Collections API missing** - Backend endpoints not built
-3. **Sync service is stub** - Needs full implementation
+1. ~~**No SQLite database**~~ - ✅ Implemented with full CRUD
+2. ~~**Collections API missing**~~ - ✅ Backend endpoints built
+3. ~~**Sync service is stub**~~ - ✅ Full bi-directional sync working
+4. ~~**Sync status UI**~~ - ✅ Dashboard, badges, and indicators added
 
-### Minor Issues (Phase 2+)
+### Phase 2 Remaining
 
-1. **Emotion log slide** - Component not created
-2. **AI UI integration** - "Go Deeper" button not in UI
-3. **Draft functionality** - Resume not implemented
+1. **Emotion log slide** - Mood slider component (1-10 scale)
+2. **AI "Go Deeper" button** - HTTP POST for single AI follow-up question
+3. **Streak tracking** - Consecutive journaling days
 
-### Not Blockers
+### Deferred to v1.1 (Not Blocking v1.0)
 
-These are documented but NOT blocking v1.0:
-- Speech input (Phase 3)
-- Advanced metrics (Phase 3)
-- Journal export (post-v1.0)
+- ❌ Draft/resume functionality
+- ❌ WebSocket AI chat (using HTTP "Go Deeper" instead)
+- ❌ Complex conflict resolution UI (using last-write-wins)
+- ❌ Speech input
+- ❌ Advanced metrics
+- ❌ Journal export
 
 ---
 

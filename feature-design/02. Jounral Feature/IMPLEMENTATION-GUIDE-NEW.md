@@ -1,8 +1,8 @@
 # Journaling Feature - Implementation Guide
 
-> **Status**: 🔄 In Development  
-> **Last Updated**: December 9, 2025  
-> **Version**: 1.0.0  
+> **Status**: 🔄 Phase 2 In Progress (Phase 1 Complete)  
+> **Last Updated**: January 25, 2026  
+> **Version**: 1.1.0  
 > **Priority**: 🔴 CRITICAL (Offline-First)
 
 ---
@@ -638,14 +638,14 @@ graph LR
    - Attempt silent refresh if expired
 4. **Upload Order** (sequential to preserve causality):
    - Journal entries with embedded emotion logs and AI interactions
-5. **Conflict Resolution** (v1.0 simplified):
-   - **Last-write-wins**: Use `updated_at` timestamp
-   - Server rejects if `updated_at` < server version
-   - Frontend shows conflict warning, user chooses version
+5. **Conflict Resolution** (v1.0 - Last-Write-Wins):
+   - **Strategy**: Most recent `updated_at` timestamp wins
+   - **No UI needed**: Server automatically accepts newer version
+   - **Simple merge**: If server has newer, overwrite local; if local is newer, upload replaces server
+   - **Future (v1.1)**: May add conflict detection UI if needed
 6. **Error Handling**:
    - Network error → Retry with exponential backoff (1s, 2s, 4s, 8s)
    - 401 Unauthorized → Prompt re-authentication
-   - 409 Conflict → Show conflict resolution UI
    - 500 Server Error → Log to error service, retry later
 
 ---
