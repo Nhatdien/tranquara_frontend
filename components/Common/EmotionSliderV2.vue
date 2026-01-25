@@ -24,8 +24,8 @@
         </div>
         
         <!-- Mouth - morphs from frown to smile -->
-        <svg class="mouth" viewBox="0 0 117 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path :d="mouthPath" stroke="currentColor" stroke-width="3" fill="none"/>
+        <svg class="mouth" viewBox="0 0 117 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path :d="mouthPath" stroke="currentColor" stroke-width="4" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
     </div>
@@ -111,20 +111,27 @@ const pupilStyle = computed(() => {
   };
 });
 
-// Mouth path morphs from frown to smile
+// Mouth path - use different SVG paths for different mood ranges
 const mouthPath = computed(() => {
   const v = currentValue.value;
-  // Interpolate control points for bezier curve
-  // Sad: curve down (frown), Happy: curve up (smile)
-  const progress = (v - 1) / 9; // 0 to 1
   
-  // Control point Y values
-  // Frown: middle point goes UP (y=40 for sad), Smile: middle point goes DOWN (y=-5 for happy)
-  const midY = 40 - progress * 50; // 40 -> -10
-  const startY = 40 - progress * 23; // 40 -> 17
-  const endY = 25 - progress * 10; // 25 -> 15
-  
-  return `M2 ${startY}C7.33333 28.3333 22.4 ${midY < 17 ? 7.4 : midY} 40 ${midY < 17 ? 17 : midY - 6}C55 ${midY < 4 ? 4.3335 : midY + 10} 91 ${midY < -11.8 ? -11.8 : midY + 5} 115 ${endY}`;
+  // Define clear mouth shapes for different moods
+  if (v <= 2) {
+    // Very sad - deep frown
+    return 'M20 35 Q58 10 97 35';
+  } else if (v <= 4) {
+    // Sad - slight frown  
+    return 'M25 30 Q58 18 92 30';
+  } else if (v <= 6) {
+    // Neutral - straight or very slight curve
+    return 'M30 25 Q58 28 87 25';
+  } else if (v <= 8) {
+    // Happy - smile
+    return 'M25 18 Q58 38 92 18';
+  } else {
+    // Very happy - big smile (open mouth)
+    return 'M20 15 Q58 45 97 15';
+  }
 });
 
 // Mood color for text
