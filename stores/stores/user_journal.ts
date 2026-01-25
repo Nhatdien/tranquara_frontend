@@ -287,23 +287,29 @@ export const userJournalStore = defineStore("user_journal", {
      * @returns Combined sync result
      */
     async fullBiDirectionalSync(): Promise<{
-      download: { inserted: number; updated: number; skipped: number; error?: string };
-      upload: { synced: number; failed: number; error?: string };
+      download: { inserted: number; updated: number; skipped: number; count: number; error?: string } | null;
+      upload: { syncedCount: number; failedCount: number; error?: string } | null;
+      errors: string[];
     }> {
-      const result = {
-        download: { inserted: 0, updated: 0, skipped: 0 } as any,
-        upload: { synced: 0, failed: 0 } as any,
+      const result: {
+        download: { inserted: number; updated: number; skipped: number; count: number; error?: string } | null;
+        upload: { syncedCount: number; failedCount: number; error?: string } | null;
+        errors: string[];
+      } = {
+        download: null,
+        upload: null,
+        errors: [],
       };
 
       if (this.isSyncing) {
         console.log('[JournalStore] Sync already in progress');
+        result.errors.push('Sync already in progress');
         return result;
       }
 
       if (!this.isOnline) {
         console.log('[JournalStore] Offline - skipping full sync');
-        result.download.error = 'Device is offline';
-        result.upload.error = 'Device is offline';
+        result.errors.push('Device is offline');
         return result;
       }
 
@@ -319,16 +325,26 @@ export const userJournalStore = defineStore("user_journal", {
 
         // Step 1: Download from server (pull)
         console.log('[JournalStore] Step 1: Downloading from server...');
-        result.download = await this.syncDownloadFromServer();
+        const downloadResult = await this.syncDownloadFromServer();
+        result.download = {
+          ...downloadResult,
+          count: downloadResult.inserted + downloadResult.updated,
+        };
+        if (downloadResult.error) {
+          result.errors.push(`Download: ${downloadResult.error}`);
+        }
 
         // Step 2: Upload pending to server (push)
         console.log('[JournalStore] Step 2: Uploading pending journals...');
         const uploadResult = await SyncService.syncAll(userId);
         result.upload = {
-          synced: uploadResult.syncedCount,
-          failed: uploadResult.failedCount,
+          syncedCount: uploadResult.syncedCount,
+          failedCount: uploadResult.failedCount,
           error: uploadResult.errors.length > 0 ? uploadResult.errors.join(', ') : undefined,
         };
+        if (uploadResult.errors.length > 0) {
+          result.errors.push(`Upload: ${uploadResult.errors.join(', ')}`);
+        }
 
         // Step 3: Reload local journals to reflect all changes
         console.log('[JournalStore] Step 3: Reloading local journals...');
@@ -340,8 +356,7 @@ export const userJournalStore = defineStore("user_journal", {
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
         console.error('[JournalStore] Full sync error:', error);
-        result.download.error = result.download.error || errorMsg;
-        result.upload.error = result.upload.error || errorMsg;
+        result.errors.push(errorMsg);
         return result;
       } finally {
         this.isSyncing = false;

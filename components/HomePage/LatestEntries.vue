@@ -1,14 +1,31 @@
 <template>
   <section class="space-y-3 pb-6">
+    <!-- Sync Status Banner -->
+    <SyncStatusBanner
+      :is-online="userJournalStore().isOnline"
+      :is-syncing="userJournalStore().isSyncing"
+      :pending-count="pendingSyncCount"
+      :show-sync-button="true"
+      @sync="triggerSync"
+    />
+
     <!-- Entry Cards -->
     <div 
       v-for="journal in userJournalStore()?.journals" 
       :key="journal.id"
       @click="() => openEntry(journal)"
-      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented transition border"
+      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented transition border relative"
     >
+      <!-- Sync Status Badge (top right) -->
+      <div class="absolute top-3 right-3">
+        <SyncBadge 
+          :needs-sync="journal.needs_sync" 
+          :syncing="userJournalStore().isSyncing"
+        />
+      </div>
+
       <!-- Header: Category & Time -->
-      <div class="flex justify-between items-start mb-3">
+      <div class="flex justify-between items-start mb-3 pr-16">
         <span class="text-xs text-muted uppercase tracking-wide font-semibold">
           REFLECTION
         </span>
@@ -63,6 +80,18 @@ import { ChevronRight } from 'lucide-vue-next';
 import { useAuthStore } from '~/stores/stores/auth_store';
 
 const authStore = useAuthStore();
+
+// Computed property for pending sync count
+const pendingSyncCount = computed(() => userJournalStore().pendingSyncCount);
+
+// Trigger manual sync
+const triggerSync = async () => {
+  try {
+    await userJournalStore().syncWithServer();
+  } catch (error) {
+    console.error('[LatestEntries] Error syncing:', error);
+  }
+};
 
 const openEntry = (journal: LocalJournal) => {
   userJournalStore().currentJournal = journal;

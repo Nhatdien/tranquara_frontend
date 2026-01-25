@@ -12,10 +12,16 @@
       <p class="text-sm text-muted">{{ formattedDate }}</p>
     </div>
 
-    <!-- Profile Icon -->
-    <NuxtLink to="/profile" class="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-      <User class="w-5 h-5 text-toned" />
-    </NuxtLink>
+    <!-- Profile and Sync Icons -->
+    <div class="flex items-center gap-1">
+      <!-- Sync Status Mini Indicator -->
+      <SyncMiniIndicator size="sm" @click="navigateToSync" />
+      
+      <!-- Profile Icon -->
+      <NuxtLink to="/profile" class="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+        <User class="w-5 h-5 text-toned" />
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -23,8 +29,15 @@
 import { Flame, User } from "lucide-vue-next";
 import { computed } from 'vue';
 
+const router = useRouter();
+
 // TODO: Replace with actual streak data from store
 const streak = ref(1);
+
+// Navigate to profile page (sync section)
+const navigateToSync = () => {
+  router.push('/profile#data-sync');
+};
 
 const formattedDate = computed(() => {
   const date = new Date();

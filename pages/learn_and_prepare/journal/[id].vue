@@ -3,7 +3,14 @@
     <!-- Header -->
     <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
       <UButton variant="ghost" icon="i-lucide-arrow-left" @click="router.back()" />
-      <h1 class="text-xl font-bold truncate max-w-[200px]">{{ journal.title || 'Untitled Journal' }}</h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-bold truncate max-w-[180px]">{{ journal.title || 'Untitled Journal' }}</h1>
+        <!-- Sync Badge -->
+        <SyncBadge 
+          :needs-sync="journal.needs_sync" 
+          :syncing="store.isSyncing"
+        />
+      </div>
       <UDropdownMenu :items="menuItems" :ui="{ content: 'w-40' }">
         <UButton variant="ghost" icon="i-lucide-more-vertical" />
       </UDropdownMenu>

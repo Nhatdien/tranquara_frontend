@@ -71,7 +71,7 @@
               </div>
             </div>
 
-            <UDivider />
+            <USeparator />
 
             <!-- Evening Reflection -->
             <div>
@@ -110,7 +110,7 @@
               <USwitch v-model="notifications.dailyFocus.enabled" size="lg" />
             </div>
 
-            <UDivider />
+            <USeparator />
 
             <!-- Daily Journaling Prompt -->
             <div>
@@ -132,6 +132,17 @@
             </div>
           </div>
         </UCard>
+      </div>
+
+      <!-- Data & Sync Section -->
+      <div class="space-y-4 mt-8">
+        <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">data & sync.</h2>
+        
+        <SyncStatusDashboard 
+          :show-stats="true" 
+          :show-history="true"
+          :show-actions="true"
+        />
       </div>
 
       <!-- Settings Section -->

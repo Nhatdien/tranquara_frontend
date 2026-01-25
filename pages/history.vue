@@ -5,27 +5,15 @@
       <p class="text-muted text-sm">Your journal entries over time</p>
     </div>
 
-    <!-- Sync Status Banner -->
-    <div v-if="pendingSyncCount > 0" class="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <Icon name="i-lucide-cloud-upload" class="w-5 h-5 text-blue-500" />
-        <span class="text-sm text-blue-500">{{ pendingSyncCount }} entries pending sync</span>
-      </div>
-      <UButton 
-        @click="triggerSync" 
-        :loading="journalStore.isSyncing"
-        :disabled="!journalStore.isOnline"
-        size="xs"
-        variant="ghost"
-      >
-        Sync Now
-      </UButton>
-    </div>
-
-    <!-- Offline Banner -->
-    <div v-if="!journalStore.isOnline" class="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-2">
-      <Icon name="i-lucide-wifi-off" class="w-5 h-5 text-yellow-500" />
-      <span class="text-sm text-yellow-500">Working offline - showing local entries</span>
+    <!-- Sync Status Banner (reusable component) -->
+    <div class="mb-4">
+      <SyncStatusBanner
+        :is-online="journalStore.isOnline"
+        :is-syncing="journalStore.isSyncing"
+        :pending-count="pendingSyncCount"
+        :show-sync-button="true"
+        @sync="triggerSync"
+      />
     </div>
 
     <!-- Filter/Search Bar -->
@@ -90,12 +78,15 @@
             class="bg-muted rounded-lg p-4 cursor-pointer hover:bg-accented transition relative"
             @click="openEntry(entry)"
           >
-            <!-- Sync Status Badge -->
-            <div v-if="entry.needs_sync === 1" class="absolute top-2 right-2">
-              <div class="w-2 h-2 bg-blue-500 rounded-full" title="Pending sync"></div>
+            <!-- Sync Status Badge (reusable component) -->
+            <div class="absolute top-3 right-3">
+              <SyncBadge 
+                :needs-sync="entry.needs_sync" 
+                :syncing="journalStore.isSyncing"
+              />
             </div>
 
-            <div class="flex justify-between items-start mb-2">
+            <div class="flex justify-between items-start mb-2 pr-12">
               <span class="text-xs text-muted uppercase tracking-wide">
                 {{ getTemplateName(entry.collection_id) || 'JOURNAL' }}
               </span>

@@ -1,7 +1,7 @@
 /**
  * Background Sync Plugin
  * 
- * Automatically triggers sync on:
+ * Automatically triggers bi-directional sync on:
  * 1. App resume (when user returns to app)
  * 2. Network status changes (when going online)
  * 
@@ -10,9 +10,9 @@
 
 import { App, AppState } from '@capacitor/app';
 import { Network } from '@capacitor/network';
-import SyncService from '~/services/sync/sync_service';
 import NetworkMonitor from '~/services/sync/network_monitor';
 import KeycloakService from '~/stores/auth/keycloak_service';
+import { userJournalStore } from '~/stores/stores/user_journal';
 
 export default defineNuxtPlugin(() => {
   console.log('[BackgroundSync] Plugin initializing...');
@@ -21,7 +21,8 @@ export default defineNuxtPlugin(() => {
   let isAppActive = true;
 
   /**
-   * Trigger sync if user is authenticated
+   * Trigger full bi-directional sync if user is authenticated
+   * Downloads from server + uploads pending local changes
    */
   const triggerSyncIfAuthenticated = async () => {
     try {
@@ -36,8 +37,17 @@ export default defineNuxtPlugin(() => {
         return;
       }
 
-      console.log('[BackgroundSync] Triggering sync...');
-      await SyncService.syncAll(userId);
+      console.log('[BackgroundSync] Triggering bi-directional sync...');
+      
+      // Use the journal store's full bi-directional sync
+      // This downloads from server AND uploads pending local changes
+      const store = userJournalStore();
+      if (store.isInitialized) {
+        const result = await store.fullBiDirectionalSync();
+        console.log('[BackgroundSync] Sync complete:', result);
+      } else {
+        console.log('[BackgroundSync] Store not initialized - skipping sync');
+      }
     } catch (error) {
       console.error('[BackgroundSync] Sync error:', error);
     }
