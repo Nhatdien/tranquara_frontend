@@ -3,6 +3,7 @@
     <div class="h-32 rounded-2xl border border-neutral-400">
     </div>
     <p class="text-center mt-2">{{ template.title }}</p>
+    {{ template.id }}
   </section>
 </template>
 

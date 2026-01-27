@@ -69,7 +69,7 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
     useRouter().back()
   };
 
-  const saveJournal = async (journal: CreateJournalRequest, slideGroupId?: string) => {
+  const saveJournal = async (journal: CreateJournalRequest, slideGroupId?: string | null) => {
     try {
       console.log("[saveJournal] Saving journal:", journal, "slideGroupId:", slideGroupId);
       
@@ -80,7 +80,7 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
       }
       
       const newJournal = await userJournalStore().createJournal({
-        collection_id: slideGroupId || journal.collection_id,
+        collection_id: slideGroupId,
         title: journal.title,
         content: journal.content,
         content_html: journal.content_html,

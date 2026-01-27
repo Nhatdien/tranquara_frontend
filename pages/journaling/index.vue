@@ -43,6 +43,18 @@
           <span class="text-lg">{{ selectedMoodEmoji }}</span>
           <span class="ml-1 text-sm text-muted">{{ moodLabel }}</span>
         </UButton>
+        
+        <!-- Go Deeper Button -->
+        <UButton
+          variant="ghost"
+          size="sm"
+          :loading="isGeneratingQuestion"
+          :disabled="!hasContent || isGeneratingQuestion"
+          @click="handleGoDeeper"
+          icon="i-lucide-sparkles"
+        >
+          <span class="text-sm">Go Deeper</span>
+        </UButton>
       </div>
       
       <div class="flex items-center gap-2">
@@ -67,6 +79,7 @@
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useAuthStore } from "~/stores/stores/auth_store";
 import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
+import TranquaraSDK from "~/stores/tranquara_sdk";
 
 const router = useRouter();
 const journalStore = userJournalStore();
@@ -81,6 +94,7 @@ const showMoodPicker = ref(false);
 const editorRef = ref<any>(null);
 const autoSaveStatus = ref("Ready");
 const lastSavedAt = ref<Date | null>(null);
+const isGeneratingQuestion = ref(false);
 
 // Debounce for auto-save
 let autoSaveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -146,6 +160,52 @@ const onContentUpdate = () => {
 const confirmMood = () => {
   moodLabel.value = computedMoodLabel.value;
   showMoodPicker.value = false;
+};
+
+const handleGoDeeper = async () => {
+  if (!hasContent.value || isGeneratingQuestion.value) return;
+  
+  try {
+    isGeneratingQuestion.value = true;
+    autoSaveStatus.value = "Thinking...";
+    
+    const sdk = TranquaraSDK.getInstance();
+    
+    // Get plain text content from editor
+    const plainText = content.value.replace(/<[^>]*>/g, '').trim();
+    
+    const response = await sdk.analyzeJournal({
+      content: plainText,
+      mood_score: moodScore.value,
+      slide_prompt: undefined, // No template for free-form journaling
+    });
+    
+    // Insert AI question into editor with muted styling
+    if (editorRef.value?.editor) {
+      const editor = editorRef.value.editor;
+      
+      editor
+        .chain()
+        .focus('end')
+        .insertContent('<p></p>') // Add empty line
+        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`)
+        .insertContent('<p></p>') // Add empty line for user to type
+        .run();
+    }
+    
+    autoSaveStatus.value = "Question added!";
+    setTimeout(() => {
+      autoSaveStatus.value = "Ready";
+    }, 2000);
+  } catch (error) {
+    console.error("[GoDeeper] Error:", error);
+    autoSaveStatus.value = "Error generating question";
+    setTimeout(() => {
+      autoSaveStatus.value = "Ready";
+    }, 2000);
+  } finally {
+    isGeneratingQuestion.value = false;
+  }
 };
 
 const saveAndClose = async () => {

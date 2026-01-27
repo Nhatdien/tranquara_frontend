@@ -52,7 +52,6 @@ import { Editor } from "@tiptap/vue-3";
 
 const props = defineProps(['templateId']);
 const carousel = useTemplateRef("carousel");
-const emits = defineEmits(["saveJournal", "closeModal"]);
 const currentIndex = ref(0);
 
 // Use the prop instead of route params
@@ -95,12 +94,11 @@ const nextNode = () => {
       !userJournalStore().currentJournal
     ) {
       saveJournal({
-        collection_id: props.templateId || "",
         content: generateJournalHtml(userJournalStore().currentWritingContent),
         mood_score: userJournalStore().currentMoodScore,
         mood_label: userJournalStore().currentMoodLabel,
         title: activeSlideGroup.value?.title || "",
-      });
+      }, (useRoute()?.params?.id || null) as string | null);
     }
     closeSlideGroup();
   } else {

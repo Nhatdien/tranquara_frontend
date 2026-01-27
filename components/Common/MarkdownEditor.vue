@@ -150,9 +150,24 @@ button {
 
 .tiptap.ProseMirror {
   height: 100%;
-
 }
+
 .is-active {
   background-color: gray;
+}
+</style>
+
+<style>
+/* Global styles for AI suggestions (not scoped to allow TipTap content styling) */
+.ProseMirror .ai-suggestion {
+  color: #888 !important;
+  font-style: italic;
+  opacity: 0.8;
+  padding: 0.5rem 0;
+  margin: 0.25rem 0;
+}
+
+.ProseMirror .ai-suggestion:hover {
+  opacity: 1;
 }
 </style>

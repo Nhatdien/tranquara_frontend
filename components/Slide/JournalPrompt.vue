@@ -8,22 +8,32 @@
     </div>
     <CommonMarkdownEditor
       ref="editor"
-      @on-update="
-        () =>
-          userJournalStore().updateCurrentWritingContent(
-            content?.question || content?.question_content,
-            currentNote
-          )
-      "
+      @on-update="onEditorUpdate"
       v-model="currentNote" />
+    
+    <!-- Go Deeper Button -->
+    <div class="mt-4 flex justify-end" v-if="hasContent">
+      <UButton
+        variant="soft"
+        size="sm"
+        :loading="isGeneratingQuestion"
+        :disabled="!hasContent || isGeneratingQuestion"
+        @click="handleGoDeeper"
+        icon="i-lucide-sparkles"
+      >
+        Go Deeper
+      </UButton>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import TranquaraSDK from "~/stores/tranquara_sdk";
+
 const currentNote = ref("");
+const isGeneratingQuestion = ref(false);
 
 const editor = ref()
-const onUpdate = (key: string, value: string) => {};
 const props = defineProps({
   content: {
     type: Object,
@@ -37,17 +47,80 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  initialContent: {
+    type: String,
+    default: "",
+  },
 });
 
+// Computed to check if there's content
+const hasContent = computed(() => {
+  const stripped = currentNote.value.replace(/<[^>]*>/g, "").trim();
+  return stripped.length > 0;
+});
+
+const onEditorUpdate = () => {
+  userJournalStore().updateCurrentWritingContent(
+    props.content?.question || props.content?.question_content,
+    currentNote.value
+  );
+};
+
+const handleGoDeeper = async () => {
+  if (!hasContent.value || isGeneratingQuestion.value) return;
+  
+  try {
+    isGeneratingQuestion.value = true;
+    
+    const sdk = TranquaraSDK.getInstance();
+    
+    // Get plain text content from editor
+    const plainText = currentNote.value.replace(/<[^>]*>/g, '').trim();
+    const slidePrompt = props.content?.question || props.content?.question_content;
+    
+    const response = await sdk.analyzeJournal({
+      content: plainText,
+      mood_score: userJournalStore().currentMoodScore,
+      slide_prompt: slidePrompt,
+    });
+    
+    // Insert AI question into editor with muted styling
+    if (editor.value?.editor) {
+      const editorInstance = editor.value.editor;
+      
+      editorInstance
+        .chain()
+        .focus('end')
+        .insertContent('<p></p>')
+        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`)
+        .insertContent('<p></p>')
+        .run();
+    }
+  } catch (error) {
+    console.error("[GoDeeper] Error:", error);
+  } finally {
+    isGeneratingQuestion.value = false;
+  }
+};
+
 onMounted(() => {
-  useTiptapEditorStore().editors[props.index] = editor.value?.editor
-}),
+  useTiptapEditorStore().editors[props.index] = editor.value?.editor;
+  
+  // Pre-fill content if provided (for edit mode)
+  if (props.initialContent) {
+    currentNote.value = props.initialContent;
+    // Also update the store
+    userJournalStore().updateCurrentWritingContent(
+      props.content?.question || props.content?.question_content,
+      props.initialContent
+    );
+  }
+});
 
 watch(() => [props.currentIndex, props.index], () => {
   if(props.currentIndex === props.index) {
     useTiptapEditorStore().editors[props.currentIndex]?.commands?.focus()
   }
-
 }, {deep: true, immediate: true})
 
 watch(
