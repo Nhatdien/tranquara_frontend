@@ -2,6 +2,10 @@ export const generateJournalHtml = (questionAnswer: { [key: string]: string }): 
   let result = ""
 
   for (const key of Object.keys(questionAnswer)) {
+    // Skip metadata entries (keys that are metadata, not actual questions)
+    if (key.includes('mood_score') || key.includes('_score') || key.match(/^[a-z_]+_\d+$/)) {
+      continue
+    }
 
     const notEmptyAnswer = (questionAnswer[key] !== "") && (questionAnswer[key] !== "<p></p>")
     result += notEmptyAnswer ? `<div class="mb-4 journal-entry"><h3 class="journal-question">${key}</h3>

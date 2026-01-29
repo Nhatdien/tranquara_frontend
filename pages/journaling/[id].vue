@@ -272,10 +272,3 @@ onUnmounted(() => {
   if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
 });
 </script>
-
-<style scoped>
-:deep(.tiptap.ProseMirror) {
-  min-height: 50vh;
-  outline: none;
-}
-</style>

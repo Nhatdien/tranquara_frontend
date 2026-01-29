@@ -29,6 +29,14 @@ const newToOld = (val: number) => Math.round(((val - 1) / 9) * 4);
 // Initialize with current value (convert from 0-4 to 1-10)
 const moodValue = ref(oldToNew(store.currentMoodScore));
 
+// Watch for changes in store mood score (e.g., when editing existing journal)
+watch(() => store.currentMoodScore, (newScore) => {
+  const newValue = oldToNew(newScore);
+  if (moodValue.value !== newValue) {
+    moodValue.value = newValue;
+  }
+}, { immediate: true });
+
 // Mood labels for 1-10 scale
 const moodLabels: Record<number, string> = {
   1: 'Terrible',

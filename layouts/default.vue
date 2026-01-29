@@ -19,4 +19,9 @@ import BottomNavigation from "~/components/Common/BottomNavigation.vue";
 main {
   padding-bottom: 4rem; /* 64px for bottom nav */
 }
+
+.tiptap.ProseMirror {
+  background-color: red;
+  border: 1px solid blue;
+}
 </style>

@@ -51,6 +51,7 @@ import FurtherReading from "@/components/Slide/FutherReading.vue";
 import JournalPrompt from "@/components/Slide/JournalPrompt.vue";
 import SleepCheck from "~/components/Slide/SleepCheck.vue";
 import MoodSlide from "~/components/Slide/MoodSlide.vue";
+import { parseJournalHtml } from "~/utils/journal";
 import type { LocalJournal } from "~/types/user_journal";
 
 interface CarouselSlideItem {
@@ -77,6 +78,48 @@ const { activeSlideGroup } = useSlideGroup({
   collectionId: props.templateId 
 });
 
+// Parse existing journal content to extract answers for each slide
+const parseJournalContent = (contentHtml: string): Record<string, string> => {
+  const parsed: Record<string, string> = {};
+  
+  if (!contentHtml) return parsed;
+  
+  // Use the parseJournalHtml utility to properly parse the HTML structure
+  const parsed_from_util = parseJournalHtml(contentHtml);
+  
+  // Filter out metadata entries (those with keys that don't match any slide questions)
+  const slides = activeSlideGroup.value?.slides || [];
+  
+  for (const [key, value] of Object.entries(parsed_from_util)) {
+    // Skip metadata entries like "mood_score_10"
+    if (key.includes('mood_score') || key.includes('_score')) {
+      continue;
+    }
+    
+    // Match the key to a slide question (case-insensitive)
+    const matchedQuestion = slides.find((s: any) => {
+      const slideQuestion = s.question || '';
+      return slideQuestion.toLowerCase() === key.toLowerCase();
+    });
+    
+    if (matchedQuestion && matchedQuestion.question) {
+      parsed[matchedQuestion.question] = value;
+    }
+  }
+  
+  return parsed;
+};
+
+// Initialize store with journal data BEFORE component mounts (in setup)
+// This ensures child components get the correct initial values
+store.currentMoodScore = props.journal.mood_score ?? 5;
+store.currentMoodLabel = props.journal.mood_label || "Okay";
+store.currentJournal = props.journal;
+
+// Pre-populate the writing content
+const prefillData = parseJournalContent(props.journal.content_html || props.journal.content);
+store.currentWritingContent = prefillData;
+
 const componentMapping: Record<string, any> = {
   doc: Document,
   journal_prompt: JournalPrompt,
@@ -90,45 +133,6 @@ const componentMapping: Record<string, any> = {
 const renderSlide = (type: string) => {
   return componentMapping[type] || componentMapping.journal_prompt;
 }
-
-// Parse existing journal content to extract answers for each slide
-const parseJournalContent = (contentHtml: string): Record<string, string> => {
-  const parsed: Record<string, string> = {};
-  
-  if (!contentHtml) return parsed;
-  
-  // Try to parse the structured format: <p class="journal-question">Question</p><p class="journal-answer">Answer</p>
-  const questionRegex = /<p[^>]*class="journal-question"[^>]*>(.*?)<\/p>/g;
-  const answerRegex = /<p[^>]*class="journal-answer"[^>]*>([\s\S]*?)<\/p>/g;
-  
-  const questions = [...contentHtml.matchAll(questionRegex)].map(m => m[1]);
-  const answers = [...contentHtml.matchAll(answerRegex)].map(m => m[1]);
-  
-  questions.forEach((question, idx) => {
-    if (answers[idx]) {
-      parsed[question] = answers[idx];
-    }
-  });
-  
-  // If no structured format found, try to use the whole content
-  if (Object.keys(parsed).length === 0 && contentHtml) {
-    // For simple journals, use the content as-is for the first prompt
-    const slides = activeSlideGroup.value?.slides || [];
-    const firstPrompt = slides.find((s: any) => s.type === 'journal_prompt');
-    if (firstPrompt) {
-      const question = (firstPrompt as any).question || (firstPrompt as any).question_content;
-      if (question) {
-        // Strip the question part if it exists in the content
-        let cleanContent = contentHtml;
-        // Remove any existing question headers
-        cleanContent = cleanContent.replace(/<p[^>]*class="journal-question"[^>]*>[\s\S]*?<\/p>/g, '');
-        parsed[question] = cleanContent.trim();
-      }
-    }
-  }
-  
-  return parsed;
-};
 
 // Build carousel items with prefilled content
 const carouselItems = computed((): CarouselSlideItem[] => {
@@ -145,17 +149,8 @@ const carouselItems = computed((): CarouselSlideItem[] => {
   });
 });
 
-// Initialize store with journal data
+// Initialize editor store slots
 onMounted(() => {
-  // Set mood data from journal
-  store.currentMoodScore = props.journal.mood_score ?? 5;
-  store.currentMoodLabel = props.journal.mood_label || "Okay";
-  store.currentJournal = props.journal;
-  
-  // Pre-populate the writing content
-  const prefillData = parseJournalContent(props.journal.content_html || props.journal.content);
-  store.currentWritingContent = prefillData;
-  
   // Init editor store
   carouselItems.value.forEach(() => {
     // @ts-ignore

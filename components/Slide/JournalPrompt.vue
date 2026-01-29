@@ -91,9 +91,15 @@ const handleGoDeeper = async () => {
       editorInstance
         .chain()
         .focus('end')
-        .insertContent('<p></p>')
-        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`)
-        .insertContent('<p></p>')
+        .insertContent('<p></p>', {
+          contentType: 'html',
+        })
+        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`, {
+          contentType: 'html',
+        })
+        .insertContent('<p></p>', {
+          contentType: 'html',
+        })
         .run();
     }
   } catch (error) {
@@ -109,6 +115,10 @@ onMounted(() => {
   // Pre-fill content if provided (for edit mode)
   if (props.initialContent) {
     currentNote.value = props.initialContent;
+    // Update editor content
+    if (editor.value?.editor) {
+      editor.value.editor.commands.setContent(props.initialContent);
+    }
     // Also update the store
     userJournalStore().updateCurrentWritingContent(
       props.content?.question || props.content?.question_content,
@@ -116,6 +126,18 @@ onMounted(() => {
     );
   }
 });
+
+// Watch for initialContent changes (in case it's provided after mount)
+watch(() => props.initialContent, (newContent) => {
+  if (newContent && editor.value?.editor) {
+    currentNote.value = newContent;
+    editor.value.editor.commands.setContent(newContent);
+    userJournalStore().updateCurrentWritingContent(
+      props.content?.question || props.content?.question_content,
+      newContent
+    );
+  }
+}, { immediate: true });
 
 watch(() => [props.currentIndex, props.index], () => {
   if(props.currentIndex === props.index) {

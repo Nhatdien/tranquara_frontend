@@ -1,0 +1,12 @@
+.ProseMirror {
+    color: red !important;
+  p.ai-suggestion {
+    margin-top: 0.5rem;
+    em {
+      color: #888;
+      font-style: italic;
+      font-size: 0.85em;
+      opacity: 0.8;
+    }
+  }
+}

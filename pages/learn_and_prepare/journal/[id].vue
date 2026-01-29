@@ -200,7 +200,7 @@ const deleteJournal = async () => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .journal-content :deep(.journal-question) {
   font-weight: 700;
   font-size: 1.125rem;
@@ -213,7 +213,7 @@ const deleteJournal = async () => {
   margin-bottom: 1.5rem;
 }
 .journal-content :deep(.ai-suggestion) {
-  color: #888;
+  color: red;
   font-style: italic;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
   <section v-if="editor">
     <editor-content
-    class=" min-h-[40vh] max-h-[400px] rounded-2xl"
-    :editor="editor" />
+      class="min-h-[40vh] max-h-[400px] rounded-2xl"
+      :editor="editor" />
     <!-- <div class="border border-gray-400 p-4 overflow-x-scroll">
       <div class="button-group flex gap-x-2 max-w-[80vw]">
         <button
@@ -96,6 +96,8 @@
 <script setup>
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import { StarterKit } from "@tiptap/starter-kit";
+import { CustomParagraph } from "@/components/TiptapExtensions/CustomParagraph";
+
 import {
   Strikethrough,
   RemoveFormatting,
@@ -115,31 +117,28 @@ import {
   Redo,
 } from "lucide-vue-next";
 
-const modelValue = defineModel()
-const emits = defineEmits(["onUpdate"])
+const modelValue = defineModel();
+const emits = defineEmits(["onUpdate"]);
 const editor = useEditor({
   editorProps: {
-    attributes: {
-    
-    },
+    attributes: {},
     transformPastedText(text) {
       return text.toUpperCase();
     },
-    
   },
   content: modelValue.value || "",
-  extensions: [StarterKit],
-  onUpdate:  ({editor}) => {
-    modelValue.value = editor.getHTML()
-    emits("onUpdate")
-  }
+  extensions: [StarterKit, CustomParagraph],
+  onUpdate: ({ editor }) => {
+    modelValue.value = editor.getHTML();
+    emits("onUpdate");
+  },
 });
 
-defineExpose({editor})
+defineExpose({ editor });
 
 onMounted(() => {
-  console.log(editor.value.content)
-})
+  console.log(editor.value.content);
+});
 </script>
 <style scoped lang="scss">
 button {
@@ -148,26 +147,8 @@ button {
   font-size: 0.875rem;
 }
 
-.tiptap.ProseMirror {
-  height: 100%;
-}
 
 .is-active {
   background-color: gray;
-}
-</style>
-
-<style>
-/* Global styles for AI suggestions (not scoped to allow TipTap content styling) */
-.ProseMirror .ai-suggestion {
-  color: #888 !important;
-  font-style: italic;
-  opacity: 0.8;
-  padding: 0.5rem 0;
-  margin: 0.25rem 0;
-}
-
-.ProseMirror .ai-suggestion:hover {
-  opacity: 1;
 }
 </style>

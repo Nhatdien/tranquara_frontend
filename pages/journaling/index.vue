@@ -247,11 +247,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style scoped>
-/* Ensure editor takes remaining space */
-:deep(.tiptap.ProseMirror) {
-  min-height: 50vh;
-  outline: none;
-}
-</style>
