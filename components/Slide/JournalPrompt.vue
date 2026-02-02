@@ -11,18 +11,13 @@
       @on-update="onEditorUpdate"
       v-model="currentNote" />
     
-    <!-- Go Deeper Button -->
+    <!-- Go Deeper with Direction Selection -->
     <div class="mt-4 flex justify-end" v-if="hasContent">
-      <UButton
-        variant="soft"
-        size="sm"
+      <JournalGoDeepDirections
         :loading="isGeneratingQuestion"
         :disabled="!hasContent || isGeneratingQuestion"
-        @click="handleGoDeeper"
-        icon="i-lucide-sparkles"
-      >
-        Go Deeper
-      </UButton>
+        @select="handleGoDeeper"
+      />
     </div>
   </div>
 </template>
@@ -51,6 +46,14 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  slideGroupContext: {
+    type: Object,
+    default: null,
+  },
+  collectionTitle: {
+    type: String,
+    default: null,
+  },
 });
 
 // Computed to check if there's content
@@ -66,7 +69,7 @@ const onEditorUpdate = () => {
   );
 };
 
-const handleGoDeeper = async () => {
+const handleGoDeeper = async (direction: string) => {
   if (!hasContent.value || isGeneratingQuestion.value) return;
   
   try {
@@ -82,6 +85,10 @@ const handleGoDeeper = async () => {
       content: plainText,
       mood_score: userJournalStore().currentMoodScore,
       slide_prompt: slidePrompt,
+      slide_group_context: props.slideGroupContext,  // Pass full slide group context
+      current_slide_id: props.content?.id,            // Pass current slide ID
+      collection_title: props.collectionTitle,         // Pass collection title
+      direction: direction as 'why' | 'emotions' | 'patterns' | 'challenge' | 'growth',  // Pass selected direction
     });
     
     // Insert AI question into editor with muted styling

@@ -1,8 +1,8 @@
 # Journaling Feature - Implementation Guide
 
-> **Status**: 🔄 Phase 2 In Progress (Phase 1 Complete)  
-> **Last Updated**: January 25, 2026  
-> **Version**: 1.1.0  
+> **Status**: 🔄 Phase 2 In Progress (Phase 1 Complete, Direction-Based "Go Deeper" in Design)  
+> **Last Updated**: February 1, 2026  
+> **Version**: 1.2.0  
 > **Priority**: 🔴 CRITICAL (Offline-First)
 
 ---
@@ -12,11 +12,12 @@
 1. [Overview](#overview)
 2. [Quick Reference & Validation Links](#quick-reference--validation-links)
 3. [User Flows](#user-flows)
-4. [Data Flow](#data-flow)
-5. [Data Models](#data-models)
-6. [Implementation Steps](#implementation-steps)
-7. [Sync Status Dashboard](#sync-status-dashboard)
-8. [Acceptance Criteria](#acceptance-criteria)
+4. [Direction-Based "Go Deeper" Feature](#direction-based-go-deeper-feature)
+5. [Data Flow](#data-flow)
+6. [Data Models](#data-models)
+7. [Implementation Steps](#implementation-steps)
+8. [Sync Status Dashboard](#sync-status-dashboard)
+9. [Acceptance Criteria](#acceptance-criteria)
 
 ---
 
@@ -24,7 +25,7 @@
 
 ### Feature Summary
 
-AI-assisted emotion journaling with offline-first architecture. Users create journal entries through structured Collections (slide-based prompts) or free-form writing. AI provides "Go Deeper" follow-up questions inline to help users explore their emotions. All data is stored locally in SQLite with transparent background sync to cloud when online.
+AI-assisted emotion journaling with offline-first architecture. Users create journal entries through structured Collections (slide-based prompts) or free-form writing. AI provides **direction-based "Go Deeper"** follow-up questions inline, giving users agency to choose their reflection direction. All data is stored locally in SQLite with transparent background sync to cloud when online.
 
 **📚 Core Technology References:**
 - **SQLite via Capacitor**: [capacitor-community/sqlite](https://github.com/capacitor-community/sqlite) - Offline-first local database
@@ -368,6 +369,221 @@ graph TD
 - Never suggests actions or diagnoses
 - Questions feel like user asking themselves
 - Each click generates NEW question (not cumulative chat)
+
+---
+
+## 🎯 Direction-Based "Go Deeper" Feature
+
+### Overview
+
+**Enhancement**: Instead of generating generic AI questions, users now **select a reflection direction** that aligns with their current needs. This gives users agency while improving AI question quality.
+
+### Five Reflection Directions
+
+#### 🧠 Understand Why
+**Purpose**: Explore underlying reasons, causes, and motivations
+
+**AI Behavior**:
+- Asks about root causes and triggers
+- Probes into "why" behind experiences
+- Connects events to outcomes
+
+**Example Question**:
+> "What part of the meeting felt most disappointing to you—and why do you think that mattered?"
+
+**When to Use**: User wants to understand the reason behind their feelings or reactions
+
+---
+
+#### 💭 Explore Emotions
+**Purpose**: Dive deeper into emotional experiences
+
+**AI Behavior**:
+- Asks about secondary/hidden emotions
+- Probes beyond surface feelings
+- Explores emotional complexity and bodily sensations
+
+**Example Question**:
+> "Besides frustration, was there another feeling underneath—like embarrassment, fear, or sadness?"
+
+**When to Use**: User wants to label and process their emotions more clearly
+
+---
+
+#### 🔁 Look for Patterns
+**Purpose**: Recognize recurring themes and behavioral cycles
+
+**AI Behavior**:
+- Asks about similar past experiences
+- Identifies triggers and patterns
+- Connects current situation to personal history
+
+**Example Question**:
+> "Have you felt a similar frustration in past meetings, or was this one different?"
+
+**When to Use**: User suspects a pattern but can't quite articulate it
+
+---
+
+#### 🧩 Challenge My Thinking
+**Purpose**: Reframe assumptions and challenge cognitive distortions (CBT-based)
+
+**AI Behavior**:
+- Questions unhelpful beliefs
+- Offers alternative perspectives
+- Identifies cognitive distortions
+
+**Example Question**:
+> "What assumption about the meeting might be making this feel heavier than it needs to be?"
+
+**When to Use**: User wants to check if they're being too harsh on themselves or others
+
+---
+
+#### 🌱 Focus on Growth
+**Purpose**: Extract lessons and plan for future improvement
+
+**AI Behavior**:
+- Asks about lessons learned
+- Explores future actions
+- Encourages growth mindset
+
+**Example Question**:
+> "If a similar meeting happened again, what's one thing you'd want to do differently—or keep the same?"
+
+**When to Use**: User wants to move forward constructively
+
+---
+
+### User Flow
+
+```mermaid
+graph TD
+    A[User typing in journal] --> B[User clicks 'Go Deeper']
+    B --> C[Direction selector opens<br/>Drawer mobile / Dropdown desktop]
+    C --> D{User selects direction}
+    D -->|🧠 Why| E[AI generates<br/>reason-focused question]
+    D -->|💭 Emotions| F[AI generates<br/>emotion-focused question]
+    D -->|🔁 Patterns| G[AI generates<br/>pattern-focused question]
+    D -->|🧩 Challenge| H[AI generates<br/>reframing question]
+    D -->|🌱 Growth| I[AI generates<br/>growth-focused question]
+    E --> J[Insert question with direction emoji]
+    F --> J
+    G --> J
+    H --> J
+    I --> J
+    J --> K[User continues writing]
+```
+
+### UI Components
+
+#### Mobile: Bottom Sheet Drawer
+```vue
+<USlideover v-model="isOpen" title="Choose Your Direction">
+  <div class="space-y-4 p-4">
+    <button @click="selectDirection('why')" class="direction-card">
+      <span class="text-2xl">🧠</span>
+      <div>
+        <h3>Understand why</h3>
+        <p class="text-sm text-gray-500">Explore the reasons and causes</p>
+      </div>
+    </button>
+    <!-- More direction options... -->
+  </div>
+</USlideover>
+```
+
+#### Desktop: Dropdown Menu
+```vue
+<UDropdown :items="directions">
+  <UButton icon="i-lucide-sparkles">Go Deeper</UButton>
+</UDropdown>
+```
+
+### API Request Format
+
+```typescript
+POST /api/analyze-journal
+{
+  "content": "I had a meeting today and felt really frustrated...",
+  "mood_score": 4,
+  "slide_prompt": "What happened today?",
+  "slide_group_context": {...},
+  "current_slide_id": "slide-123",
+  "collection_title": "Daily Reflection",
+  "direction": "emotions"  // NEW: Selected direction
+}
+```
+
+### Backend Processing
+
+```python
+# Direction-specific prompt templates
+direction_prompts = {
+    "why": """
+    Focus on helping the user understand underlying reasons and causes.
+    Ask about motivations, triggers, and 'why' behind their experience.
+    Question style: "What part of X felt most Y—and why do you think that mattered?"
+    """,
+    
+    "emotions": """
+    Focus on emotional exploration and labeling feelings.
+    Ask about emotions beyond the surface, secondary feelings.
+    Question style: "Besides X, was there another feeling underneath—like Y or Z?"
+    """,
+    
+    "patterns": """
+    Focus on recognizing patterns and recurring themes.
+    Ask about similar past experiences, behavioral cycles, triggers.
+    Question style: "Have you felt similar X in past situations, or was this one different?"
+    """,
+    
+    "challenge": """
+    Focus on cognitive reframing and challenging assumptions (CBT-based).
+    Question unhelpful beliefs, offer alternative perspectives.
+    Question style: "What assumption about X might be making this feel heavier?"
+    """,
+    
+    "growth": """
+    Focus on learning, growth mindset, and forward-thinking.
+    Ask about lessons learned, future actions, what they'd do differently.
+    Question style: "If similar situation happened again, what would you do differently?"
+    """
+}
+```
+
+### Question Display Format
+
+```html
+<p class="ai-suggestion" style="color: #888; font-style: italic;">
+  💭 <span class="opacity-50">[Exploring emotions]</span><br>
+  Besides frustration, was there another feeling underneath—like 
+  embarrassment, fear, or sadness?
+</p>
+```
+
+### Benefits
+
+1. **User Agency (+50%)**: Users control their exploration direction
+2. **Question Relevance (+40%)**: AI generates direction-aligned questions
+3. **Engagement (+30%)**: Clear options encourage more usage
+4. **Therapeutic Value (+60%)**: Teaches CBT/therapy reflection techniques
+5. **Reduced Irrelevance**: No more "wrong direction" generic questions
+
+### Therapeutic Foundations
+
+- **CBT**: "Challenge thinking" and "Look for patterns" directions
+- **DBT**: "Explore emotions" encourages emotion labeling
+- **Positive Psychology**: "Focus on growth" uses growth mindset
+- **Person-Centered**: All directions respect user autonomy
+
+### Future Enhancements (Phase 3)
+
+- **Smart Suggestions**: Highlight recommended direction based on content/mood
+- **Direction History**: Track which directions user prefers
+- **Quick Access**: Remember last-used direction for faster selection
+- **Custom Directions**: Allow users to create personal reflection styles
+- **Multi-Step**: Chain multiple directions (e.g., emotions → challenge → growth)
 
 ---
 

@@ -25,7 +25,9 @@
           :currentIndex
           :index="carouselItems.indexOf(item as CarouselSlideItem)"
           :content="(item as CarouselSlideItem)?.content"
-          :initialContent="(item as CarouselSlideItem)?.prefillContent"></component>
+          :initialContent="(item as CarouselSlideItem)?.prefillContent"
+          :slideGroupContext="activeSlideGroup"
+          :collectionTitle="currentCollecton?.title"></component>
       </div>
     </UCarousel>
 
@@ -74,7 +76,7 @@ const isSaving = ref(false);
 const store = userJournalStore();
 
 // Get the slide group for this journal's collection
-const { activeSlideGroup } = useSlideGroup({ 
+const { activeSlideGroup, currentCollecton } = useSlideGroup({ 
   collectionId: props.templateId 
 });
 

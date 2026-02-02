@@ -30,7 +30,7 @@ export const userJournalStore = defineStore("user_journal", {
     templates: [] as LocalTemplate[],
     journals: [] as LocalJournal[],
     currentWritingContent: {} as { [key: string]: string },
-    currentMoodScore: 2 as number, // 0-4 scale (matches EmotionSlider)
+    currentMoodScore: 5 as number, // 1-10 scale (matches EmotionSliderV2)
     currentMoodLabel: "Okay" as string,
     currentJournal: null as LocalJournal | null,
     isInitialized: false,
@@ -665,7 +665,7 @@ export const userJournalStore = defineStore("user_journal", {
      */
     clearCurrentSession() {
       this.currentWritingContent = {};
-      this.currentMoodScore = 2; // 0-4 scale default
+      this.currentMoodScore = 5; // 1-10 scale default (middle value)
       this.currentMoodLabel = "Okay";
       this.currentJournal = null;
     },

@@ -22,18 +22,13 @@ const props = withDefaults(defineProps<{
 
 const store = userJournalStore();
 
-// Convert from old 0-4 scale to new 1-10 scale for backwards compatibility
-const oldToNew = (old: number) => Math.round((old / 4) * 9) + 1;
-const newToOld = (val: number) => Math.round(((val - 1) / 9) * 4);
-
-// Initialize with current value (convert from 0-4 to 1-10)
-const moodValue = ref(oldToNew(store.currentMoodScore));
+// Initialize with current value (1-10 scale)
+const moodValue = ref(store.currentMoodScore);
 
 // Watch for changes in store mood score (e.g., when editing existing journal)
 watch(() => store.currentMoodScore, (newScore) => {
-  const newValue = oldToNew(newScore);
-  if (moodValue.value !== newValue) {
-    moodValue.value = newValue;
+  if (moodValue.value !== newScore) {
+    moodValue.value = newScore;
   }
 }, { immediate: true });
 
@@ -55,9 +50,8 @@ const moodLabel = computed(() => moodLabels[moodValue.value] || 'Okay');
 
 // Update store when value changes
 watch(moodValue, (val) => {
-  // Store both the new 1-10 scale value and the label
-  // Also update the old 0-4 scale for backwards compatibility
-  store.updateMood(newToOld(val), moodLabel.value);
+  // Store the 1-10 scale value directly
+  store.updateMood(val, moodLabel.value);
   
   // Store the actual 1-10 value in currentWritingContent for journal save
   store.currentWritingContent['mood_score_10'] = String(val);

@@ -70,19 +70,19 @@ Provide an AI-assisted journaling experience that helps users express emotions, 
 
 
 
-### Core Journaling## 📋 Success Criteria
+### Core Journaling
 
 - **Template-Based Journaling**: Structured slide groups for specific topics (therapy prep, daily reflection, stress management)
-
-- **Free-Form Journaling**: Open-ended blank journal for spontaneous expression- [ ] AI chat assistant provides empathetic, non-clinical responses
-
-- **AI "Go Deeper" Assistant**: Contextual follow-up questions to help users explore thoughts more deeply- [ ] Template prompts guide users effectively through specific topics
-
-- **Speech Input**: Native voice-to-text for easier expression (tap-to-speak)- [ ] Free-form journaling feels natural and unrestrained
-
-- **Auto-Save**: Automatic draft saving as users type - no manual save needed- [ ] Speech input accurately transcribes user voice
-
-- **Edit & Delete**: Users can revisit, edit, or delete past journal entries- [ ] Autofill suggestions are helpful and contextual
+- **Free-Form Journaling**: Open-ended blank journal for spontaneous expression
+- **Direction-Based "Go Deeper" Assistant**: User-guided AI questions with 5 reflection directions:
+  - 🧠 **Understand why** - Explore reasons and causes
+  - 💭 **Explore emotions** - Dive into feelings beyond the surface
+  - 🔁 **Look for patterns** - Recognize recurring themes
+  - 🧩 **Challenge thinking** - Reframe assumptions and beliefs
+  - 🌱 **Focus on growth** - Learn and plan for the future
+- **Speech Input**: Native voice-to-text for easier expression (tap-to-speak)
+- **Auto-Save**: Automatic draft saving as users type - no manual save needed
+- **Edit & Delete**: Users can revisit, edit, or delete past journal entries
 
 - [ ] Emotion detection is accurate (>80% alignment with user self-report)
 

@@ -21,7 +21,9 @@
           :is="renderSlide(item?.content?.type)"
           :currentIndex
           :index="carouselItems.indexOf(item)"
-          :content="item?.content"></component>
+          :content="item?.content"
+          :slideGroupContext="activeSlideGroup"
+          :collectionTitle="currentCollecton?.title"></component>
       </div>
       <!-- <CommonMarkdownEditor v-model="item.currentNote"></CommonMarkdownEditor> -->
     </UCarousel>
@@ -55,7 +57,7 @@ const carousel = useTemplateRef("carousel");
 const currentIndex = ref(0);
 
 // Use the prop instead of route params
-const { activeSlideGroup, saveJournal, closeSlideGroup } = useSlideGroup({ 
+const { activeSlideGroup, saveJournal, closeSlideGroup, currentCollecton } = useSlideGroup({ 
   collectionId: props.templateId 
 });
 

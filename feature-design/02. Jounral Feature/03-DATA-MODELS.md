@@ -275,6 +275,7 @@ export interface AIQuestionNode {
     question: string;
     timestamp: string;                     // ISO 8601
     model?: string;                        // "gpt-4-mini"
+    direction?: 'why' | 'emotions' | 'patterns' | 'challenge' | 'growth';  // Reflection direction used
   };
 }
 
@@ -451,6 +452,7 @@ export interface GoDeepperRequest {
   slideContext: string;                    // The prompt question
   userId: string;
   journalId?: string;                      // Optional: link to existing journal
+  direction?: 'why' | 'emotions' | 'patterns' | 'challenge' | 'growth';  // Reflection direction
 }
 
 /**
@@ -460,6 +462,7 @@ export interface GoDeepperResponse {
   question: string;
   model: string;                           // "gpt-4-mini"
   timestamp: string;
+  direction?: string;                      // Echo back the selected direction
 }
 
 /**
