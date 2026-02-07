@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
-import { 
-  CreateJournalRequest, 
-  Journal, 
-  JournalTemplate, 
-  JournalTemplateResponse, 
+import {
+  CreateJournalRequest,
+  Journal,
+  JournalTemplate,
+  JournalTemplateResponse,
   UserJournalsResponse,
   LocalJournal,
-  LocalTemplate 
+  LocalTemplate
 } from "~/types/user_journal";
 import SQLiteService from "~/services/sqlite/sqlite_service";
 import JournalsRepository from "~/services/sqlite/journals_repository";
@@ -54,9 +54,9 @@ export const userJournalStore = defineStore("user_journal", {
         const userId = getUserId();
         const authStore = useAuthStore();
         const token = await authStore.getAccessToken();
-        
+
         console.log('[JournalStore] initializeDatabase - userId:', userId, 'hasToken:', !!token);
-        
+
         if (!userId || !token) {
           throw new Error('User not authenticated');
         }
@@ -133,7 +133,7 @@ export const userJournalStore = defineStore("user_journal", {
     async refreshTemplatesFromServer() {
       try {
         const response: any = await TranquaraSDK.getInstance().getAllTemplates();
-        
+
         let templatesToCache: any[] = [];
 
         // Safely extract templates array from response
@@ -142,20 +142,20 @@ export const userJournalStore = defineStore("user_journal", {
         } else if (response && Array.isArray(response.templates)) {
           templatesToCache = response.templates;
         } else if (response && Array.isArray(response.data)) {
-           templatesToCache = response.data;
+          templatesToCache = response.data;
         } else {
           console.warn('[JournalStore] Unexpected response format for templates:', response);
           return;
         }
-        
+
         // Cache in SQLite
         if (templatesToCache.length > 0) {
-            await TemplatesRepository.cacheAll(templatesToCache);
-            // Update store state
-            this.templates = await TemplatesRepository.getAll();
-            console.log('[JournalStore] Templates refreshed from server');
+          await TemplatesRepository.cacheAll(templatesToCache);
+          // Update store state
+          this.templates = await TemplatesRepository.getAll();
+          console.log('[JournalStore] Templates refreshed from server');
         } else {
-            console.log('[JournalStore] No templates found to cache');
+          console.log('[JournalStore] No templates found to cache');
         }
       } catch (error) {
         console.error('[JournalStore] Error refreshing templates:', error);
@@ -168,23 +168,19 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async getAllTemplates() {
       // If database not initialized, try to load from server only
-      if (!this.isInitialized || !SQLiteService.isReady()) {
-        console.log('[JournalStore] Database not ready - loading templates from server');
-        console.log(this.isOnline);
-        
-        if (this.isOnline) {
-          try {
-            const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
-            this.templates = response.templates as any[];
-            return this.templates;
-          } catch (error) {
-            console.error('[JournalStore] Error loading templates from server:', error);
-            return [];
-          }
-        }
-        return [];
-      }
+      console.log('[JournalStore] Database not ready - loading templates from server');
+      console.log(this.isOnline);
 
+      if (this.isOnline) {
+        try {
+          const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
+          this.templates = response.templates as any[];
+          return this.templates;
+        } catch (error) {
+          console.error('[JournalStore] Error loading templates from server:', error);
+          return [];
+        }
+      }
       if (this.templates.length === 0) {
         await this.loadTemplatesFromLocal();
       }
@@ -245,7 +241,7 @@ export const userJournalStore = defineStore("user_journal", {
 
         // Fetch journals from server
         const response: any = await TranquaraSDK.getInstance().getJournals();
-        
+
         // Handle different response formats
         let serverJournals: any[] = [];
         if (Array.isArray(response)) {
@@ -400,7 +396,7 @@ export const userJournalStore = defineStore("user_journal", {
      */
     async getJournals(forceServerSync = false) {
       console.log('[JournalStore] getJournals called - isInitialized:', this.isInitialized, 'SQLiteReady:', SQLiteService.isReady());
-      
+
       if (!this.isInitialized || !SQLiteService.isReady()) {
         console.log('[JournalStore] Database not ready - attempting initialization...');
         try {
@@ -484,7 +480,7 @@ export const userJournalStore = defineStore("user_journal", {
       try {
         // Update in local SQLite
         const updated = await JournalsRepository.update(journal.id, journal);
-        
+
         if (!updated) {
           throw new Error('Journal not found');
         }
@@ -633,15 +629,15 @@ export const userJournalStore = defineStore("user_journal", {
       try {
         await SQLiteService.clearAllData();
         await SQLiteService.close();
-        
+
         this.journals = [];
         this.templates = [];
         this.currentJournal = null;
         this.isInitialized = false;
-        
+
         SyncService.stopAutoSync();
         NetworkMonitor.unsubscribeAll();
-        
+
         console.log('[JournalStore] Local data cleared');
       } catch (error) {
         console.error('[JournalStore] Error clearing local data:', error);
@@ -649,15 +645,15 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     updateCurrentWritingContent(key: string, value: string) {
-        this.currentWritingContent[key] = value;
+      this.currentWritingContent[key] = value;
     },
 
     /**
      * Update current mood
      */
     updateMood(score: number, label: string) {
-        this.currentMoodScore = score;
-        this.currentMoodLabel = label;
+      this.currentMoodScore = score;
+      this.currentMoodLabel = label;
     },
 
     /**

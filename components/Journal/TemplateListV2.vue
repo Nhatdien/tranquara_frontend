@@ -1,40 +1,75 @@
 <template>
-  <section>
+  <section class="min-h-screen pb-20">
+    <!-- Back Button -->
+    <div class="px-4 pt-4">
+      <UButton 
+        variant="ghost" 
+        size="lg" 
+        icon="i-lucide-chevron-left" 
+        class="p-0"
+        @click="navigateTo('/learn_and_prepare')" 
+      />
+    </div>
+
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
+    <div v-if="isLoading" class="flex justify-center items-center py-24">
       <Icon name="i-lucide-loader" class="w-8 h-8 animate-spin text-primary" />
     </div>
 
     <!-- Collection Not Found -->
-    <div v-else-if="!currentCollection" class="text-center py-12">
-      <p class="text-muted mb-4">Collection not found</p>
+    <div v-else-if="!currentCollection" class="text-center py-24 px-4">
+      <p class="text-neutral-400 mb-4">Collection not found</p>
       <UButton @click="navigateTo('/learn_and_prepare')" variant="outline">
-        Back to Collections
+        Back to Library
       </UButton>
     </div>
 
     <!-- Collection Detail -->
-    <section v-else>
-      <div class="mt-8">
-        <p class="text-neutral-400 text-center text-sm">
-          {{ currentCollection?.slide_groups?.length }} lessons
-        </p>
-        <h1 class="text-center">{{ currentCollection.title }}</h1>
-        <p class="text-neutral-400 text-center text-sm">
+    <template v-else>
+      <!-- Header -->
+      <div class="px-6 pt-8 pb-12 text-center">
+        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">Collection</p>
+        <h1 class="text-2xl font-bold mb-4">{{ currentCollection.title }}</h1>
+        <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
           {{ currentCollection.description }}
         </p>
-        
-        <!-- Slide Groups List -->
-        <div class="flex flex-col gap-4 items-center mt-4 overflow-x-scroll">
-          <JournalTemplateCardV2
-            v-for="slide_group in currentCollection.slide_groups"
-            :key="slide_group.id"
-            class="flex-1/3 w-full cursor-pointer"
-            :slide_group="slide_group"
-            @click="openSlideGroup(slide_group.id, currentCollection.id)" />
+      </div>
+
+      <!-- Slide Groups Carousel -->
+      <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory">
+        <div
+          v-for="(slideGroup, index) in currentCollection.slide_groups"
+          :key="slideGroup.id"
+          class="flex-shrink-0 w-[85vw] max-w-md min-h-[320px] p-6 rounded-2xl border border-neutral-700 bg-neutral-900/50 flex flex-col snap-center">
+          <!-- Chapter Number -->
+          <div class="flex justify-end mb-8">
+            <span class="text-neutral-500 text-sm font-medium">
+              {{ String(index + 1).padStart(2, '0') }}
+            </span>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1">
+            <h2 class="text-xl font-bold mb-3 uppercase">{{ slideGroup.title }}</h2>
+            <p class="text-neutral-400 text-sm leading-relaxed">
+              {{ slideGroup.description }}
+            </p>
+          </div>
+
+          <!-- Begin Button -->
+          <div class="flex justify-center mt-6">
+            <UButton
+              variant="solid"
+              color="neutral"
+              size="lg"
+              class="px-8 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+              @click="openSlideGroup(slideGroup.id, currentCollection.id)">
+              Begin
+            </UButton>
+          </div>
         </div>
       </div>
-    </section>
+    </template>
   </section>
 </template>
 
@@ -76,3 +111,13 @@ const currentCollection = computed(() => {
   );
 });
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>

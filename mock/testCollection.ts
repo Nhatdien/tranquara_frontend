@@ -724,6 +724,720 @@ export const testCollection = {
           ]
         }
       ]
+    },
+    {
+      "id": "bbbb2222-bbbb-2222-bbbb-bbbbbbbb2222",
+      "title": "Understanding Anxiety",
+      "category": "anxiety",
+      "description": "Learn about anxiety, its triggers, and evidence-based techniques to manage worry and fear.",
+      "cover_image": "https://example.com/anxiety-cover.png",
+      "created_at": "2025-09-10T09:00:00Z",
+      "type": "learn",
+      "slide_groups": [
+        {
+          "id": "anx-001-what-is-anxiety",
+          "collection_id": "bbbb2222-bbbb-2222-bbbb-bbbbbbbb2222",
+          "title": "What is Anxiety?",
+          "description": "Understanding the nature of anxiety and how it differs from normal worry.",
+          "position": 1,
+          "created_at": "2025-09-10T09:01:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Anxiety is a natural response",
+              "body": "<p>Anxiety is your body's <strong>alarm system</strong>. It's designed to protect you from danger by triggering the fight-or-flight response. The problem arises when this alarm goes off too often or too intensely.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Worry vs. Anxiety",
+              "body": "<p><strong>Worry</strong> is mental — it's the thoughts about what might go wrong. <strong>Anxiety</strong> is physical — it's the racing heart, tight chest, and sweaty palms that come with those thoughts.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Common symptoms",
+              "body": "<ul><li>Racing thoughts and difficulty concentrating</li><li>Restlessness and feeling on edge</li><li>Physical tension and headaches</li><li>Sleep difficulties</li><li>Avoidance of triggering situations</li></ul>"
+            },
+            {
+              "type": "further_reading",
+              "contents": [
+                {
+                  "type": "article",
+                  "title": "Understanding Anxiety - NIMH",
+                  "link": "https://www.nimh.nih.gov/health/topics/anxiety-disorders"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "anx-002-anxiety-triggers",
+          "collection_id": "bbbb2222-bbbb-2222-bbbb-bbbbbbbb2222",
+          "title": "Identifying Your Triggers",
+          "description": "Learn to recognize what situations, thoughts, or patterns trigger your anxiety.",
+          "position": 2,
+          "created_at": "2025-09-10T09:02:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "What are triggers?",
+              "body": "<p>Triggers are situations, thoughts, or sensations that activate your anxiety response. They can be <strong>external</strong> (a work deadline, social event) or <strong>internal</strong> (a thought, physical sensation, memory).</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Common anxiety triggers",
+              "body": "<ul><li>Uncertainty about the future</li><li>Social situations and fear of judgment</li><li>Health concerns</li><li>Financial worries</li><li>Relationship conflicts</li><li>Past trauma or difficult memories</li></ul>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What situations tend to trigger my anxiety the most?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "Are there any patterns I notice in when my anxiety appears?"
+            }
+          ]
+        },
+        {
+          "id": "anx-003-grounding-techniques",
+          "collection_id": "bbbb2222-bbbb-2222-bbbb-bbbbbbbb2222",
+          "title": "Grounding Techniques",
+          "description": "Practical techniques to calm your nervous system when anxiety strikes.",
+          "position": 3,
+          "created_at": "2025-09-10T09:03:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "The 5-4-3-2-1 technique",
+              "body": "<p>When anxiety overwhelms you, use your senses to ground yourself: Name <strong>5 things you can see</strong>, <strong>4 things you can touch</strong>, <strong>3 things you can hear</strong>, <strong>2 things you can smell</strong>, and <strong>1 thing you can taste</strong>.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Box breathing",
+              "body": "<p>Breathe in for 4 counts, hold for 4 counts, breathe out for 4 counts, hold for 4 counts. Repeat until you feel calmer. This activates your parasympathetic nervous system.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Physical grounding",
+              "body": "<p>Press your feet firmly into the floor, squeeze a stress ball, or hold something cold. Physical sensations help bring you back to the present moment.</p>"
+            }
+          ]
+        },
+        {
+          "id": "anx-004-challenging-thoughts",
+          "collection_id": "bbbb2222-bbbb-2222-bbbb-bbbbbbbb2222",
+          "title": "Challenging Anxious Thoughts",
+          "description": "Learn to identify and reframe the thinking patterns that fuel anxiety.",
+          "position": 4,
+          "created_at": "2025-09-10T09:04:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Cognitive distortions",
+              "body": "<p>Anxiety often involves <strong>thinking traps</strong> like catastrophizing (assuming the worst), mind-reading (assuming others think negatively of you), and all-or-nothing thinking.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "The questioning approach",
+              "body": "<p>When you notice an anxious thought, ask yourself: <em>Is this thought based on facts or feelings? What's the evidence for and against it? What would I tell a friend in this situation?</em></p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What anxious thought keeps recurring for me?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What evidence do I have that this thought might not be completely true?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cccc3333-cccc-3333-cccc-cccccccc3333",
+      "title": "Better Sleep",
+      "category": "sleep",
+      "description": "Learn about sleep hygiene and develop habits that support restful, restorative sleep.",
+      "cover_image": "https://example.com/sleep-cover.png",
+      "created_at": "2025-09-10T10:00:00Z",
+      "type": "learn",
+      "slide_groups": [
+        {
+          "id": "sleep-001-why-sleep-matters",
+          "collection_id": "cccc3333-cccc-3333-cccc-cccccccc3333",
+          "title": "Why Sleep Matters",
+          "description": "Understanding the vital role sleep plays in mental and physical health.",
+          "position": 1,
+          "created_at": "2025-09-10T10:01:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Sleep is not optional",
+              "body": "<p>Sleep is when your brain <strong>consolidates memories</strong>, <strong>processes emotions</strong>, and <strong>repairs cells</strong>. Poor sleep doesn't just make you tired — it affects mood, decision-making, and even immune function.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "The sleep-mental health connection",
+              "body": "<p>Sleep and mental health are deeply connected. Anxiety and depression can disrupt sleep, and poor sleep can worsen anxiety and depression. Breaking this cycle is key to feeling better.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "How much sleep do you need?",
+              "body": "<p>Most adults need <strong>7-9 hours</strong> of quality sleep. It's not just about quantity — the quality of your sleep matters too. Deep sleep and REM sleep are essential for restoration.</p>"
+            }
+          ]
+        },
+        {
+          "id": "sleep-002-sleep-hygiene",
+          "collection_id": "cccc3333-cccc-3333-cccc-cccccccc3333",
+          "title": "Sleep Hygiene Basics",
+          "description": "Simple habits and environmental changes that promote better sleep.",
+          "position": 2,
+          "created_at": "2025-09-10T10:02:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Create a sleep sanctuary",
+              "body": "<p>Keep your bedroom <strong>cool, dark, and quiet</strong>. Remove screens if possible. Your bed should be associated with sleep, not scrolling.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Establish a consistent schedule",
+              "body": "<p>Go to bed and wake up at the same time every day — even on weekends. This helps regulate your body's internal clock.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Wind-down routine",
+              "body": "<p>Start relaxing 30-60 minutes before bed. Dim the lights, avoid screens, and do something calming like reading, stretching, or journaling.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What does my current bedtime routine look like?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What one change could I make to improve my sleep environment?"
+            }
+          ]
+        },
+        {
+          "id": "sleep-003-racing-thoughts",
+          "collection_id": "cccc3333-cccc-3333-cccc-cccccccc3333",
+          "title": "Calming Racing Thoughts",
+          "description": "Techniques to quiet the mind when thoughts keep you awake at night.",
+          "position": 3,
+          "created_at": "2025-09-10T10:03:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "The worry dump",
+              "body": "<p>Before bed, write down everything on your mind. Get it out of your head and onto paper. You can deal with it tomorrow — right now, it's time to rest.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Body scan relaxation",
+              "body": "<p>Starting from your toes, slowly focus on relaxing each part of your body. Notice tension and consciously release it as you move upward.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "The 4-7-8 breath",
+              "body": "<p>Breathe in for 4 counts, hold for 7 counts, exhale slowly for 8 counts. This breathing pattern activates relaxation and helps quiet the mind.</p>"
+            }
+          ]
+        },
+        {
+          "id": "sleep-004-evening-reflection",
+          "collection_id": "cccc3333-cccc-3333-cccc-cccccccc3333",
+          "title": "Evening Reflection",
+          "description": "Journal prompts to help you process the day and prepare for restful sleep.",
+          "position": 4,
+          "created_at": "2025-09-10T10:04:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What are three things I'm grateful for from today?" },
+            { "type": "journal_prompt", "question_content": "What can I let go of from today?" },
+            { "type": "journal_prompt", "question_content": "What thoughts are still on my mind that I can write down and release?" },
+            { "type": "journal_prompt", "question_content": "How do I want to feel when I wake up tomorrow?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dddd4444-dddd-4444-dddd-dddddddd4444",
+      "title": "Relationships & Connection",
+      "category": "relationships",
+      "description": "Explore your relationships, communication patterns, and how to build deeper connections with others.",
+      "cover_image": "https://example.com/relationships-cover.png",
+      "created_at": "2025-09-10T11:00:00Z",
+      "type": "",
+      "slide_groups": [
+        {
+          "id": "rel-001-relationship-reflection",
+          "collection_id": "dddd4444-dddd-4444-dddd-dddddddd4444",
+          "title": "Relationship Reflection",
+          "description": "Reflect on the quality and patterns in your closest relationships.",
+          "position": 1,
+          "created_at": "2025-09-10T11:01:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Who are the most important people in my life right now?" },
+            { "type": "journal_prompt", "question_content": "How do I show love and appreciation to those closest to me?" },
+            { "type": "journal_prompt", "question_content": "What relationships feel nourishing, and which feel draining?" },
+            { "type": "journal_prompt", "question_content": "Is there a relationship I've been neglecting that I want to nurture?" }
+          ]
+        },
+        {
+          "id": "rel-002-communication-patterns",
+          "collection_id": "dddd4444-dddd-4444-dddd-dddddddd4444",
+          "title": "Communication Patterns",
+          "description": "Explore how you communicate and how it affects your relationships.",
+          "position": 2,
+          "created_at": "2025-09-10T11:02:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "How do I typically express my needs and feelings to others?" },
+            { "type": "journal_prompt", "question_content": "What happens when I feel misunderstood or unheard?" },
+            { "type": "journal_prompt", "question_content": "Are there things I struggle to say to people I care about?" },
+            { "type": "journal_prompt", "question_content": "How do I handle conflict in relationships?" }
+          ]
+        },
+        {
+          "id": "rel-003-boundaries",
+          "collection_id": "dddd4444-dddd-4444-dddd-dddddddd4444",
+          "title": "Setting Boundaries",
+          "description": "Reflect on your boundaries and how they protect your well-being.",
+          "position": 3,
+          "created_at": "2025-09-10T11:03:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What boundaries do I need to set or strengthen in my life?" },
+            { "type": "journal_prompt", "question_content": "How do I feel when my boundaries are crossed?" },
+            { "type": "journal_prompt", "question_content": "What makes it hard for me to say no?" },
+            { "type": "journal_prompt", "question_content": "How can I communicate my boundaries with kindness and clarity?" }
+          ]
+        },
+        {
+          "id": "rel-004-forgiveness",
+          "collection_id": "dddd4444-dddd-4444-dddd-dddddddd4444",
+          "title": "Forgiveness & Letting Go",
+          "description": "Explore forgiveness — both giving it and receiving it.",
+          "position": 4,
+          "created_at": "2025-09-10T11:04:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Is there someone I'm holding resentment toward? What happened?" },
+            { "type": "journal_prompt", "question_content": "How is holding onto this affecting me?" },
+            { "type": "journal_prompt", "question_content": "What would it mean to forgive — and what would I need to let go?" },
+            { "type": "journal_prompt", "question_content": "Is there something I need to forgive myself for?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eeee5555-eeee-5555-eeee-eeeeeeee5555",
+      "title": "Gratitude Practice",
+      "category": "gratitude",
+      "description": "Cultivate gratitude through daily reflections that shift your focus toward appreciation and positivity.",
+      "cover_image": "https://example.com/gratitude-cover.png",
+      "created_at": "2025-09-10T12:00:00Z",
+      "type": "",
+      "slide_groups": [
+        {
+          "id": "grat-001-daily-gratitude",
+          "collection_id": "eeee5555-eeee-5555-eeee-eeeeeeee5555",
+          "title": "Daily Gratitude",
+          "description": "A simple daily practice to notice and appreciate the good in your life.",
+          "position": 1,
+          "created_at": "2025-09-10T12:01:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What are three things I'm grateful for today?" },
+            { "type": "journal_prompt", "question_content": "What small moment brought me joy or peace today?" },
+            { "type": "journal_prompt", "question_content": "Who made a positive difference in my day, and how?" }
+          ]
+        },
+        {
+          "id": "grat-002-appreciating-self",
+          "collection_id": "eeee5555-eeee-5555-eeee-eeeeeeee5555",
+          "title": "Appreciating Yourself",
+          "description": "Turn gratitude inward and appreciate your own qualities and efforts.",
+          "position": 2,
+          "created_at": "2025-09-10T12:02:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What is something I appreciate about myself today?" },
+            { "type": "journal_prompt", "question_content": "What challenge did I handle well recently?" },
+            { "type": "journal_prompt", "question_content": "What strength helped me get through a difficult moment?" },
+            { "type": "journal_prompt", "question_content": "How have I grown in the past year?" }
+          ]
+        },
+        {
+          "id": "grat-003-appreciating-others",
+          "collection_id": "eeee5555-eeee-5555-eeee-eeeeeeee5555",
+          "title": "Appreciating Others",
+          "description": "Reflect on the people who enrich your life and consider expressing appreciation.",
+          "position": 3,
+          "created_at": "2025-09-10T12:03:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "Who is someone I often take for granted but am truly grateful for?" },
+            { "type": "journal_prompt", "question_content": "What has someone done for me recently that I appreciated?" },
+            { "type": "journal_prompt", "question_content": "How could I express my gratitude to someone this week?" },
+            { "type": "journal_prompt", "question_content": "What qualities do I admire in the people closest to me?" }
+          ]
+        },
+        {
+          "id": "grat-004-finding-silver-linings",
+          "collection_id": "eeee5555-eeee-5555-eeee-eeeeeeee5555",
+          "title": "Finding Silver Linings",
+          "description": "Practice finding gratitude even in difficult situations.",
+          "position": 4,
+          "created_at": "2025-09-10T12:04:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What difficult experience taught me something valuable?" },
+            { "type": "journal_prompt", "question_content": "Is there anything positive that came from a challenging situation?" },
+            { "type": "journal_prompt", "question_content": "How has a struggle helped me grow or become stronger?" },
+            { "type": "journal_prompt", "question_content": "What am I learning from my current challenges?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ffff6666-ffff-6666-ffff-ffffffff6666",
+      "title": "Understanding Emotions",
+      "category": "emotions",
+      "description": "Learn about emotions, why they matter, and how to work with them instead of against them.",
+      "cover_image": "https://example.com/emotions-cover.png",
+      "created_at": "2025-09-10T13:00:00Z",
+      "type": "learn",
+      "slide_groups": [
+        {
+          "id": "emo-001-what-are-emotions",
+          "collection_id": "ffff6666-ffff-6666-ffff-ffffffff6666",
+          "title": "What Are Emotions?",
+          "description": "Understanding emotions as messengers rather than problems to fix.",
+          "position": 1,
+          "created_at": "2025-09-10T13:01:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Emotions are messengers",
+              "body": "<p>Emotions aren't good or bad — they're <strong>information</strong>. They tell us about our needs, boundaries, and what matters to us. Learning to listen to them is key to emotional health.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "The purpose of emotions",
+              "body": "<p><strong>Fear</strong> protects us from danger. <strong>Anger</strong> signals a boundary has been crossed. <strong>Sadness</strong> helps us process loss. <strong>Joy</strong> connects us to what we love. Every emotion has a purpose.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Emotions are temporary",
+              "body": "<p>No emotion lasts forever. Like waves, they rise, peak, and fall. Resisting them often makes them stronger; allowing them helps them pass.</p>"
+            }
+          ]
+        },
+        {
+          "id": "emo-002-emotional-awareness",
+          "collection_id": "ffff6666-ffff-6666-ffff-ffffffff6666",
+          "title": "Building Emotional Awareness",
+          "description": "Learn to notice and name your emotions with greater precision.",
+          "position": 2,
+          "created_at": "2025-09-10T13:02:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Name it to tame it",
+              "body": "<p>Research shows that simply <strong>naming an emotion</strong> can reduce its intensity. Instead of 'I feel bad,' try to get specific: 'I feel disappointed and a little anxious.'</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Emotions in the body",
+              "body": "<p>Emotions show up physically. Anxiety might feel like a tight chest. Sadness might feel heavy. Anger might feel hot. Notice where you feel emotions in your body.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What emotion am I feeling right now? Where do I feel it in my body?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What is this emotion trying to tell me?"
+            }
+          ]
+        },
+        {
+          "id": "emo-003-difficult-emotions",
+          "collection_id": "ffff6666-ffff-6666-ffff-ffffffff6666",
+          "title": "Working with Difficult Emotions",
+          "description": "Strategies for sitting with uncomfortable emotions without being overwhelmed.",
+          "position": 3,
+          "created_at": "2025-09-10T13:03:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Don't fight, don't follow",
+              "body": "<p>When a difficult emotion arises, don't try to push it away (fight) or get lost in the story (follow). Instead, <strong>acknowledge it</strong>: 'I notice I'm feeling anxious right now.'</p>"
+            },
+            {
+              "type": "doc",
+              "header": "RAIN technique",
+              "body": "<p><strong>R</strong>ecognize what's happening. <strong>A</strong>llow the experience to be there. <strong>I</strong>nvestigate with kindness. <strong>N</strong>urture yourself with self-compassion.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What difficult emotion have I been avoiding lately?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What do I need right now to support myself through this feeling?"
+            }
+          ]
+        },
+        {
+          "id": "emo-004-emotional-triggers",
+          "collection_id": "ffff6666-ffff-6666-ffff-ffffffff6666",
+          "title": "Understanding Triggers",
+          "description": "Explore what triggers strong emotional reactions and why.",
+          "position": 4,
+          "created_at": "2025-09-10T13:04:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "What is an emotional trigger?",
+              "body": "<p>A trigger is something that sets off a strong emotional reaction — often connected to past experiences. Understanding your triggers helps you respond rather than react.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What situations tend to trigger strong emotions in me?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "When I'm triggered, how do I typically react?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What past experience might this trigger be connected to?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "How could I respond differently next time I'm triggered?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gggg7777-gggg-7777-gggg-gggggggg7777",
+      "title": "Mindfulness",
+      "category": "mindfulness",
+      "description": "Learn and practice mindfulness to cultivate present-moment awareness and inner calm.",
+      "cover_image": "https://example.com/mindfulness-cover.png",
+      "created_at": "2025-09-10T14:00:00Z",
+      "type": "learn",
+      "slide_groups": [
+        {
+          "id": "mind-001-what-is-mindfulness",
+          "collection_id": "gggg7777-gggg-7777-gggg-gggggggg7777",
+          "title": "What is Mindfulness?",
+          "description": "Understanding mindfulness and why it matters for mental health.",
+          "position": 1,
+          "created_at": "2025-09-10T14:01:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Mindfulness defined",
+              "body": "<p>Mindfulness is <strong>paying attention to the present moment, on purpose, without judgment</strong>. It's about noticing what's happening right now — your thoughts, feelings, and sensations — with curiosity rather than criticism.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Why mindfulness helps",
+              "body": "<p>When we're caught up in worries about the future or regrets about the past, we suffer. Mindfulness brings us back to the only moment we can actually live in — <strong>now</strong>.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Mindfulness is a skill",
+              "body": "<p>Like any skill, mindfulness improves with practice. You don't need to be perfect at it. The goal isn't to empty your mind — it's to notice when your mind wanders and gently bring it back.</p>"
+            }
+          ]
+        },
+        {
+          "id": "mind-002-mindful-breathing",
+          "collection_id": "gggg7777-gggg-7777-gggg-gggggggg7777",
+          "title": "Mindful Breathing",
+          "description": "A simple practice using your breath as an anchor to the present moment.",
+          "position": 2,
+          "created_at": "2025-09-10T14:02:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Your breath is always with you",
+              "body": "<p>Your breath is a powerful anchor to the present. It's always happening now, making it the perfect focus for mindfulness practice.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "How to practice",
+              "body": "<p>Sit comfortably and close your eyes. Notice your breath — the inhale, the exhale, the pause between. When thoughts arise, acknowledge them and gently return to the breath.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Start small",
+              "body": "<p>Even 1-2 minutes of mindful breathing can make a difference. Start small and build up. Consistency matters more than duration.</p>"
+            }
+          ]
+        },
+        {
+          "id": "mind-003-body-scan",
+          "collection_id": "gggg7777-gggg-7777-gggg-gggggggg7777",
+          "title": "Body Scan Practice",
+          "description": "A guided practice to connect with physical sensations and release tension.",
+          "position": 3,
+          "created_at": "2025-09-10T14:03:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "What is a body scan?",
+              "body": "<p>A body scan is a mindfulness practice where you slowly move your attention through different parts of your body, noticing sensations without trying to change them.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "How to practice",
+              "body": "<p>Lie down or sit comfortably. Start at the top of your head and slowly move your attention down through your body — face, neck, shoulders, arms, chest, belly, legs, feet. Notice what you feel.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Benefits of body scanning",
+              "body": "<p>Body scans help you notice where you hold tension, reconnect with your body, and calm your nervous system. They're especially helpful before sleep or during stressful moments.</p>"
+            }
+          ]
+        },
+        {
+          "id": "mind-004-mindful-moments",
+          "collection_id": "gggg7777-gggg-7777-gggg-gggggggg7777",
+          "title": "Mindful Moments",
+          "description": "Journal prompts to practice mindfulness through reflection.",
+          "position": 4,
+          "created_at": "2025-09-10T14:04:00Z",
+          "content": [
+            { "type": "journal_prompt", "question_content": "What am I noticing right now — thoughts, feelings, sensations?" },
+            { "type": "journal_prompt", "question_content": "What sounds can I hear in this moment?" },
+            { "type": "journal_prompt", "question_content": "Where in my body do I feel tension, and can I soften around it?" },
+            { "type": "journal_prompt", "question_content": "What is one thing I can appreciate about this present moment?" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hhhh8888-hhhh-8888-hhhh-hhhhhhhh8888",
+      "title": "Self-Compassion",
+      "category": "self_care",
+      "description": "Learn to treat yourself with the same kindness you would offer a good friend.",
+      "cover_image": "https://example.com/self-compassion-cover.png",
+      "created_at": "2025-09-10T15:00:00Z",
+      "type": "learn",
+      "slide_groups": [
+        {
+          "id": "comp-001-what-is-self-compassion",
+          "collection_id": "hhhh8888-hhhh-8888-hhhh-hhhhhhhh8888",
+          "title": "What is Self-Compassion?",
+          "description": "Understanding self-compassion and why it's different from self-esteem.",
+          "position": 1,
+          "created_at": "2025-09-10T15:01:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Self-compassion defined",
+              "body": "<p>Self-compassion means treating yourself with the same <strong>kindness, understanding, and patience</strong> you would offer a good friend who is struggling.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Three elements of self-compassion",
+              "body": "<p><strong>1. Self-kindness</strong> instead of self-judgment. <strong>2. Common humanity</strong> — recognizing that suffering is part of being human. <strong>3. Mindfulness</strong> — holding painful feelings in balanced awareness.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Self-compassion vs. self-esteem",
+              "body": "<p>Self-esteem is about evaluating yourself positively. Self-compassion is about <strong>being kind to yourself regardless of success or failure</strong>. It's more stable and unconditional.</p>"
+            }
+          ]
+        },
+        {
+          "id": "comp-002-inner-critic",
+          "collection_id": "hhhh8888-hhhh-8888-hhhh-hhhhhhhh8888",
+          "title": "Working with the Inner Critic",
+          "description": "Learn to recognize and soften your harsh inner voice.",
+          "position": 2,
+          "created_at": "2025-09-10T15:02:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "The inner critic",
+              "body": "<p>Many of us have an inner voice that criticizes, judges, and puts us down. This voice often developed to protect us, but it can become harsh and harmful.</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Noticing the critic",
+              "body": "<p>The first step is to <strong>notice</strong> when your inner critic is speaking. What does it say? What tone does it use? Would you speak this way to a friend?</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What does my inner critic typically say to me?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What would a compassionate friend say instead?"
+            }
+          ]
+        },
+        {
+          "id": "comp-003-self-compassion-practice",
+          "collection_id": "hhhh8888-hhhh-8888-hhhh-hhhhhhhh8888",
+          "title": "Self-Compassion Practice",
+          "description": "A simple exercise to cultivate self-compassion in difficult moments.",
+          "position": 3,
+          "created_at": "2025-09-10T15:03:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "The self-compassion break",
+              "body": "<p>When you're struggling, try these three phrases: <strong>1.</strong> 'This is a moment of suffering.' <strong>2.</strong> 'Suffering is part of life.' <strong>3.</strong> 'May I be kind to myself.'</p>"
+            },
+            {
+              "type": "doc",
+              "header": "Physical self-compassion",
+              "body": "<p>Place your hand on your heart or give yourself a gentle hug. Physical touch releases oxytocin and can soothe your nervous system.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What is one kind thing I can do for myself today?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "How can I be gentler with myself this week?"
+            }
+          ]
+        },
+        {
+          "id": "comp-004-self-forgiveness",
+          "collection_id": "hhhh8888-hhhh-8888-hhhh-hhhhhhhh8888",
+          "title": "Self-Forgiveness",
+          "description": "Learn to release guilt and shame through self-forgiveness.",
+          "position": 4,
+          "created_at": "2025-09-10T15:04:00Z",
+          "content": [
+            {
+              "type": "doc",
+              "header": "Why self-forgiveness matters",
+              "body": "<p>Holding onto guilt and shame keeps us stuck. Self-forgiveness doesn't mean excusing harmful behavior — it means <strong>releasing the burden</strong> so you can move forward and do better.</p>"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What am I still holding against myself?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What would it mean to truly forgive myself for this?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "What have I learned from this experience?"
+            },
+            {
+              "type": "journal_prompt",
+              "question_content": "How can I make amends — to myself or others — and move forward?"
+            }
+          ]
+        }
+      ]
     }
   ]
 
