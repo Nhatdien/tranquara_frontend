@@ -5,21 +5,23 @@
       <Icon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-primary" />
     </div>
 
-    <!-- Slide Edit Mode (for journals with collection_id) -->
-    <div v-else-if="journal && journal.collection_id" class="h-full">
+    <!-- ============ EDIT MODE ============ -->
+
+    <!-- Slide Edit Mode (for template journals with collection_id) -->
+    <div v-else-if="isEditing && journal && journal.collection_id" class="h-full">
       <JournalEditModalContents
         :journal="journal"
         :templateId="journal.collection_id"
         @saved="onSaved"
-        @closed="onClosed"
+        @closed="onEditClosed"
       />
     </div>
 
-    <!-- Simple Edit Mode (for free-form journals without collection_id) -->
-    <div v-else-if="journal" class="flex flex-col min-h-screen bg-background">
+    <!-- Free-form Edit Mode (for journals without collection_id) -->
+    <div v-else-if="isEditing && journal" class="flex flex-col min-h-screen bg-background">
       <!-- Header -->
       <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
-        <UButton variant="ghost" icon="i-lucide-arrow-left" @click="router.back()" />
+        <UButton variant="ghost" icon="i-lucide-arrow-left" @click="onEditClosed" />
         <h1 class="text-lg font-semibold">Edit Journal</h1>
         <UButton variant="ghost" icon="i-lucide-check" @click="saveAndClose" :disabled="!hasContent" />
       </header>
@@ -91,6 +93,17 @@
       </UModal>
     </div>
 
+    <!-- ============ VIEW MODE (default) ============ -->
+    <JournalDetailView
+      v-else-if="journal"
+      :journal="journal"
+      :is-syncing="journalStore.isSyncing"
+      :is-deleting="isDeleting"
+      @back="router.back()"
+      @edit="enterEdit"
+      @delete="deleteJournal"
+    />
+
     <!-- Not Found -->
     <div v-else class="flex items-center justify-center h-full">
       <p class="text-muted">Journal not found</p>
@@ -111,6 +124,8 @@ const journalStore = userJournalStore();
 // State
 const isLoading = ref(true);
 const journal = ref<LocalJournal | null>(null);
+const isEditing = ref(false);
+const isDeleting = ref(false);
 
 // Free-form editor state
 const title = ref("");
@@ -136,13 +151,6 @@ onMounted(async () => {
     const loadedJournal = await journalStore.getJournalById(journalId);
     if (loadedJournal) {
       journal.value = loadedJournal;
-      
-      if (!loadedJournal.collection_id) {
-        title.value = loadedJournal.title || "";
-        content.value = loadedJournal.content_html || loadedJournal.content || "";
-        moodScore.value = loadedJournal.mood_score ?? 5;
-        moodLabel.value = loadedJournal.mood_label || "Okay";
-      }
     } else {
       router.push("/history");
     }
@@ -187,12 +195,41 @@ const moodLabels: Record<number, string> = {
 
 const computedMoodLabel = computed(() => moodLabels[moodScore.value] || 'Okay');
 
-const onSaved = () => {
-  router.push("/history");
+const onSaved = async () => {
+  // Reload journal data and return to view mode
+  const journalId = route.params.id as string;
+  const updated = await journalStore.getJournalById(journalId);
+  if (updated) journal.value = updated;
+  isEditing.value = false;
 };
 
-const onClosed = () => {
-  router.back();
+const onEditClosed = () => {
+  isEditing.value = false;
+};
+
+// --- View mode helpers ---
+
+const enterEdit = () => {
+  if (journal.value && !journal.value.collection_id) {
+    // Prefill free-form editor state from journal
+    title.value = journal.value.title || "";
+    content.value = journal.value.content_html || journal.value.content || "";
+    moodScore.value = journal.value.mood_score ?? 5;
+    moodLabel.value = journal.value.mood_label || "Okay";
+  }
+  isEditing.value = true;
+};
+
+const deleteJournal = async () => {
+  if (!journal.value) return;
+  try {
+    isDeleting.value = true;
+    await journalStore.deleteJournal(journal.value.id);
+    router.push('/history');
+  } catch (error) {
+    console.error('Error deleting journal:', error);
+    isDeleting.value = false;
+  }
 };
 
 const onContentUpdate = () => {
@@ -260,8 +297,11 @@ const saveAndClose = async () => {
       mood_label: moodLabel.value,
     });
 
+    // Reload journal and return to view mode
+    const updated = await journalStore.getJournalById(journal.value.id);
+    if (updated) journal.value = updated;
+    isEditing.value = false;
     autoSaveStatus.value = "Saved!";
-    setTimeout(() => { router.push("/history"); }, 300);
   } catch (error) {
     console.error("[EditJournal] Error saving:", error);
     autoSaveStatus.value = "Error saving";

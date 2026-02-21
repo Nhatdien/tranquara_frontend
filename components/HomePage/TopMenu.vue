@@ -19,18 +19,11 @@
             <div class="w-full">
               <p class="font-semibold text-lg">Journaling streak</p>
               <span class="flex gap-1 items-center text-primary-700 font-bold"
-                ><Flame /> 7 days</span
+                ><Flame /> {{ streakStore.currentStreak }} {{ streakStore.currentStreak === 1 ? 'day' : 'days' }}</span
               >
-              <UProgress
-                v-model="progress"
-                size="md"
-                class="w-full my-2"
-                color="primary"
-                :show-value="false" />
 
-              <p class="text-sm text-muted">
-                3 more days to reach your goal
-              </p>
+
+
             </div>
           </div>
         </UCard>
@@ -43,16 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { useScreen } from "~/composables/useScreen"; // Assuming you have a useScreen composable
+import { useScreen } from "~/composables/useScreen";
 import { Flame } from "lucide-vue-next";
+import { useUserStreakStore } from "~/stores/stores/user_streak";
 import moment from "moment";
 
 const { $tranquaraSDK } = useNuxtApp();
-const isSearchActive = ref(false);
-const progress = ref(70);
+const streakStore = useUserStreakStore();
 const screen = useScreen();
 
-const isMediumOrBelow = computed(() => !screen.isLargerThanMedium);
+
 </script>
 
 <style scoped>

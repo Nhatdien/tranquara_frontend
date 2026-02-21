@@ -9,6 +9,21 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import type { LocalJournal } from '~/types/user_journal';
 import SQLiteService from './sqlite_service';
 
+/**
+ * Filter options for advanced journal queries
+ * Matches the server's QueryFilter pattern
+ */
+export interface JournalFilterOptions {
+  searchText?: string;
+  collectionId?: string | null;  // undefined = all, null = free-form only, string = specific collection
+  startTime?: string;  // ISO date string
+  endTime?: string;    // ISO date string
+  page?: number;
+  pageSize?: number;
+  sortBy?: 'created_at' | 'updated_at' | 'title';
+  sortDirection?: 'ASC' | 'DESC';
+}
+
 export class JournalsRepository {
   private getDb(): SQLiteDBConnection {
     const service = SQLiteService;
@@ -336,27 +351,114 @@ export class JournalsRepository {
 
   /**
    * Search journals by text content
+   * Matches server implementation: searches title, content, AND content_html
+   * Uses LIKE for SQLite (equivalent to PostgreSQL's plainto_tsquery for basic cases)
    */
   async search(userId: string, searchText: string): Promise<LocalJournal[]> {
     const db = this.getDb();
     
+    // Match server: search across title, content, and content_html
     const query = `
       SELECT * FROM user_journals 
       WHERE user_id = ? 
         AND is_deleted = 0
-        AND (title LIKE ? OR content LIKE ?)
+        AND (
+          title LIKE ? 
+          OR content LIKE ? 
+          OR content_html LIKE ?
+        )
       ORDER BY created_at DESC
       LIMIT 50;
     `;
     
     const searchPattern = `%${searchText}%`;
-    const result = await db.query(query, [userId, searchPattern, searchPattern]);
+    const result = await db.query(query, [userId, searchPattern, searchPattern, searchPattern]);
 
     if (!result.values || result.values.length === 0) {
       return [];
     }
 
     return result.values.map(row => this.mapRowToJournal(row));
+  }
+
+  /**
+   * Get journals with advanced filtering (matches server's GetListWithFilter)
+   * Supports:
+   * - Full-text search (title, content, content_html)
+   * - Collection filtering (including free-form: collectionId = null)
+   * - Time range filtering
+   * - Pagination
+   * - Sorting
+   */
+  async getWithFilter(
+    userId: string, 
+    options: JournalFilterOptions = {}
+  ): Promise<{ journals: LocalJournal[]; totalCount: number }> {
+    const db = this.getDb();
+    
+    const {
+      searchText,
+      collectionId,
+      startTime,
+      endTime,
+      page = 1,
+      pageSize = 20,
+      sortBy = 'created_at',
+      sortDirection = 'DESC'
+    } = options;
+
+    // Build dynamic query
+    const conditions: string[] = ['user_id = ?', 'is_deleted = 0'];
+    const params: any[] = [userId];
+
+    // Search condition (matches server's full-text search on title + content_html)
+    if (searchText && searchText.trim()) {
+      const searchPattern = `%${searchText.trim()}%`;
+      conditions.push('(title LIKE ? OR content LIKE ? OR content_html LIKE ?)');
+      params.push(searchPattern, searchPattern, searchPattern);
+    }
+
+    // Collection filter
+    if (collectionId !== undefined) {
+      if (collectionId === null) {
+        // Free-form journals (no collection)
+        conditions.push('collection_id IS NULL');
+      } else {
+        conditions.push('collection_id = ?');
+        params.push(collectionId);
+      }
+    }
+
+    // Time range filter (matches server's time range implementation)
+    if (startTime) {
+      conditions.push('created_at >= ?');
+      params.push(startTime);
+    }
+    if (endTime) {
+      conditions.push('created_at <= ?');
+      params.push(endTime);
+    }
+
+    const whereClause = conditions.join(' AND ');
+    const offset = (page - 1) * pageSize;
+
+    // Count query
+    const countQuery = `SELECT COUNT(*) as total FROM user_journals WHERE ${whereClause}`;
+    const countResult = await db.query(countQuery, params);
+    const totalCount = countResult.values?.[0]?.total || 0;
+
+    // Data query with sorting and pagination
+    const dataQuery = `
+      SELECT * FROM user_journals 
+      WHERE ${whereClause}
+      ORDER BY ${sortBy} ${sortDirection}
+      LIMIT ? OFFSET ?
+    `;
+    const dataResult = await db.query(dataQuery, [...params, pageSize, offset]);
+
+    const journals = dataResult.values?.map(row => this.mapRowToJournal(row)) || [];
+
+    return { journals, totalCount };
   }
 
   /**

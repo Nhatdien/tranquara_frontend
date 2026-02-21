@@ -1,6 +1,7 @@
 import AuthService from "~/stores/auth/auth_service";
 import { useAuthStore } from "~/stores/stores/auth_store";
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useUserStreakStore } from "~/stores/stores/user_streak";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 
 export default defineNuxtPlugin(async (nuxtApp) => {
@@ -33,6 +34,12 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       
       console.log('[Plugin] SDK configured for authenticated user');
       // Don't initialize database here - let pages do it when mounted
+
+      // Fetch streak data for authenticated user
+      const streakStore = useUserStreakStore();
+      streakStore.fetchStreak().catch((err: any) => {
+        console.warn('[Plugin] Failed to fetch streak on init:', err);
+      });
     }
   }
 
@@ -51,12 +58,22 @@ export default defineNuxtPlugin(async (nuxtApp) => {
           
           console.log('[Plugin] SDK configured after login');
           // Don't initialize database here - let pages do it when they need it
+
+          // Fetch streak data after login
+          const streakStore = useUserStreakStore();
+          streakStore.fetchStreak().catch((err: any) => {
+            console.warn('[Plugin] Failed to fetch streak after login:', err);
+          });
         }
       } else {
         // Clear SDK token and local data when logged out
         tranquaraSDK.config.access_token = "";
         tranquaraSDK.config.current_username = "";
         
+        // Reset streak state
+        const streakStore = useUserStreakStore();
+        streakStore.resetState();
+
         try {
           const journalStore = userJournalStore();
           await journalStore.clearLocalData();

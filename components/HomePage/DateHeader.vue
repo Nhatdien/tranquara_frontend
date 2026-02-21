@@ -1,10 +1,10 @@
 <template>
   <div class="flex items-center justify-between px-4 py-6">
     <!-- Streak Counter -->
-    <div class="flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
+    <button class="flex items-center gap-2 px-4 py-2 bg-muted rounded-full cursor-pointer active:scale-95 transition-transform" @click="navigateToProgress">
       <Flame class="w-5 h-5 text-primary" :fill="'currentColor'" />
       <span class="text-sm font-semibold">{{ streak }}</span>
-    </div>
+    </button>
 
     <!-- Date Display -->
     <div class="text-center flex-1">
@@ -28,15 +28,21 @@
 <script setup lang="ts">
 import { Flame, User } from "lucide-vue-next";
 import { computed } from 'vue';
+import { useUserStreakStore } from "~/stores/stores/user_streak";
 
 const router = useRouter();
+const streakStore = useUserStreakStore();
 
-// TODO: Replace with actual streak data from store
-const streak = ref(1);
+const streak = computed(() => streakStore.currentStreak);
 
 // Navigate to profile page (sync section)
 const navigateToSync = () => {
   router.push('/profile#data-sync');
+};
+
+// Navigate to progress/stats page
+const navigateToProgress = () => {
+  router.push('/progress');
 };
 
 const formattedDate = computed(() => {

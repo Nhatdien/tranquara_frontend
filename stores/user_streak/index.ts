@@ -1,16 +1,14 @@
 import { Base } from "../base";
-import { UserStreak } from "~/types/user_streak";
+import type { UserStreakResponse } from "~/types/user_streak";
 
 export class UserStreaks extends Base {
-    // async getExerciseById(exericseId: number): Promise<ProgramExercise> {
-    //     const searchParams = new URLSearchParams({
-    //         "exercise_id": `${exericseId}`
-    //     })
-    //     return this.fetch<Exercise>(`${this.config.base_url}/exercise?${searchParams}`)
-    // }
+    async getUserStreak(): Promise<UserStreakResponse> {
+        return this.fetch<UserStreakResponse>(`${this.config.base_url}/user_streaks`);
+    }
 
-    // async getExercises(filter: ExerciseFilter): Promise<Exercise[]> {
-    //     const searchParams = new URLSearchParams({...filter})
-    //     return this.fetch<Exercise[]>(`${this.config.base_url}/exercise?${searchParams}`)
-    // } 
+    async updateUserStreak(): Promise<{ message: string }> {
+        return this.fetch<{ message: string }>(`${this.config.base_url}/user_streaks`, {
+            method: "PUT",
+        });
+    }
 }

@@ -16,6 +16,7 @@ import SyncService from "~/services/sync/sync_service";
 import SyncQueue from "~/services/sync/sync_queue";
 import NetworkMonitor from "~/services/sync/network_monitor";
 import { useAuthStore } from "./auth_store";
+import { useUserStreakStore } from "./user_streak";
 
 // Helper function to get current user ID from auth store
 const getUserId = (): string | undefined => {
@@ -465,6 +466,15 @@ export const userJournalStore = defineStore("user_journal", {
           this.triggerBackgroundSync();
         }
 
+        // Refresh streak data after journal creation
+        try {
+          const streakStore = useUserStreakStore();
+          await streakStore.refreshAfterJournaling();
+        } catch (streakError) {
+          console.warn('[JournalStore] Failed to refresh streak:', streakError);
+          // Don't fail journal creation if streak refresh fails
+        }
+
         console.log('[JournalStore] Journal created locally:', newJournal.id);
         return newJournal;
       } catch (error) {
@@ -583,6 +593,7 @@ export const userJournalStore = defineStore("user_journal", {
 
     /**
      * Search journals by text
+     * Matches server implementation: searches title, content, AND content_html
      */
     async searchJournals(searchText: string) {
       try {
@@ -594,6 +605,38 @@ export const userJournalStore = defineStore("user_journal", {
         return await JournalsRepository.search(userId, searchText);
       } catch (error) {
         console.error('[JournalStore] Search error:', error);
+        throw error;
+      }
+    },
+
+    /**
+     * Get journals with advanced filtering (matches server's GetListWithFilter)
+     * Supports:
+     * - Full-text search (title, content, content_html)
+     * - Collection filtering (including free-form: collectionId = null)
+     * - Time range filtering
+     * - Pagination
+     * - Sorting
+     */
+    async getJournalsWithFilter(options: {
+      searchText?: string;
+      collectionId?: string | null;
+      startTime?: string;
+      endTime?: string;
+      page?: number;
+      pageSize?: number;
+      sortBy?: 'created_at' | 'updated_at' | 'title';
+      sortDirection?: 'ASC' | 'DESC';
+    } = {}) {
+      try {
+        const userId = getUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+
+        return await JournalsRepository.getWithFilter(userId, options);
+      } catch (error) {
+        console.error('[JournalStore] Filter error:', error);
         throw error;
       }
     },
