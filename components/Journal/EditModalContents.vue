@@ -32,7 +32,7 @@
     </UCarousel>
 
     <!-- Button group -->
-    <div class="flex fixed justify-between w-full bottom-8 right-4">
+    <div class="flex fixed justify-between left-4 right-4 bottom-8">
       <div></div>
       <div class="flex items-center gap-2">
         <UButton :variant="'outline'" @click="saveJournalChanges" :loading="isSaving">

@@ -36,7 +36,7 @@
       </div>
 
       <!-- Slide Groups Carousel -->
-      <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory">
+      <div class="flex justify-center gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory">
         <div
           v-for="(template, templateIndex) in categoryTemplates"
           :key="template.id"
@@ -80,6 +80,8 @@
 
 <script lang="ts" setup>
 import { userJournalStore } from "~/stores/stores/user_journal";
+
+definePageMeta({ layout: "detail" });
 
 const { openSlideGroup } = useSlideGroup();
 const route = useRoute();

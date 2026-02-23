@@ -317,6 +317,10 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/stores/auth_store";
 
+definePageMeta({
+  layout: "detail",
+});
+
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 

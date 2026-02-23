@@ -131,6 +131,9 @@ import { computed, onMounted } from "vue";
 const streakStore = useUserStreakStore();
 const journalStore = userJournalStore();
 
+definePageMeta({
+  layout: "detail",
+});
 // Ensure data is loaded
 onMounted(async () => {
   if (!streakStore.streak) {

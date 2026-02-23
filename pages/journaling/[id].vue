@@ -117,6 +117,8 @@ import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 import type { LocalJournal } from "~/types/user_journal";
 
+definePageMeta({ layout: "detail" });
+
 const route = useRoute();
 const router = useRouter();
 const journalStore = userJournalStore();
@@ -266,7 +268,7 @@ const handleGoDeeper = async () => {
         .chain()
         .focus('end')
         .insertContent('<p></p>')
-        .insertContent('<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ' + response.question + '</p>')
+        .insertContent('<p class="ai-suggestion" style="color: #888; font-style: italic;">' + response.question + '</p>')
         .insertContent('<p></p>')
         .run();
     }

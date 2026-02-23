@@ -188,7 +188,7 @@ const handleGoDeeper = async () => {
         .chain()
         .focus('end')
         .insertContent('<p></p>') // Add empty line
-        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`)
+        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">${response.question}</p>`)
         .insertContent('<p></p>') // Add empty line for user to type
         .run();
     }

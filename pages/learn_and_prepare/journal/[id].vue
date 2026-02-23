@@ -33,6 +33,8 @@
 import { userJournalStore } from "~/stores/stores/user_journal";
 import type { LocalJournal } from "~/types/user_journal";
 
+definePageMeta({ layout: "detail" });
+
 const route = useRoute();
 const router = useRouter();
 const store = userJournalStore();

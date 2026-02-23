@@ -101,7 +101,7 @@ const handleGoDeeper = async (direction: string) => {
         .insertContent('<p></p>', {
           contentType: 'html',
         })
-        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">💭 ${response.question}</p>`, {
+        .insertContent(`<p class="ai-suggestion" style="color: #888; font-style: italic;">${response.question}</p>`, {
           contentType: 'html',
         })
         .insertContent('<p></p>', {
