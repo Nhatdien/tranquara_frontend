@@ -142,6 +142,8 @@ const handleDelete = () => {
 }
 .journal-content :deep(.ai-suggestion) {
   color: var(--color-old-neutral-500);
+  border-left: 1px solid var(--color-old-neutral-500);
+  padding-left: 0.5rem;
   font-size: 0.875rem;
   margin: 0.75rem 0;
 }

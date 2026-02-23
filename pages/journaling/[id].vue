@@ -113,6 +113,7 @@
 
 <script setup lang="ts">
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useAuthStore } from "~/stores/stores/auth_store";
 import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 import type { LocalJournal } from "~/types/user_journal";
@@ -256,8 +257,10 @@ const handleGoDeeper = async () => {
     
     const sdk = TranquaraSDK.getInstance();
     const plainText = content.value.replace(/<[^>]*>/g, '').trim();
+    const userId = useAuthStore().getUserUUID;
     
     const response = await sdk.analyzeJournal({
+      user_id: userId || '',
       content: plainText,
       mood_score: moodScore.value,
       slide_prompt: undefined,

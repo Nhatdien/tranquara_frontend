@@ -173,8 +173,10 @@ const handleGoDeeper = async () => {
     
     // Get plain text content from editor
     const plainText = content.value.replace(/<[^>]*>/g, '').trim();
+    const userId = useAuthStore().getUserUUID;
     
     const response = await sdk.analyzeJournal({
+      user_id: userId || '',
       content: plainText,
       mood_score: moodScore.value,
       slide_prompt: undefined, // No template for free-form journaling

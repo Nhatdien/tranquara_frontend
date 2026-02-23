@@ -24,6 +24,7 @@
 
 <script lang="ts" setup>
 import TranquaraSDK from "~/stores/tranquara_sdk";
+import { useAuthStore } from "~/stores/stores/auth_store";
 
 const currentNote = ref("");
 const isGeneratingQuestion = ref(false);
@@ -80,8 +81,10 @@ const handleGoDeeper = async (direction: string) => {
     // Get plain text content from editor
     const plainText = currentNote.value.replace(/<[^>]*>/g, '').trim();
     const slidePrompt = props.content?.question || props.content?.question_content;
+    const userId = useAuthStore().getUserUUID;
     
     const response = await sdk.analyzeJournal({
+      user_id: userId || '',
       content: plainText,
       mood_score: userJournalStore().currentMoodScore,
       slide_prompt: slidePrompt,
