@@ -7,6 +7,7 @@ import { UserInformations } from "./user_information";
 import { UserStreaks } from "./user_streak";
 import { Chatlogs } from "./chatlog";
 import { UserJournals } from "./user_journal";
+import { UserLearned } from "./user_learned";
 import { Auth } from "./auth";
 import { AIService } from "./ai_service";
 
@@ -37,8 +38,8 @@ class TranquaraSDK extends Base {
 
 }
 
-interface TranquaraSDK extends Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, Auth, AIService { }
+interface TranquaraSDK extends Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService { }
 
-applyMixins(TranquaraSDK, [Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, Auth, AIService]);
+applyMixins(TranquaraSDK, [Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService]);
 
 export default TranquaraSDK;

@@ -57,7 +57,7 @@ const carousel = useTemplateRef("carousel");
 const currentIndex = ref(0);
 
 // Use the prop instead of route params
-const { activeSlideGroup, saveJournal, closeSlideGroup, currentCollecton } = useSlideGroup({ 
+const { activeSlideGroup, saveJournal, closeSlideGroup, currentCollecton, markSlideGroupCompleted } = useSlideGroup({ 
   collectionId: props.templateId 
 });
 
@@ -102,6 +102,10 @@ const nextNode = () => {
         title: activeSlideGroup.value?.title || "",
       }, (useRoute()?.params?.id || null) as string | null);
     }
+
+    // Mark slide group as completed for learn-type collections
+    markSlideGroupCompleted();
+
     closeSlideGroup();
   } else {
     carousel.value?.emblaApi?.scrollNext();

@@ -129,12 +129,13 @@ const categoryDescription = computed(() => {
   return `A collection of lessons and journal prompts to help you explore and understand ${categoryLabel.value}.`;
 });
 
-// Filter templates by category
+// Filter only journal-type templates by category
 const categoryTemplates = computed(() => {
   const id = categoryId.value || "";
   return journalStore.templates.filter(template => {
+    const isJournalType = template.type === 'journal' || !template.type;
     const templateCategory = template.category?.toLowerCase().replace(/\s+/g, "-");
-    return templateCategory === id;
+    return isJournalType && templateCategory === id;
   });
 });
 </script>

@@ -32,9 +32,9 @@ export class TemplatesRepository {
       // Insert all templates
       const query = `
         INSERT INTO journal_templates (
-          id, title, description, category, slide_groups, 
+          id, title, description, category, type, slide_groups, 
           is_active, created_at, updated_at, cached_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
 
       for (const template of templates) {
@@ -43,6 +43,7 @@ export class TemplatesRepository {
           template.title,
           template.description || null,
           template.category || null,
+          template.type || 'journal', // Default to 'journal' for backwards compatibility
           JSON.stringify(template.slide_groups), // Store as JSON string
           template.is_active ? 1 : 0,
           template.created_at || null,
@@ -188,6 +189,27 @@ export class TemplatesRepository {
   }
 
   /**
+   * Get templates by type ('journal' or 'learn')
+   */
+  async getByType(type: 'journal' | 'learn'): Promise<LocalTemplate[]> {
+    const db = this.getDb();
+    
+    const query = `
+      SELECT * FROM journal_templates 
+      WHERE type = ? AND is_active = 1
+      ORDER BY category, title ASC;
+    `;
+    
+    const result = await db.query(query, [type]);
+
+    if (!result.values || result.values.length === 0) {
+      return [];
+    }
+
+    return result.values.map(row => this.mapRowToTemplate(row));
+  }
+
+  /**
    * Helper: Map SQLite row to LocalTemplate type
    */
   private mapRowToTemplate(row: any): LocalTemplate {
@@ -196,6 +218,7 @@ export class TemplatesRepository {
       title: row.title,
       description: row.description,
       category: row.category,
+      type: row.type || 'journal',
       slide_groups: JSON.parse(row.slide_groups), // Parse JSON string back to object
       is_active: row.is_active === 1,
       created_at: row.created_at,

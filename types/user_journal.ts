@@ -30,12 +30,16 @@ export type SlideGroup = {
   slides: SlideData[];
 }
 
+// Collection type discriminator
+export type CollectionType = 'journal' | 'learn';
+
 // Journal Template (Collection)
 export type JournalTemplate = {
   id: string;
   title: string;
   description?: string;
   category: string;
+  type: CollectionType;
   slide_groups: SlideGroup[];
   is_active: boolean;
   created_at: string;
@@ -122,6 +126,30 @@ export type LocalJournal = Journal & {
 
 export type LocalTemplate = JournalTemplate & {
   cached_at: string;              // When downloaded from server
+}
+
+// Learned Slide Group (progress tracking for learn-type collections)
+export type LearnedSlideGroup = {
+  id: string;
+  user_id: string;
+  collection_id: string;
+  slide_group_id: string;
+  completed_at: string;
+}
+
+export type LocalLearnedSlideGroup = LearnedSlideGroup & {
+  server_id?: string | null;      // UUID from server after sync
+  needs_sync: 0 | 1;
+  synced_at?: string | null;
+}
+
+export type LearnedSlideGroupResponse = {
+  learned: LearnedSlideGroup[];
+}
+
+export type CreateLearnedRequest = {
+  collection_id: string;
+  slide_group_id: string;
 }
 
 // Legacy types for backwards compatibility

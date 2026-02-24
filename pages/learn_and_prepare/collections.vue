@@ -53,6 +53,7 @@
 
 <script lang="ts" setup>
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useLearnedStore } from "~/stores/stores/user_learned";
 import { 
   Feather, 
   Moon, 
@@ -69,12 +70,16 @@ import {
 } from "lucide-vue-next";
 
 const journalStore = userJournalStore();
+const learnedStore = useLearnedStore();
 const isLoading = ref(true);
 
-// Load templates on mount
+// Load templates and progress on mount
 onMounted(async () => {
   try {
-    await journalStore.getAllTemplates();
+    await Promise.all([
+      journalStore.getAllTemplates(),
+      learnedStore.loadFromLocal(),
+    ]);
   } catch (error) {
     console.error("Error loading templates:", error);
   } finally {
@@ -82,9 +87,9 @@ onMounted(async () => {
   }
 });
 
-// All collections
+// Only learn-type collections
 const allCollections = computed(() => {
-  return journalStore.templates;
+  return journalStore.templates.filter(t => t.type === 'learn');
 });
 
 // Get icon based on category or title keywords
@@ -119,11 +124,11 @@ const getCollectionIcon = (category: string, title: string) => {
   return Feather; // Default icon
 };
 
-// Get collection progress (placeholder - implement actual tracking later)
+// Get collection progress from learned store
 const getCollectionProgress = (collectionId: string) => {
-  // TODO: Implement actual progress tracking from user data
-  // For now, return a consistent value based on collection ID hash
-  const hash = collectionId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return (hash % 50) + 10; // Returns 10-60%
+  const collection = allCollections.value.find(c => c.id === collectionId);
+  const totalSlideGroups = collection?.slide_groups?.length || 0;
+  if (totalSlideGroups === 0) return 0;
+  return learnedStore.getProgress(collectionId, totalSlideGroups);
 };
 </script>

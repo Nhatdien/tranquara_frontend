@@ -2,6 +2,9 @@
   <div class="flex flex-col w-full min-h-screen pb-20">
     <!-- Date Header with Streak -->
     <HomePageDateHeader />
+
+    <!-- Daily Check-In (Morning / Evening) -->
+    <HomePageDailyCheckIn />
     
     <!-- Daily Prompt -->
     <HomePageDailyPrompt />

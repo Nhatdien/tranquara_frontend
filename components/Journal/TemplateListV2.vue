@@ -57,7 +57,7 @@
           </div>
 
           <!-- Begin Button -->
-          <div class="flex justify-center mt-6">
+          <div class="flex flex-col items-center mt-6 gap-4">
             <UButton
               variant="solid"
               color="neutral"
@@ -66,6 +66,10 @@
               @click="openSlideGroup(slideGroup.id, currentCollection.id)">
               Begin
             </UButton>
+            <!-- Completed tick -->
+            <div v-if="learnedStore.isSlideGroupCompleted(currentCollection.id, slideGroup.id)" class="flex items-center gap-1">
+              <Icon name="i-lucide-check-circle" class="w-4 h-4" />
+            </div>
           </div>
         </div>
       </div>
@@ -76,11 +80,13 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useLearnedStore } from "~/stores/stores/user_learned";
 import type { LocalTemplate } from "~/types/user_journal";
 
 const { openSlideGroup } = useSlideGroup();
 const route = useRoute();
 const journalStore = userJournalStore();
+const learnedStore = useLearnedStore();
 
 const isLoading = ref(true);
 const collectionId = computed(() => route.params?.id as string);
@@ -96,6 +102,8 @@ onMounted(async () => {
     }
     
     await journalStore.getAllTemplates();
+    // Load learned progress
+    await learnedStore.loadFromLocal();
   } catch (error) {
     console.error('Error loading templates:', error);
   } finally {

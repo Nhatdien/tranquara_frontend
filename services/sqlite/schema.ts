@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS journal_templates (
   title TEXT NOT NULL,
   description TEXT,
   category TEXT,
+  type TEXT NOT NULL DEFAULT 'journal',
   slide_groups TEXT NOT NULL,
   is_active INTEGER DEFAULT 1,
   created_at TEXT,
@@ -54,6 +55,29 @@ CREATE INDEX IF NOT EXISTS idx_templates_category ON journal_templates(category)
 
 export const CREATE_JOURNAL_TEMPLATES_INDEX_ACTIVE = `
 CREATE INDEX IF NOT EXISTS idx_templates_active ON journal_templates(is_active);`;
+
+export const CREATE_JOURNAL_TEMPLATES_INDEX_TYPE = `
+CREATE INDEX IF NOT EXISTS idx_templates_type ON journal_templates(type);`;
+
+// User Learned Slide Groups table schema (progress tracking for learn-type collections)
+export const CREATE_USER_LEARNED_SLIDE_GROUPS_TABLE = `
+CREATE TABLE IF NOT EXISTS user_learned_slide_groups (
+  id TEXT PRIMARY KEY,
+  server_id TEXT,
+  user_id TEXT NOT NULL,
+  collection_id TEXT NOT NULL,
+  slide_group_id TEXT NOT NULL,
+  completed_at TEXT NOT NULL,
+  needs_sync INTEGER DEFAULT 1,
+  synced_at TEXT,
+  UNIQUE(user_id, collection_id, slide_group_id)
+);`;
+
+export const CREATE_USER_LEARNED_INDEX_USER_ID = `
+CREATE INDEX IF NOT EXISTS idx_learned_user_id ON user_learned_slide_groups(user_id);`;
+
+export const CREATE_USER_LEARNED_INDEX_COLLECTION = `
+CREATE INDEX IF NOT EXISTS idx_learned_collection ON user_learned_slide_groups(user_id, collection_id);`;
 
 // Sync Queue metadata table (optional - for advanced queue tracking)
 export const CREATE_SYNC_QUEUE_TABLE = `
@@ -69,7 +93,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
 );`;
 
 // Database version tracking
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -84,7 +108,11 @@ export const INITIALIZATION_SCRIPTS = [
   CREATE_JOURNAL_TEMPLATES_TABLE,
   CREATE_JOURNAL_TEMPLATES_INDEX_CATEGORY,
   CREATE_JOURNAL_TEMPLATES_INDEX_ACTIVE,
+  CREATE_JOURNAL_TEMPLATES_INDEX_TYPE,
   CREATE_SYNC_QUEUE_TABLE,
+  CREATE_USER_LEARNED_SLIDE_GROUPS_TABLE,
+  CREATE_USER_LEARNED_INDEX_USER_ID,
+  CREATE_USER_LEARNED_INDEX_COLLECTION,
 ];
 
 /**
@@ -93,6 +121,12 @@ export const INITIALIZATION_SCRIPTS = [
  */
 export const MIGRATIONS: Record<number, string[]> = {
   1: INITIALIZATION_SCRIPTS,
-  // Future migrations:
-  // 2: ['ALTER TABLE ...', 'CREATE INDEX ...'],
+  // v2: Add type column to templates + user_learned_slide_groups table
+  2: [
+    `ALTER TABLE journal_templates ADD COLUMN type TEXT NOT NULL DEFAULT 'journal';`,
+    CREATE_JOURNAL_TEMPLATES_INDEX_TYPE,
+    CREATE_USER_LEARNED_SLIDE_GROUPS_TABLE,
+    CREATE_USER_LEARNED_INDEX_USER_ID,
+    CREATE_USER_LEARNED_INDEX_COLLECTION,
+  ],
 };

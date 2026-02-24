@@ -1,5 +1,6 @@
 import { computed } from "vue";
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useLearnedStore } from "~/stores/stores/user_learned";
 import { Journal, CreateJournalRequest, SlideGroup } from "~/types/user_journal";
 
 export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: string }) => {
@@ -96,8 +97,23 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
     }
   };
 
+  /**
+   * Mark the current slide group as completed for learn-type collections.
+   * Should be called when the user finishes the last slide in a slide group.
+   */
+  const markSlideGroupCompleted = async () => {
+    if (!currentCollecton.value || !slideGroupId.value) return;
+
+    // Only track progress for learn-type collections
+    if (currentCollecton.value.type !== 'learn') return;
+
+    const learnedStore = useLearnedStore();
+    await learnedStore.markCompleted(collectionId.value, slideGroupId.value);
+    console.log("[useSlideGroup] Marked slide group as completed:", slideGroupId.value);
+  };
+
 
   return {
-    currentCollecton, activeSlideGroup, openSlideGroup, closeSlideGroup, saveJournal, findSlideGroup
+    currentCollecton, activeSlideGroup, openSlideGroup, closeSlideGroup, saveJournal, findSlideGroup, markSlideGroupCompleted
   };
 };

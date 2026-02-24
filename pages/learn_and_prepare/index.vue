@@ -86,21 +86,21 @@
           </button>
         </div>
 
-        <!-- Category Cards Grid -->
-        <div class="grid grid-cols-3 gap-3 mb-4">
+        <!-- Category Cards Grid (Slide Groups) -->
+        <div class="grid grid-cols-1 gap-3 mb-4">
           <div
-            v-for="template in categoryTemplates"
-            :key="template.id"
+            v-for="item in categorySlideGroups"
+            :key="item.slideGroup.id"
             class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 cursor-pointer hover:bg-neutral-800/50 transition-colors"
-            @click="navigateTo(`/learn_and_prepare/collection/${template.id}`)">
-            <h3 class="font-medium text-sm mb-2 line-clamp-2">{{ template.title }}</h3>
-            <p class="text-xs text-neutral-400">{{ template.slide_groups?.length || 0 }} questions</p>
+            @click="navigateTo(`/learn_and_prepare/collection/${item.collectionId}/${item.slideGroup.id}`)">
+            <h3 class="font-medium text-base mb-1">{{ item.slideGroup.title }}</h3>
+            <p class="text-xs text-neutral-400">{{ item.slideGroup.slides?.length || 0 }} questions</p>
           </div>
         </div>
 
         <!-- See All Link -->
         <NuxtLink 
-          v-if="categoryTemplates.length > 0"
+          v-if="categorySlideGroups.length > 0"
           :to="`/learn_and_prepare/category/${selectedCategory}`" 
           class="flex items-center justify-center gap-1 text-sm text-neutral-400 hover:text-neutral-200">
           See All {{ totalCategoryCount }} Journals on {{ selectedCategoryLabel }}
@@ -133,6 +133,7 @@
 
 <script lang="ts" setup>
 import { userJournalStore } from "~/stores/stores/user_journal";
+import { useLearnedStore } from "~/stores/stores/user_learned";
 import { 
   Feather, 
   Sun, 
@@ -152,14 +153,21 @@ import {
 } from "lucide-vue-next";
 
 const journalStore = userJournalStore();
+const learnedStore = useLearnedStore();
 const isLoading = ref(true);
 const selectedCategory = ref("check-ins");
 
-// Load templates on mount
+// Load templates and progress on mount
 onMounted(async () => {
   try {
     console.log("calling get templates");
     await journalStore.getAllTemplates();
+    // Load learned progress
+    learnedStore.setOnline(journalStore.isOnline);
+    await learnedStore.loadFromLocal();
+    if (journalStore.isOnline) {
+      await learnedStore.fullSync();
+    }
   } catch (error) {
     console.error("Error loading templates:", error);
   } finally {
@@ -167,14 +175,24 @@ onMounted(async () => {
   }
 });
 
-// Featured collections (first 2)
+// Featured collections (first 2 learn-type)
 const featuredCollections = computed(() => {
-  return journalStore.templates.slice(0, 2);
+  return learnCollections.value.slice(0, 2);
+});
+
+// Learn-type collections (for Collections section)
+const learnCollections = computed(() => {
+  return journalStore.templates.filter(t => t.type === 'learn');
+});
+
+// Journal-type templates (for Categories section)
+const journalTemplates = computed(() => {
+  return journalStore.templates.filter(t => t.type === 'journal' || !t.type);
 });
 
 // Display collections (for horizontal scroll, max 5)
 const displayedCollections = computed(() => {
-  return journalStore.templates.slice(0, 5);
+  return learnCollections.value.slice(0, 5);
 });
 
 // Category icon mapping
@@ -231,23 +249,24 @@ const getCategoryIcon = (category: string) => {
   return Leaf; // Default icon
 };
 
-// Dynamic categories from templates
+// Dynamic categories from journal-type templates — count slide groups, not collections
 const categories = computed(() => {
   const uniqueCategories = new Map<string, { id: string; label: string; icon: any; count: number }>();
   
-  journalStore.templates.forEach(template => {
+  journalTemplates.value.forEach(template => {
     const category = template.category?.trim();
     if (category) {
       const id = category.toLowerCase().replace(/\s+/g, '-');
+      const slideGroupCount = template.slide_groups?.length || 0;
       if (!uniqueCategories.has(id)) {
         uniqueCategories.set(id, {
           id,
           label: category,
           icon: getCategoryIcon(category),
-          count: 1,
+          count: slideGroupCount,
         });
       } else {
-        uniqueCategories.get(id)!.count++;
+        uniqueCategories.get(id)!.count += slideGroupCount;
       }
     }
   });
@@ -266,20 +285,46 @@ const selectedCategoryLabel = computed(() => {
   return categories.value.find(c => c.id === selectedCategory.value)?.label || "";
 });
 
-// Filter templates by selected category
-const categoryTemplates = computed(() => {
+// Flatten journal-type templates into individual slide groups for the selected category
+const categorySlideGroups = computed(() => {
   const selectedCat = categories.value.find(c => c.id === selectedCategory.value);
   if (!selectedCat) return [];
   
-  return journalStore.templates.filter(template => {
+  const result: { slideGroup: any; collectionId: string; collectionTitle: string }[] = [];
+  
+  journalTemplates.value.forEach(template => {
     const templateCategory = template.category?.toLowerCase().replace(/\s+/g, '-');
-    return templateCategory === selectedCategory.value;
-  }).slice(0, 6);
+    if (templateCategory === selectedCategory.value && template.slide_groups) {
+      const groups = typeof template.slide_groups === 'string'
+        ? JSON.parse(template.slide_groups)
+        : template.slide_groups;
+      
+      groups.forEach((sg: any) => {
+        result.push({
+          slideGroup: sg,
+          collectionId: template.id,
+          collectionTitle: template.title,
+        });
+      });
+    }
+  });
+  
+  return result.slice(0, 6);
 });
 
 const totalCategoryCount = computed(() => {
-  const selectedCat = categories.value.find(c => c.id === selectedCategory.value);
-  return selectedCat?.count || categoryTemplates.value.length;
+  // Count all slide groups in the selected category across all journal-type templates
+  let count = 0;
+  journalTemplates.value.forEach(template => {
+    const templateCategory = template.category?.toLowerCase().replace(/\s+/g, '-');
+    if (templateCategory === selectedCategory.value) {
+      const groups = typeof template.slide_groups === 'string'
+        ? JSON.parse(template.slide_groups)
+        : template.slide_groups;
+      count += groups?.length || 0;
+    }
+  });
+  return count;
 });
 
 // Mindful exercises (static for now)
@@ -304,8 +349,10 @@ const getCollectionIcon = (category: string) => {
 };
 
 const getCollectionProgress = (collectionId: string) => {
-  // TODO: Implement actual progress tracking
-  return Math.floor(Math.random() * 60) + 10;
+  const collection = learnCollections.value.find(c => c.id === collectionId);
+  const totalSlideGroups = collection?.slide_groups?.length || 0;
+  if (totalSlideGroups === 0) return 0;
+  return learnedStore.getProgress(collectionId, totalSlideGroups);
 };</script>
 
 <style scoped>
