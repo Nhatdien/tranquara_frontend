@@ -2,82 +2,60 @@
 
 ## Overview
 
-This document details the database schemas for the micro-learning feature, covering both **server-side (PostgreSQL)** and **client-side (SQLite via @capacitor-community/sqlite)** data models.
+This document details the data models for the micro-learning feature. 
+
+> **⚠️ Important**: Learning content shares the same database table (`journal_templates`) as journaling collections, distinguished by the `type` column. See [Journal Feature Data Models](../02.%20Jounral%20Feature/03-DATA-MODELS.md) for the canonical schema definition.
 
 ---
 
-## 🗄️ Server-Side: PostgreSQL Schema
+## 🗄️ Database Architecture
 
-### `collections`
+### Shared Table: `journal_templates`
 
-Groups related lessons by topic or purpose. Both learning content and therapy prep use this table.
+Both learning and journaling content live in the same `journal_templates` table, filtered by `type`:
 
-| Column          | Type         | Constraints | Description                           |
-|-----------------|--------------|-------------|---------------------------------------|
-| `id`            | UUID         | PK          | Unique collection ID                  |
-| `title`         | VARCHAR(255) | NOT NULL    | Collection title                      |
-| `category`      | VARCHAR(50)  | NOT NULL    | Category slug                         |
-| `description`   | TEXT         |             | Short summary                         |
-| `type`          | VARCHAR(50)  | NOT NULL    | 'learn' or 'journal'                  |
-| `thumbnail_url` | TEXT         |             | Cover image URL                       |
-| `position`      | INTEGER      |             | Display order in library              |
-| `created_at`    | TIMESTAMP    | DEFAULT NOW()| Creation timestamp                   |
+| `type` Value | Description | Library Section |
+|-------------|-------------|-----------------|
+| `'learn'` | Educational micro-lessons | "Collections" — horizontal scroll cards with chapter count & progress |
+| `'journal'` | Journaling prompt templates | "All Categories" — grouped by category tabs, shows slide groups |
 
-#### `type` Values
+**Slide groups are stored as JSONB** within `journal_templates.slide_groups` — there is no separate `slide_groups` table. Each element in the JSONB array represents one lesson/chapter.
 
-- **`learn`**: Educational micro-lessons (includes therapy prep)
-- **`journal`**: Journaling slide groups (daily prompts, templates)
+For the full `journal_templates` schema, see: [Journal Feature 03-DATA-MODELS.md](../02.%20Jounral%20Feature/03-DATA-MODELS.md#table-journal_templates-collections)
 
 #### `category` Values (for `type = 'learn'`)
 
-- `mindfulness`
-- `stress_management`
-- `emotional_regulation`
-- `therapy_prep` ← Therapy preparation lessons use this category
-- `journaling_basics`
-- `sleep_wellness`
-- `communication`
-- `self_compassion`
-
-**Indexes:**
-- `idx_collections_type` on `type`
-- `idx_collections_category` on `category`
-- `idx_collections_type_category` on `(type, category)` for filtered queries
+- `anxiety`, `emotions`, `gratitude`, `mental_health`, `mindfulness`
+- `relationships`, `self_care`, `sleep`, `therapy_prep`
+- `journaling_basics`, `stress_management`, `communication`, `self_compassion`
 
 ---
 
-#### Example Rows
+### Learning Progress: `user_learned_slide_groups`
 
-_[SQL code implementation removed - to be added during development]_
+Tracks which slide groups (chapters) a user has completed within `type='learn'` collections.
 
----
+For the full schema, see: [Journal Feature 03-DATA-MODELS.md](../02.%20Jounral%20Feature/03-DATA-MODELS.md#table-user_learned_slide_groups-learning-progress)
 
-### `slide_groups`
+**Key queries:**
 
-Individual lessons within a collection, composed of multiple slides.
+```sql
+-- Collection progress: how many chapters completed out of total
+SELECT collection_id, COUNT(*) as completed
+FROM user_learned_slide_groups
+WHERE user_id = $1
+GROUP BY collection_id;
 
-| Column               | Type         | Constraints  | Description                      |
-|----------------------|--------------|--------------|----------------------------------|
-| `id`                 | UUID         | PK           | Unique lesson ID                 |
-| `collection_id`      | UUID         | FK, NOT NULL | Parent collection                |
-| `title`              | VARCHAR(255) | NOT NULL     | Lesson title                     |
-| `description`        | TEXT         |              | Short description                |
-| `content`            | JSONB        | NOT NULL     | Slide content array              |
-| `position`           | INTEGER      | NOT NULL     | Order within collection          |
-| `estimated_duration` | INTEGER      |              | Minutes to complete              |
-| `created_at`         | TIMESTAMP    | DEFAULT NOW() | Creation timestamp              |
-
-**Relationships:**
-- Many-to-one with `collections` (ON DELETE CASCADE)
-
-**Indexes:**
-- `idx_slide_groups_collection` on `collection_id`
-- `idx_slide_groups_position` on `position`
-- GIN index on `content` for JSONB search: `CREATE INDEX idx_slide_groups_content ON slide_groups USING GIN(content);`
+-- Check if specific slide group is completed
+SELECT EXISTS(
+  SELECT 1 FROM user_learned_slide_groups
+  WHERE user_id = $1 AND collection_id = $2 AND slide_group_id = $3
+);
+```
 
 ---
 
-#### `content` JSONB Structure
+### Slide Group `content` JSONB Structure
 
 Array of slide objects, each with a `type` field determining its schema.
 
@@ -91,270 +69,110 @@ Array of slide objects, each with a `type` field determining its schema.
 
 See **[Content Type Schemas Design](../02.%20Jounral%20Feature/Content%20type%20schemas%20design.md)** for detailed specifications.
 
----
-
-#### Example: Complete Lesson Content
-
-_[JSON code implementation removed - to be added during development]_
-
-**Full Row Example:**
-
 _[SQL code implementation removed - to be added during development]_
 
 ---
 
-### `user_learned_lessons`
-
-Tracks which lessons users have completed.
-
-| Column           | Type        | Constraints | Description                    |
-|------------------|-------------|-------------|--------------------------------|
-| `id`             | UUID        | PK          | Unique completion record       |
-| `user_id`        | UUID        | NOT NULL    | From Keycloak token            |
-| `slide_group_id` | UUID        | FK, NOT NULL| References `slide_groups.id`   |
-| `collection_id`  | UUID        | FK          | Denormalized for quick queries |
-| `topic`          | VARCHAR(50) |             | Denormalized category          |
-| `completed_at`   | TIMESTAMP   | DEFAULT NOW()| Completion timestamp          |
-
-**Constraints:**
-- **Unique**: `(user_id, slide_group_id)` - Prevents duplicate completions
-- **Foreign Keys**:
-  - `slide_group_id` → `slide_groups.id` (ON DELETE CASCADE)
-  - `collection_id` → `collections.id` (ON DELETE SET NULL)
-
-**Indexes:**
-- `idx_user_learned_user_id` on `user_id`
-- `idx_user_learned_completed` on `completed_at`
-- `idx_user_learned_topic` on `topic` for category filtering
+> **Note**: The old `user_learned_lessons`, `lesson_progress_metrics`, `local_collections`, and `local_slide_groups` tables from the earlier design have been **replaced** by:
+> - `user_learned_slide_groups` — tracking table (see [Journal Feature 03-DATA-MODELS.md](../02.%20Jounral%20Feature/03-DATA-MODELS.md))
+> - `journal_templates` (local cache) — same table used by journaling, with `type='learn'`
+>
+> This simplifies the architecture: one table for all collections, one table for all progress tracking.
 
 ---
 
-#### Why Denormalize `collection_id` and `topic`?
+## 📱 Client-Side: SQLite Schema
 
-**Performance**: Fast queries without joins.
+Learning content reuses the same local SQLite tables as journaling:
 
-_[SQL code implementation removed - to be added during development]_
+- **`journal_templates`** (local cache) — includes `type` column to filter `'learn'` vs `'journal'`
+- **`user_learned_slide_groups`** (local) — offline progress tracking with sync support
 
-**Trade-off**: Small redundancy for significant speed improvement on progress queries.
-
----
-
-#### Example Rows
-
-_[SQL code implementation removed - to be added during development]_
+See [Journal Feature 03-DATA-MODELS.md](../02.%20Jounral%20Feature/03-DATA-MODELS.md) for full local SQLite schemas.
 
 ---
 
-### `user_journals` (Updated for Lesson Integration)
+## 🔗 Common Queries
 
-Journal entries, **including those created from lesson prompts**.
+### 1. Get All Learning Collections by Category
 
-| Column          | Type      | Constraints | Description                  |
-|-----------------|-----------|-------------|------------------------------|
-| `id`            | UUID      | PK          | Unique journal entry ID      |
-| `user_id`       | UUID      | NOT NULL    | From Keycloak token          |
-| `template_id`   | UUID      |             | FK to journal template (if used) |
-| **`collection_id`** | **UUID** |         | **FK to collections (if from lesson)** ✨ NEW |
-| **`source_type`**   | **VARCHAR(20)** | | **'standalone' or 'lesson'** ✨ NEW |
-| `title`         | TEXT      |             | User-provided or AI-generated|
-| `content`       | TEXT      | NOT NULL    | Full journal content         |
-| `mood_score`    | FLOAT     |             | Self-reported mood (1-10)    |
-| `tags`          | TEXT[]    |             | User or AI-generated tags    |
-| `created_at`    | TIMESTAMP | DEFAULT NOW()| When journal was written    |
-| `updated_at`    | TIMESTAMP |             | Last modification time       |
-
-**New Fields for Lesson Integration:**
-
-- **`collection_id`**: Links journal back to source lesson (NULL for standalone journals)
-- **`source_type`**: 
-  - `'standalone'` - Regular journaling (default)
-  - `'lesson'` - Created from lesson journal_prompt slides
-
-**Indexes:**
-- Existing indexes remain
-- **New**: `idx_user_journals_collection` on `collection_id`
-- **New**: `idx_user_journals_source` on `source_type`
-
----
-
-#### Example: Journal from Lesson
-
-_[SQL code implementation removed - to be added during development]_
-
-**UI Display in Journal History:**
-
+```sql
+SELECT * FROM journal_templates
+WHERE type = 'learn' AND category = $1 AND is_active = true
+ORDER BY created_at;
 ```
-┌─────────────────────────────────────────┐
-│ Introduction to Journaling              │
-│ Nov 20, 2025 • 8:35 AM                  │
-│                                         │
-│ 🧠 From lesson: Introduction to...     │  ← Badge with link
-│                                         │
-│ What brought you to journaling today?  │
-│                                         │
-│ I decided to start journaling because  │
-│ I want to understand my emotions...    │
-└─────────────────────────────────────────┘
+
+### 2. Get User's Completed Slide Groups for a Collection
+
+```sql
+SELECT slide_group_id, completed_at
+FROM user_learned_slide_groups
+WHERE user_id = $1 AND collection_id = $2;
+```
+
+### 3. Get Collection Progress (completed / total)
+
+```sql
+-- Total slide groups per collection comes from JSONB array length:
+SELECT jsonb_array_length(slide_groups) as total
+FROM journal_templates WHERE id = $1;
+
+-- Completed count:
+SELECT COUNT(*) as completed
+FROM user_learned_slide_groups
+WHERE user_id = $1 AND collection_id = $2;
+```
+
+### 4. Get All Learning Collections Grouped by Category (for "See All" page)
+
+```sql
+SELECT category, json_agg(
+  json_build_object('id', id, 'title', title, 'description', description, 'slide_groups', slide_groups)
+) as collections
+FROM journal_templates
+WHERE type = 'learn' AND is_active = true
+GROUP BY category
+ORDER BY category;
 ```
 
 ---
 
-### `lesson_progress_metrics` (Aggregated Progress)
-
-Cached aggregation for fast dashboard queries.
-
-| Column                | Type      | Constraints | Description                      |
-|-----------------------|-----------|-------------|----------------------------------|
-| `user_id`             | UUID      | PK          | From Keycloak token              |
-| `total_lessons`       | INTEGER   | DEFAULT 0   | Total lessons completed          |
-| `topic_distribution`  | JSONB     |             | Category breakdown               |
-| `last_completed_at`   | TIMESTAMP |             | Most recent lesson completion    |
-| `updated_at`          | TIMESTAMP | DEFAULT NOW()| Last recalculation              |
-
-#### `topic_distribution` JSONB Example
-
-_[JSON code implementation removed - to be added during development]_
-
-**Purpose**: Avoid scanning `user_learned_lessons` on every dashboard load.
-
-**Update Trigger**: Recalculate after each lesson completion.
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-## 📱 Client-Side: SQLite Schema (@capacitor-community/sqlite)
-
-### Mobile & Web: SQLite Database
-
-**Storage**: SQLite database via `@capacitor-community/sqlite`
-- **Mobile (iOS/Android)**: Native SQLite
-- **Web**: SQL.js (WASM-based SQLite)
-- **Encryption**: Optional SQLite encryption available
-
-#### `local_collections`
-
-Stores collection metadata locally (including bundled lessons).
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### `local_slide_groups`
-
-Stores lesson content locally.
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### `local_progress`
-
-Tracks lesson completions locally (syncs to `user_learned_lessons` on server).
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### `sync_queue`
-
-Tracks pending sync operations.
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-### Web Platform Note
-
-**Web uses the same SQLite database** via SQL.js (WebAssembly):
-- Same schema as mobile (consistency)
-- Stored in browser's IndexedDB (for persistence)
-- Automatic migration from mobile ↔ web
-
-No separate IndexedDB schema needed - SQLite handles all platforms uniformly.
-
----
-
-## 🔗 Relationships & Queries
-
-### Common Queries
-
-#### 1. Get All Learning Lessons by Category
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### 2. Get User's Completed Lessons
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### 3. Get Progress Counter
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### 4. Get Journals from Lessons
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### 5. Check if Lesson Already Completed
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-## 📊 Data Flow Diagram
+## 📊 Data Flow: Completing a Lesson
 
 ```
-User Completes Lesson
+User Completes Slide Group (taps "Finish")
          │
          ▼
 ┌─────────────────────┐
 │ Frontend            │
-│ - User taps Finish  │
+│ - Mark completed    │
 └──────────┬──────────┘
            │
            ▼
 ┌─────────────────────┐
-│ Local Storage       │
+│ Local SQLite        │
 │ INSERT INTO         │
-│ local_progress      │
-│ (synced = 0)        │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Sync Queue          │
-│ Add completion task │
+│ user_learned_       │
+│ slide_groups        │
+│ (needs_sync = 1)    │
 └──────────┬──────────┘
            │
            │ When Online
            ▼
-┌─────────────────────┐
-│ Backend API         │
-│ POST /api/lessons/  │
-│ :id/complete        │
-└──────────┬──────────┘
+┌──────────────────────────┐
+│ Backend API              │
+│ POST /v1/learned/        │
+│ {collection_id,          │
+│  slide_group_id}         │
+└──────────┬───────────────┘
            │
            ▼
-┌─────────────────────────────────┐
-│ PostgreSQL                      │
-│ INSERT INTO user_learned_lessons│
-└──────────┬──────────────────────┘
-           │
-           ▼
-┌─────────────────────────────────┐
-│ Trigger                         │
-│ UPDATE lesson_progress_metrics  │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ PostgreSQL                           │
+│ INSERT INTO user_learned_slide_groups│
+└──────────────────────────────────────┘
 ```
 
 ---
 
-**Last Updated**: November 22, 2025
+**Last Updated**: February 24, 2026

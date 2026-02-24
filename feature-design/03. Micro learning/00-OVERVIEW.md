@@ -55,7 +55,7 @@ Provide bite-sized educational content about psychology, therapy, emotional well
 
 - **[Journaling](../02.%20Jounral%20Feature/)** - Lessons include journal prompts that create linked entries
 - **[User Profile](../06.%20User%20profile%20and%20Settings/)** - AI recommendation opt-in setting
-- **[Database Schema](../00-DATABASE/)** - `collections`, `slide_groups`, `user_learned_lessons`
+- **[Database Schema](../00-DATABASE/)** - `journal_templates` (type='learn'), `user_learned_slide_groups`
 
 ## 📝 Notes
 

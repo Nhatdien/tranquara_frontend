@@ -63,15 +63,16 @@ CREATE INDEX idx_user_journals_collection_id ON user_journals(collection_id);
 
 #### Table: `journal_templates` (Collections)
 
-Stores predefined journaling collections with structured slide groups.
+Stores predefined collections with structured slide groups. Collections are split into two types for display in the Library page.
 
 ```sql
 CREATE TABLE journal_templates (
     id UUID DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    category VARCHAR(100),                 -- e.g., "Daily Reflection", "Therapy Prep"
-    slide_groups JSONB NOT NULL,          -- Array of slide group definitions
+    category VARCHAR(100),                 -- e.g., "anxiety", "gratitude", "therapy_prep"
+    type VARCHAR(50) NOT NULL DEFAULT 'journal',  -- 'learn' or 'journal'
+    slide_groups JSONB NOT NULL,           -- Array of slide group definitions
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -79,6 +80,8 @@ CREATE TABLE journal_templates (
 );
 
 CREATE INDEX idx_journal_templates_category ON journal_templates(category);
+CREATE INDEX idx_journal_templates_type ON journal_templates(type);
+CREATE INDEX idx_journal_templates_type_category ON journal_templates(type, category);
 CREATE INDEX idx_journal_templates_active ON journal_templates(is_active);
 ```
 
@@ -87,13 +90,29 @@ CREATE INDEX idx_journal_templates_active ON journal_templates(is_active);
 | Field | Type | Description |
 |-------|------|-------------|
 | `id` | UUID | Primary key |
-| `title` | VARCHAR(255) | Collection name (e.g., "Daily Reflection") |
+| `title` | VARCHAR(255) | Collection name (e.g., "Understanding Anxiety") |
 | `description` | TEXT | What this collection is for |
-| `category` | VARCHAR(100) | Grouping category |
+| `category` | VARCHAR(100) | Grouping category (e.g., "anxiety", "emotions", "gratitude") |
+| `type` | VARCHAR(50) | **`'learn'`** = Educational content (Library "Collections" section) · **`'journal'`** = Journaling prompts (Library "Categories" section) |
 | `slide_groups` | JSONB | Structured slide definitions (see JSONB structure below) |
 | `is_active` | BOOLEAN | Whether collection is available to users |
 | `created_at` | TIMESTAMP | Creation timestamp |
 | `updated_at` | TIMESTAMP | Last modification timestamp |
+
+**`type` Values:**
+
+| Value | Description | Library Section | Example Collections |
+|-------|-------------|-----------------|---------------------|
+| `learn` | Educational micro-lessons | **"Collections"** — horizontal scroll cards with chapter count & progress | Understanding Anxiety, Understanding Emotions, Introduction to Journaling |
+| `journal` | Journaling prompt templates | **"All Categories"** — grouped by category tabs, shows slide groups as cards | Daily Reflection, Gratitude Practice, Stress Journaling |
+
+**`category` Values (shared by both types):**
+
+- `anxiety`, `emotions`, `gratitude`, `mental_health`, `mindfulness`, `relationships`, `self_care`, `sleep`, `therapy_prep`, `journaling_basics`, `stress_management`
+
+Both `learn` and `journal` type collections can share the same category values. For example:
+- `type='learn', category='anxiety'` → "Understanding Anxiety" (educational)
+- `type='journal', category='anxiety'` → "Anxiety Journaling Prompts" (journaling)
 
 **`slide_groups` JSONB Structure:**
 
@@ -192,6 +211,7 @@ CREATE TABLE journal_templates (
     title TEXT NOT NULL,
     description TEXT,
     category TEXT,
+    type TEXT NOT NULL DEFAULT 'journal',  -- 'learn' or 'journal'
     slide_groups TEXT NOT NULL,            -- JSON string
     is_active INTEGER DEFAULT 1,
     created_at TEXT,
@@ -200,8 +220,67 @@ CREATE TABLE journal_templates (
 );
 
 CREATE INDEX idx_local_templates_category ON journal_templates(category);
+CREATE INDEX idx_local_templates_type ON journal_templates(type);
 CREATE INDEX idx_local_templates_active ON journal_templates(is_active);
 ```
+
+---
+
+#### Table: `user_learned_slide_groups` (Learning Progress)
+
+Tracks which slide groups a user has completed within `type='learn'` collections.
+
+**PostgreSQL Schema:**
+
+```sql
+CREATE TABLE user_learned_slide_groups (
+    id UUID DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    collection_id UUID NOT NULL REFERENCES journal_templates(id) ON DELETE CASCADE,
+    slide_group_id TEXT NOT NULL,           -- Matches slide_group.id within JSONB
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE (user_id, collection_id, slide_group_id)  -- Prevent duplicate completions
+);
+
+CREATE INDEX idx_learned_user_id ON user_learned_slide_groups(user_id);
+CREATE INDEX idx_learned_collection ON user_learned_slide_groups(collection_id);
+CREATE INDEX idx_learned_completed ON user_learned_slide_groups(completed_at);
+```
+
+**SQLite Schema (Local):**
+
+```sql
+CREATE TABLE user_learned_slide_groups (
+    id TEXT PRIMARY KEY,
+    server_id TEXT,                         -- UUID from server after sync
+    user_id TEXT NOT NULL,
+    collection_id TEXT NOT NULL,
+    slide_group_id TEXT NOT NULL,
+    completed_at TEXT NOT NULL,             -- ISO 8601
+    needs_sync INTEGER DEFAULT 1,
+    synced_at TEXT,
+    UNIQUE (user_id, collection_id, slide_group_id)
+);
+
+CREATE INDEX idx_local_learned_user ON user_learned_slide_groups(user_id);
+CREATE INDEX idx_local_learned_collection ON user_learned_slide_groups(collection_id);
+CREATE INDEX idx_local_learned_sync ON user_learned_slide_groups(needs_sync);
+```
+
+**Field Descriptions:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `user_id` | UUID | User who completed the slide group |
+| `collection_id` | UUID | FK to `journal_templates.id` (the parent collection) |
+| `slide_group_id` | TEXT | The `id` field from within the collection's `slide_groups` JSONB |
+| `completed_at` | TIMESTAMP | When the user finished the slide group |
+
+**Usage:**
+- Calculate collection progress: `completed slide groups / total slide groups`
+- Show progress bar on collection cards in the Library page
+- "Chapters read" count per collection
 
 ---
 
@@ -326,6 +405,13 @@ export interface ListItemNode {
 
 ```typescript
 /**
+ * Collection Type
+ * - 'learn': Educational content (Library "Collections" section)
+ * - 'journal': Journaling prompts (Library "Categories" section)
+ */
+export type CollectionType = 'learn' | 'journal';
+
+/**
  * Journal Collection (Template)
  */
 export interface JournalCollection {
@@ -333,12 +419,26 @@ export interface JournalCollection {
   title: string;
   description: string;
   category: string;
+  type: CollectionType;                    // 'learn' or 'journal'
   slideGroups: SlideGroup[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   cachedAt?: string;                       // Local cache timestamp
 }
+
+/**
+ * Learning Progress Record
+ * Tracks which slide groups a user has completed in learn-type collections.
+ */
+export interface LearnedSlideGroup {
+  id: string;
+  userId: string;
+  collectionId: string;
+  slideGroupId: string;                    // Matches SlideGroup.id within collection
+  completedAt: string;                     // ISO 8601
+}
+```
 
 /**
  * Slide Group (e.g., "Morning Prep", "Evening Reflection")
@@ -698,65 +798,53 @@ function generateTitle(content: TipTapJSON, collectionTitle?: string): string {
 ### Required Migrations
 
 - [x] `000010_create_user_journals_table.up.sql` - ✅ Exists
-- [ ] **TODO**: Add `content_html` column to `user_journals`
-- [ ] **TODO**: Add `updated_at` column to `user_journals`
-- [ ] **TODO**: Rename `template_id` → `collection_id` in `user_journals`
-- [ ] **TODO**: Update `journal_templates` to use JSONB `slide_groups` instead of VARCHAR[] `content`
-- [ ] **TODO**: Add `description` column to `journal_templates`
-- [ ] **TODO**: Drop `greetings` column from `journal_templates` (moved to slide_groups)
+- [x] `000015_update_user_journals_schema.up.sql` - ✅ Exists (content_html, updated_at, collection_id)
+- [x] `000016_update_journal_templates_schema.up.sql` - ✅ Exists (slide_groups JSONB, description, is_active)
+- [ ] **TODO**: `000021` - Add `type` column to `journal_templates` (default `'journal'`)
+- [ ] **TODO**: `000022` - Create `user_learned_slide_groups` table (learning progress tracking)
 - [x] ~~`000012_create_emotion_logs_table.up.sql`~~ - ❌ No longer needed (embedded in content)
 - [x] ~~`000013_create_guider_chatlog_table.up.sql`~~ - ❌ No longer needed (embedded in content)
 
-### Migration: Update `user_journals` Schema
+### Migration: Add `type` to `journal_templates`
 
 ```sql
--- migrations/000015_update_user_journals_schema.up.sql
-ALTER TABLE user_journals ADD COLUMN content_html TEXT;
-ALTER TABLE user_journals ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE user_journals RENAME COLUMN template_id TO collection_id;
+-- migrations/000021_add_type_to_journal_templates.up.sql
+ALTER TABLE journal_templates ADD COLUMN type VARCHAR(50) NOT NULL DEFAULT 'journal';
 
--- Create index on updated_at for efficient queries
-CREATE INDEX idx_user_journals_updated_at ON user_journals(updated_at DESC);
+-- Create indexes for type-based queries
+CREATE INDEX idx_journal_templates_type ON journal_templates(type);
+CREATE INDEX idx_journal_templates_type_category ON journal_templates(type, category);
 ```
 
 ```sql
--- migrations/000015_update_user_journals_schema.down.sql
-DROP INDEX IF EXISTS idx_user_journals_updated_at;
-ALTER TABLE user_journals RENAME COLUMN collection_id TO template_id;
-ALTER TABLE user_journals DROP COLUMN updated_at;
-ALTER TABLE user_journals DROP COLUMN content_html;
+-- migrations/000021_add_type_to_journal_templates.down.sql
+DROP INDEX IF EXISTS idx_journal_templates_type_category;
+DROP INDEX IF EXISTS idx_journal_templates_type;
+ALTER TABLE journal_templates DROP COLUMN type;
 ```
 
-### Migration: Modernize `journal_templates`
+### Migration: Create `user_learned_slide_groups`
 
 ```sql
--- migrations/000016_modernize_journal_templates.up.sql
-ALTER TABLE journal_templates ADD COLUMN description TEXT;
-ALTER TABLE journal_templates ADD COLUMN slide_groups JSONB NOT NULL DEFAULT '[]'::jsonb;
-ALTER TABLE journal_templates ADD COLUMN is_active BOOLEAN DEFAULT true;
-ALTER TABLE journal_templates ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+-- migrations/000022_create_user_learned_slide_groups.up.sql
+CREATE TABLE user_learned_slide_groups (
+    id UUID DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,
+    collection_id UUID NOT NULL REFERENCES journal_templates(id) ON DELETE CASCADE,
+    slide_group_id TEXT NOT NULL,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE (user_id, collection_id, slide_group_id)
+);
 
--- Drop old columns
-ALTER TABLE journal_templates DROP COLUMN content;
-ALTER TABLE journal_templates DROP COLUMN greetings;
-
--- Create indexes
-CREATE INDEX idx_journal_templates_category ON journal_templates(category);
-CREATE INDEX idx_journal_templates_active ON journal_templates(is_active);
+CREATE INDEX idx_learned_user_id ON user_learned_slide_groups(user_id);
+CREATE INDEX idx_learned_collection ON user_learned_slide_groups(collection_id);
+CREATE INDEX idx_learned_completed ON user_learned_slide_groups(completed_at);
 ```
 
 ```sql
--- migrations/000016_modernize_journal_templates.down.sql
-DROP INDEX IF EXISTS idx_journal_templates_active;
-DROP INDEX IF EXISTS idx_journal_templates_category;
-
-ALTER TABLE journal_templates ADD COLUMN greetings TEXT[];
-ALTER TABLE journal_templates ADD COLUMN content VARCHAR(255)[];
-
-ALTER TABLE journal_templates DROP COLUMN updated_at;
-ALTER TABLE journal_templates DROP COLUMN is_active;
-ALTER TABLE journal_templates DROP COLUMN slide_groups;
-ALTER TABLE journal_templates DROP COLUMN description;
+-- migrations/000022_create_user_learned_slide_groups.down.sql
+DROP TABLE IF EXISTS user_learned_slide_groups;
 ```
 
 ---
@@ -818,8 +906,10 @@ export const CollectionSchema = {
 ---
 
 **Next Steps:**
-1. Create database migrations for schema updates
-2. Implement TypeScript interfaces in frontend
-3. Create TipTap custom nodes for `slideResponse` and `aiQuestion`
-4. Build data transformation utilities
-5. Test offline sync with embedded data structure
+1. Run migration `000021` to add `type` column to `journal_templates`
+2. Run migration `000022` to create `user_learned_slide_groups` table
+3. Update Go model (`JournalTemplate`) to include `Type` field
+4. Update TypeScript type (`JournalTemplate`) to include `type` field
+5. Update frontend Library page to filter by `type`
+6. Implement learning progress tracking (mark slide group as completed)
+7. Update seed data to include `type` values for existing templates

@@ -11,29 +11,37 @@ This document outlines all user journeys within the micro-learning feature, from
 ```mermaid
 flowchart TD
     A[User Opens App] --> B{Navigation Choice}
-    B -->|Tap Library Tab| C[Lesson Library Screen]
+    B -->|Tap Library Tab| C[Library Screen]
     B -->|Tap Home| D[Home Dashboard]
     D -->|See Learn Section| C
     
-    C --> E[View Categories<br/>Mindfulness<br/>Therapy Prep<br/>Stress Management<br/>Emotions<br/>Journaling Skills]
+    C --> E[Library Page:<br/>📚 Collections Section type=learn<br/>📝 Categories Section type=journal]
+    
     E --> F{User Action}
+    F -->|Browse Collections| G[Horizontal scroll<br/>Learn collections with<br/>progress bars]
+    F -->|Browse Categories| H[Tap category chip<br/>e.g., Mindfulness]
+    F -->|Use Search Bar| I[Enter keyword/topic]
     
-    F -->|Tap Category| G[View Lessons in Category<br/>Filtered list]
-    F -->|Use Search Bar| H[Enter keyword/topic]
-    F -->|Scroll All Lessons| I[Browse full library]
+    G --> J{Action on Collection}
+    J -->|Tap Collection Card| K[View Slide Groups<br/>in Collection<br/>with completion status]
+    J -->|Tap See All| L[All Learn Collections<br/>Grouped by Category]
     
-    H --> J[Search Results<br/>PostgreSQL + Qdrant]
-    J --> K[Tap Lesson Card]
-    G --> K
-    I --> K
+    H --> M[Show all slide groups<br/>from ALL journal-type<br/>collections in category]
     
-    K --> L[Lesson Detail Screen<br/>- Title<br/>- Description<br/>- Estimated time<br/>- Preview illustration<br/>- Start Button]
-    L --> M{User Decision}
-    M -->|Start Lesson| N[Begin Slide Flow]
-    M -->|Back| C
+    I --> N[Search Results<br/>PostgreSQL + Qdrant]
+    
+    K --> O[Tap Slide Group]
+    L --> O
+    M --> O
+    N --> O
+    
+    O --> P[Lesson/Session Detail<br/>- Title<br/>- Description<br/>- Start Button]
+    P --> Q{User Decision}
+    Q -->|Start| R[Begin Slide Flow]
+    Q -->|Back| C
 ```
 
-**Result**: User enters a lesson and begins slide-by-slide content.
+**Result**: User enters a lesson/session and begins slide-by-slide content. Learn collections show progress bars; journal categories show slide group listings.
 
 ---
 
@@ -69,7 +77,7 @@ flowchart TD
     
     P --> Q[Finish Button Visible]
     Q --> R{User Action}
-    R -->|Tap Finish| S[Mark Lesson Complete<br/>Save to user_learned_lessons]
+    R -->|Tap Finish| S[Mark Lesson Complete<br/>Save to user_learned_slide_groups]
     R -->|Back/Exit| T[Exit Without Completing<br/>Progress not saved]
     
     S --> U[Show Completion Badge<br/>+1 to Progress Counter]
@@ -279,7 +287,7 @@ flowchart TD
     Q --> R[User Completes Lesson]
     R --> S[Save Progress Locally<br/>to Sync Queue]
     
-    S --> T[When Online:<br/>Sync to Server<br/>user_learned_lessons]
+    S --> T[When Online:<br/>Sync to Server<br/>user_learned_slide_groups]
 ```
 
 **Result**: Core lessons work 100% offline. New content syncs when available.
@@ -305,7 +313,7 @@ flowchart TD
     J --> K{User Taps Finish}
     
     K --> L[Check Database:<br/>Already Completed?]
-    L -->|Yes| M[Don't Create Duplicate<br/>user_learned_lessons Entry]
+    L -->|Yes| M[Don't Create Duplicate<br/>user_learned_slide_groups Entry]
     L -->|No somehow| N[Create Entry]
     
     M --> O[Show Message:<br/>You've already completed<br/>this lesson]
@@ -321,15 +329,15 @@ flowchart TD
 
 | Flow | Entry Point | Exit Point | Critical Data |
 |------|-------------|------------|---------------|
-| **Browse & Discover** | Library Tab | Lesson Detail | `collections` query |
-| **Complete Lesson** | Start Button | Finish Button → Save | `user_learned_lessons` insert |
+| **Browse & Discover** | Library Tab | Lesson Detail | `journal_templates` (type='learn') query |
+| **Complete Lesson** | Start Button | Finish Button → Save | `user_learned_slide_groups` insert |
 | **Journal Integration** | journal_prompt Slide | Journal Editor → Save | `user_journals` with `collection_id` |
 | **Search** | Search Bar | Results List → Lesson | PostgreSQL + Qdrant |
 | **AI Recommendations** | Settings Toggle → Home | Suggested Lessons | AI analysis of journals |
-| **Progress View** | Profile Tab | Progress Dashboard | `user_learned_lessons` count |
+| **Progress View** | Profile Tab | Progress Dashboard | `user_learned_slide_groups` count |
 | **Offline Access** | App Launch | Lesson Playback | Local DB sync |
 | **Retake Lesson** | Completed Lesson | Finish (no re-save) | No duplicate entries |
 
 ---
 
-**Last Updated**: November 22, 2025
+**Last Updated**: February 24, 2026

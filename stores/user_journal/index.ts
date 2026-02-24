@@ -31,9 +31,8 @@ export class UserJournals extends Base {
 
 
     async deleteJournal(journalId: string): Promise<void> {
-        return this.fetch(`${this.config.base_url}/journal`, {
+        return this.fetch(`${this.config.base_url}/journal?id=${journalId}`, {
             method: "DELETE",
-            body: journalId
         })
     }
 
@@ -46,26 +45,6 @@ export class UserJournals extends Base {
      */
     async syncJournal(journal: LocalJournal): Promise<Journal> {
         try {
-            // If journal is marked as deleted, delete from server
-            if (journal.is_deleted === 1) {
-                if (journal.server_id) {
-                    await this.deleteJournal(journal.server_id);
-                }
-                // Return minimal response for deleted journals
-                return {
-                    id: journal.server_id || '',
-                    user_id: journal.user_id,
-                    collection_id: journal.collection_id,
-                    title: journal.title || '',
-                    content: journal.content,
-                    content_html: journal.content_html,
-                    mood_score: journal.mood_score,
-                    mood_label: journal.mood_label,
-                    created_at: journal.created_at,
-                    updated_at: journal.updated_at,
-                } as Journal;
-            }
-
             // Prepare journal data for server (exclude local-only fields)
             const journalData = {
                 id: journal.server_id, // Include server_id for updates
