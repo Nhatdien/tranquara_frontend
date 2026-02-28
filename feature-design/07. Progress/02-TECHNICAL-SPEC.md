@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document details the technical implementation of the Progress feature, including real-time metric updates, calculation strategies, export generation, and API specifications.
+This document details the technical implementation of the Progress feature. The Progress page is a **detail page** accessed via the 🔥 streak icon on the Home screen. All metrics are **computed client-side** from local SQLite journals (offline-first), with streak data fetched from the backend.
 
 ---
 
@@ -11,283 +11,269 @@ This document details the technical implementation of the Progress feature, incl
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Mobile/Web Frontend                       │
-│              (Nuxt 3 + Vue 3 + Capacitor)                    │
+│              (Nuxt 3 + Vue 3 + Capacitor)                   │
 │                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Progress     │  │ Charts       │  │ Export       │      │
-│  │ Screen       │  │ Renderer     │  │ Generator    │      │
+│  │ Progress     │  │ ECharts      │  │ Pinia        │      │
+│  │ Page         │  │ Components   │  │ Stores       │      │
+│  │ (detail      │  │ (Emotion Pie,│  │ (Journal,    │      │
+│  │  layout)     │  │  Heatmap)    │  │  Streak,     │      │
+│  │              │  │              │  │  Learned)    │      │
 │  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
 │         │                 │                 │               │
-└─────────┼─────────────────┼─────────────────┼───────────────┘
-          │                 │                 │
-          │                 │                 │
-          │                 │                 │ WebSocket
-┌─────────▼─────────────────▼─────────────────▼───────────────┐
+│         └────── computed properties ────────┘               │
+│                         │                                   │
+│              ┌──────────▼──────────┐                        │
+│              │   Local SQLite DB    │                        │
+│              │   (journals, learned)│                        │
+│              └─────────────────────┘                        │
+└─────────────────────────────────────────────────────────────┘
+                          │
+              Backend (streak data only)
+                          │
+┌─────────────────────────▼───────────────────────────────────┐
 │                   Backend API (Go)                           │
 │              tranquara_core_service                          │
 │                                                              │
-│  GET  /api/progress/summary?period=30d  - Fetch metrics     │
-│  GET  /api/progress/journal?period=30d  - Journal metrics   │
-│  GET  /api/progress/learning?period=30d - Learning metrics  │
-│  POST /api/progress/export              - Generate PDF      │
-│  WS   /api/progress/live                - Real-time updates │
-└─────────┬────────────────────────────────────────┬──────────┘
-          │                                        │
-          │ PostgreSQL                             │ RabbitMQ
-          │                                        │
-┌─────────▼────────────────┐          ┌───────────▼───────────┐
-│   PostgreSQL Database    │          │   Metric Calculator   │
-│                          │          │   (Background Worker) │
-│  - user_journals         │          │                       │
-│  - journal_metrics_daily │◄─────────┤  - Incremental updates│
-│  - user_metrics          │  Trigger │  - Aggregation jobs   │
-│  - user_learned_lessons  │          │  - Sentiment analysis │
-│  - lesson_progress       │          │  - Emotion extraction │
-└──────────────────────────┘          └───────────────────────┘
+│  GET  /v1/user_streaks     - Fetch streak data              │
+│  PUT  /v1/user_streaks     - Update streak data             │
+│  GET  /v1/emotion_log      - Fetch emotion logs             │
+└─────────┬───────────────────────────────────────────────────┘
+          │
+          │ PostgreSQL
+          │
+┌─────────▼────────────────┐
+│   PostgreSQL Database    │
+│                          │
+│  - user_streaks          │
+│  - emotion_logs          │
+│  - user_learned_slide_   │
+│    groups                │
+└──────────────────────────┘
 ```
 
 ---
 
-## 📊 Metric Calculation Strategy
+## 📊 Metric Computation Strategy
 
-### Real-Time Incremental Updates
+### Client-Side Computation (Primary Approach)
 
-**Goal**: Update metrics immediately when user journals or completes lesson, without full recalculation.
+All metrics are computed from data already available in Pinia stores, which are populated from local SQLite on app initialization. **No dedicated backend progress API endpoints are needed.**
 
-#### Journaling Metric Update Flow
-
+#### Entry & Day Counts (✅ Implemented)
 ```
-User Saves Journal Entry
-    ↓
-Backend: POST /api/journals
-    ↓
-1. Insert into user_journals
-    ↓
-2. Trigger Metric Update (async)
-    ↓
-3. Publish to RabbitMQ:
-   {
-     "type": "journal_created",
-     "user_id": "...",
-     "journal_id": "...",
-     "content": "...",
-     "created_at": "2025-11-23T10:30:00Z"
-   }
-    ↓
-4. Metric Calculator Worker Consumes:
-   - Extract sentiment (HuggingFace)
-   - Extract emotions (NLP keywords)
-   - Count words
-   - Check for sleep_check data
-    ↓
-5. Update journal_metrics_daily (today):
-   - entry_count += 1
-   - avg_sentiment = recalculated average
-   - dominant_emotions = updated frequency
-   - emotion_word_freq = merge new emotions
-    ↓
-6. Update user_streaks:
-   - Check if consecutive day
-   - Increment current_streak or reset
-   - Update longest_streak if needed
-    ↓
-7. Publish WebSocket event:
-   {
-     "type": "metrics_updated",
-     "user_id": "...",
-     "metrics": { ... }
-   }
-    ↓
-8. Frontend receives WebSocket → Refresh UI
+Source: userJournalStore.journals (local SQLite)
+Computation: 
+  - totalEntries → streakStore.totalEntries (from backend)
+  - totalCompletedDays → count unique dates from journal created_at
+  - totalWordsWritten → strip HTML/TipTap JSON → split by whitespace → count
 ```
 
-**Performance Optimization:**
-- **Incremental**: Only recalculate affected metrics (today's date)
-- **Cached Aggregations**: Pre-computed daily summaries (not raw scan)
-- **Async Processing**: Metric calculation doesn't block journal save (returns immediately)
-- **Debouncing**: If multiple journals in 1 minute, batch update
-
----
-
-### Learning Metric Update Flow
-
+#### Average Mood (✅ Implemented)
 ```
-User Completes Lesson
-    ↓
-Backend: POST /api/lessons/:id/complete
-    ↓
-1. Insert into user_learned_lessons
-    ↓
-2. Update lesson_progress_metrics (atomic):
-   - total_lessons += 1
-   - topic_distribution[category] += 1
-   - last_completed_at = NOW()
-    ↓
-3. Return success immediately
-    ↓
-4. Optional: Publish WebSocket (if user on Progress tab)
+Source: userJournalStore.journals[].mood_score (1-10 scale)
+Computation:
+  - Filter journals where mood_score != null && mood_score > 0
+  - Calculate average → round to nearest integer
+  - Map to label: {1: 'Terrible', 2: 'Very Bad', ..., 10: 'Fantastic'}
 ```
 
-**Simpler than Journaling** because:
-- No sentiment/emotion analysis needed
-- Just counters (no complex aggregation)
-- Can update synchronously (fast operation)
+#### Streak Data (✅ Implemented)
+```
+Source: useUserStreakStore (fetched from backend GET /v1/user_streaks)
+Data: current_streak, longest_streak, total_entries, last_active
+Note: This is the ONLY metric requiring a backend API call
+```
 
----
+#### Emotion Distribution (🔜 To Implement — Priority #1)
+```
+Source: userJournalStore.journals[].emotion_log (local SQLite)
+Computation:
+  - Group emotions by name/type
+  - Count frequency of each emotion
+  - Format for ECharts pie chart
+Chart: ECharts pie chart (donut style) showing emotion frequency
+```
 
-## 🔄 Real-Time Update Implementation
-
-### Option 1: WebSocket (Recommended)
-
-**Pros**: Instant updates, bidirectional, efficient for real-time
-**Cons**: More complex setup, requires persistent connection
-
-**Backend (Go)**:
-
-_[GO code implementation removed - to be added during development]_
-
-**Frontend (Nuxt 3 + Capacitor)**:
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
----
-
-### Option 2: Polling (Fallback)
-
-**Pros**: Simple, works everywhere, no persistent connection
-**Cons**: Less efficient, 5-10s delay
-
-**Frontend**:
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
-**Recommendation**: Use WebSocket for mobile, polling for web (easier fallback).
-
----
-
-## 📈 Metric Aggregation Queries
-
-### Query 1: Fetch Summary (Last 30 Days)
-
-**Endpoint**: `GET /api/progress/summary?period=30d`
-
-**SQL** (Go backend):
-
-_[SQL code implementation removed - to be added during development]_
-
-**Response Example**:
-
-_[JSON code implementation removed - to be added during development]_
-
----
-
-### Query 2: Time Period Toggle
-
-**Backend Logic**:
-
-_[GO code implementation removed - to be added during development]_
-
----
-
-## 📄 Export Progress Report
-
-### PDF Generation Strategy
-
-**Approach**: Server-side PDF generation using Go template + library.
-
-**Backend Endpoint**: `POST /api/progress/export`
-
-**Request**:
-
-_[JSON code implementation removed - to be added during development]_
-
-**Implementation** (Go):
-
-_[GO code implementation removed - to be added during development]_
-
-**Frontend**:
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
----
-
-### Screenshot Alternative (Simpler)
-
-**Frontend-Only** (no backend):
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
-
-**Trade-off**: Screenshots less professional than PDFs, but much simpler to implement.
+#### Journaling Heatmap (🔜 To Implement — Priority #1)
+```
+Source: userJournalStore.journals[].created_at (local SQLite)
+Computation:
+  - Extract date from each journal's created_at
+  - Count entries per day
+  - Map to heatmap grid: [{date: '2026-01-15', count: 2}, ...]
+Chart: ECharts calendar heatmap (GitHub-style contribution grid)
+  - Color intensity based on journal count per day
+  - Shows last 6 months of activity
+```
 
 ---
 
 ## 🎨 Chart Rendering
 
-### Sentiment Trend Line Chart
+### Library: ECharts + vue-echarts
 
-**Library**: Use `chart.js` with `vue-chartjs` (cross-platform)
+Already installed in the project:
+- `echarts`: ^5.6.0
+- `vue-echarts`: ^7.0.3
+- Plugin: `plugins/echarts.client.ts`
 
-**Data Format**:
+### Emotion Distribution Chart
 
-_[TYPESCRIPT code implementation removed - to be added during development]_
+**Type**: Pie chart (donut style)
 
-**Component**:
+**Data Computation**:
+```typescript
+const emotionDistribution = computed(() => {
+  const emotionCounts: Record<string, number> = {};
+  journalStore.journals
+    .filter(j => !j.is_deleted && j.emotion_log)
+    .forEach(j => {
+      const emotion = j.emotion_log; // e.g., "calm", "anxious"
+      emotionCounts[emotion] = (emotionCounts[emotion] || 0) + 1;
+    });
+  return Object.entries(emotionCounts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+});
+```
 
-_[VUE code implementation removed - to be added during development]_
+**ECharts Option**:
+```typescript
+const emotionChartOption = computed(() => ({
+  tooltip: { trigger: 'item' },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    data: emotionDistribution.value,
+    emphasis: { itemStyle: { shadowBlur: 10 } },
+    label: { show: true, formatter: '{b}: {c}' }
+  }]
+}));
+```
+
+### Journaling Heatmap Calendar
+
+**Type**: ECharts calendar heatmap (GitHub-style)
+
+**Data Computation**:
+```typescript
+const heatmapData = computed(() => {
+  const dayCounts: Record<string, number> = {};
+  journalStore.journals
+    .filter(j => !j.is_deleted)
+    .forEach(j => {
+      const date = new Date(j.created_at).toISOString().split('T')[0];
+      dayCounts[date] = (dayCounts[date] || 0) + 1;
+    });
+  return Object.entries(dayCounts).map(([date, count]) => [date, count]);
+});
+```
+
+**ECharts Option**:
+```typescript
+const heatmapOption = computed(() => {
+  const end = new Date();
+  const start = new Date();
+  start.setMonth(start.getMonth() - 6);
+
+  return {
+    tooltip: {
+      formatter: (p: any) => `${p.data[0]}: ${p.data[1]} entries`
+    },
+    visualMap: {
+      min: 0, max: 5, show: false,
+      inRange: {
+        color: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39']
+      }
+    },
+    calendar: {
+      range: [
+        start.toISOString().split('T')[0],
+        end.toISOString().split('T')[0]
+      ],
+      cellSize: ['auto', 15],
+      dayLabel: { firstDay: 1 },
+    },
+    series: [{
+      type: 'heatmap',
+      coordinateSystem: 'calendar',
+      data: heatmapData.value
+    }]
+  };
+});
+```
 
 ---
 
-### Topic Distribution Radar Chart
+## 🔄 Data Flow
 
-**Library**: `chart.js` with `vue-chartjs` (radar chart)
+### Page Load Flow
 
-**Data**:
+```
+User taps 🔥 streak icon (DateHeader component on Home screen)
+    ↓
+router.push('/progress')
+    ↓
+pages/progress.vue loads (layout: 'detail')
+    ↓
+onMounted:
+  1. Check if streakStore.streak exists
+     → If not: await streakStore.fetchStreak() (GET /v1/user_streaks)
+  2. journalStore.journals already loaded from SQLite on app init
+  3. learnedStore data already loaded from SQLite on app init
+    ↓
+Vue computed properties recalculate:
+  - totalCompletedDays, totalWordsWritten, averageMoodLabel
+  - emotionDistribution, heatmapData
+    ↓
+ECharts components render charts reactively
+    ↓
+UI displays immediately (< 500ms)
+```
 
-_[TYPESCRIPT code implementation removed - to be added during development]_
+### Metric Refresh After Journaling
 
-**Component**:
-
-_[TSX code implementation removed - to be added during development]_
-
----
-
-## 🔧 Performance Optimization
-
-### 1. Caching Strategy
-
-**Backend** (Go):
-
-_[GO code implementation removed - to be added during development]_
-
-**Frontend** (Nuxt 3):
-
-**Progress metrics cached using Capacitor Preferences** (small data, infrequent updates):
-- Cache key: `progress_metrics_{period}` (e.g., `progress_metrics_30d`)
-- TTL: 5 minutes
-- Cache invalidation: On new journal entry or lesson completion
-
-**Note**: Progress feature uses **Capacitor Preferences for caching** (NOT SQLite) because:
-- Small data size (< 10KB JSON response)
-- Simple read/write (no complex queries)
-- Short TTL (5 minutes)
-
-For actual journal/lesson data, see Journal and Micro Learning features which use SQLite.
-
----
-
-### 2. Lazy Loading
-
-**Frontend**:
-
-_[TYPESCRIPT code implementation removed - to be added during development]_
+```
+User writes journal → saves → navigates back to Home
+    ↓
+Journal saved to local SQLite → journalStore.journals updates
+    ↓
+User taps 🔥 streak icon again
+    ↓
+progress.vue re-enters → computed properties recalculate (Vue reactivity)
+    ↓
+Charts re-render with updated data automatically
+    ↓
+No manual refresh or API call needed for local metrics
+```
 
 ---
 
-### 3. Database Indexing
+## 📁 File Structure
 
-**Required Indexes** (PostgreSQL):
+```
+pages/progress.vue                    → Main progress page (detail layout)
+components/HomePage/DateHeader.vue    → 🔥 streak icon → navigateTo('/progress')
+stores/stores/user_streak.ts          → Streak data from backend
+stores/stores/user_journal.ts         → Local journal data (SQLite)
+stores/stores/user_learned.ts         → Local learned data (SQLite)
+plugins/echarts.client.ts             → ECharts plugin setup
+```
 
-_[SQL code implementation removed - to be added during development]_
+---
+
+## 📦 Dependencies
+
+### Frontend (Already Installed)
+- `echarts`: ^5.6.0 — Chart rendering engine
+- `vue-echarts`: ^7.0.3 — Vue 3 wrapper for ECharts
+- `lucide-vue-next` — Icons (Flame, CalendarCheck, Trophy, SmilePlus)
+
+### Backend (Already Exists)
+- `GET /v1/user_streaks` — Streak data (current, longest, total)
+- `PUT /v1/user_streaks` — Update streak on journal save
+- `GET /v1/emotion_log` — Emotion log history (optional enhancement)
 
 ---
 
@@ -295,34 +281,27 @@ _[SQL code implementation removed - to be added during development]_
 
 | Metric | Target |
 |--------|--------|
-| **Progress tab load** | < 1.5s (initial) |
-| **Time period toggle** | < 500ms (cached), < 2s (uncached) |
-| **Real-time update** | < 2s (from action to UI) |
-| **Chart render** | < 1s |
-| **PDF export** | < 5s |
-| **Screenshot capture** | < 2s |
-| **WebSocket latency** | < 100ms |
+| **Progress page load** | < 500ms (data is local) |
+| **Chart render** | < 300ms (ECharts) |
+| **Metric computation** | < 100ms (client-side, even with 1000+ journals) |
+
+### Performance Notes
+- All data is already in memory (Pinia stores loaded from SQLite at app init)
+- No API calls needed except streak data (cached after first fetch)
+- ECharts lazy-loaded via client-side plugin (no SSR overhead)
+- Heatmap limited to last 6 months to keep chart performant
 
 ---
 
-## 📦 Third-Party Libraries
+## 🔮 Future Enhancements
 
-### Frontend (Nuxt 3 + Capacitor)
-
-**Charting**:
-- `chart.js`: ^4.x - Chart rendering engine
-- `vue-chartjs`: ^5.x - Vue 3 wrapper for Chart.js
-
-**Export**:
-- `html2canvas`: ^1.x - Screenshot generation
-- `jspdf`: ^2.x - PDF generation (optional)
-- `@capacitor/filesystem`: ^6.x - File saving
-- `@capacitor/share`: ^6.x - Share dialog
-
-**WebSocket**:
-- `socket.io-client`: ^4.x - Real-time updates
-- Built-in `WebSocket` API for simple use cases
+- [ ] Time period toggle (filter metrics by Daily/Weekly/Monthly/All Time)
+- [ ] Sentiment trend line chart (mood_score over time)
+- [ ] Learning section (lessons completed, topic distribution)
+- [ ] Export as screenshot (html2canvas → Capacitor Filesystem)
+- [ ] Sleep quality trend (if sleep_check data is tracked)
+- [ ] AI-generated insights ("Your mood improved by 15% this month")
 
 ---
 
-**Last Updated**: November 25, 2025
+**Last Updated**: February 28, 2026

@@ -6,14 +6,15 @@ Provide users with clear, informative insights into their journaling habits and 
 
 ## 📊 Status
 
-- **Current Status**: 🧠 Planned
-- **Priority**: High (P0)
+- **Current Status**: 🔄 In Progress (basic stats page exists, charts pending)
+- **Priority**: Medium
 - **Target Release**: v1.0
 - **Dependencies**: 
   - Journaling feature ✅
   - Micro Learning feature ✅
-  - Database metrics tables (`journal_metrics_daily`, `user_metrics`, `lesson_progress_metrics`)
-  - Real-time metric calculation system
+  - `user_streaks` table ✅ (backend)
+  - `user_learned_slide_groups` table ✅ (backend)
+  - Local SQLite journals ✅ (client-side metric computation)
 
 ## 🎨 User Value
 
@@ -26,61 +27,63 @@ Provide users with clear, informative insights into their journaling habits and 
 ## 🔑 Key Features
 
 ### Core Progress Display
-- **Bottom Navigation Tab**: Quick access between Journal, Progress, and Library
-- **Time Period Toggle**: View metrics for Daily / Weekly / Monthly / All Time
-- **Default View**: Last 30 days
-- **Real-Time Updates**: Metrics refresh immediately after journaling or completing lessons
+- **Detail Page**: Accessed by tapping the 🔥 streak icon in the Home screen `DateHeader` component
+- **Layout**: Uses `detail` layout (back button, no bottom nav) — page at `pages/progress.vue`
+- **Client-Side Computation**: All metrics computed locally from SQLite journals (offline-first)
+- **Backend Streaks**: `user_streaks` table provides current_streak, longest_streak, total_entries
 
-### Journaling Metrics (Priority #1)
-- **Entry Count**: Total journal entries in selected period
-- **Streak Tracking**: Current streak + longest streak (with 🔥 icon)
-- **Word Count**: Total words written
-- **Sentiment Trend**: Mood chart showing positive/negative patterns over time
-- **Sleep Quality Trend**: Line chart from sleep_check slides
-- **Emotion Variety**: Diversity index of emotions expressed (0-1 scale)
-- **Dominant Emotions**: Top 3-5 most frequent emotions (calm, anxious, happy, etc.)
+### Journaling Metrics (Priority #1 — ✅ Partially Implemented)
+- **Entry Count**: Total journal entries ✅
+- **Streak Tracking**: Current streak + longest streak (with 🔥 icon) ✅
+- **Word Count**: Total words written (strips HTML/TipTap JSON) ✅
+- **Average Mood**: Mapped from mood_score (1-10 scale) to labels ✅
+- **Total Completed Days**: Unique journaling days ✅
+- **Emotion Distribution**: Pie/radar chart showing emotion frequency 🔜
+- **Journaling Heatmap**: GitHub-style calendar showing journaling activity 🔜
 
-### Learning Metrics (Secondary)
-- **Total Lessons Completed**: Simple counter
-- **Topic Distribution**: Radar or pie chart showing category breakdown
-- **Recently Completed**: Last 3 lessons with completion dates
+### Learning Metrics (Secondary — Not Yet Implemented)
+- **Total Lessons Completed**: Counter from `useLearnedStore` 🔜
+- **Recently Completed**: Last lessons with completion dates 🔜
 
-### Data Export
-- **Export Progress Report**: Generate PDF or screenshot of current view
-- **Share-Ready Format**: Formatted for therapist review (future: direct share)
-
-### Empty State Handling
-- **Quick Action**: "Write your first journal" button at top
-- **Sample Metrics**: Grayed-out placeholders showing what will be tracked
+### Empty State Handling ✅
+- **Quick Action**: "Start Journaling" button
 - **Encouraging Tone**: Gentle invitation to start journey
 
 ## 📋 Success Criteria
 
-- [ ] Progress tab loads within 1 second
-- [ ] Metrics update in real-time after journaling/learning actions
-- [ ] Time period toggle works smoothly without lag
+- [ ] Progress page loads within 1 second
+- [ ] Metrics computed from local SQLite journals (offline-first)
+- [ ] Emotion distribution chart renders correctly (ECharts)
+- [ ] Journaling heatmap calendar renders correctly (ECharts)
 - [ ] Charts are accessible and readable (WCAG AA)
-- [ ] Export generates clean, shareable PDF
 - [ ] Empty state is clear and actionable
 - [ ] Users understand their metrics without confusion
-- [ ] No performance impact when calculating metrics for large datasets
+- [ ] No performance impact when computing metrics from large journal sets
 
 ## 🔗 Related Features
 
 - **[Journaling](../02.%20Jounral%20Feature/)** - Primary data source for journaling metrics
 - **[Micro Learning](../03.%20Micro%20learning/)** - Source for learning progress
-- **[Database Schema](../00-DATABASE/)** - `journal_metrics_daily`, `user_metrics`, `lesson_progress_metrics`
-- **[User Settings](../06.%20User%20profile%20and%20Settings/)** - Profile accessed from Home screen (not bottom nav)
+- **[Database Schema](../00-DATABASE/)** - `user_streaks`, `user_learned_slide_groups`
+- **[User Settings](../06.%20User%20profile%20and%20Settings/)** - Profile accessed from Home screen top-right icon
 
 ## 📝 Notes
 
 ### Design Decisions
 
-1. **Why Bottom Navigation for Progress?**
-   - Central to user experience (equal importance to Journal/Library)
-   - Frequent access expected (users check progress regularly)
-   - Tab order: Home → Journal → **Progress** → Library → (Profile in top-right)
-   - Progress between Journal and Library creates logical flow
+1. **Why Detail Page (Not Bottom Navigation)?**
+   - Progress is secondary to the core journaling workflow
+   - Accessed via the 🔥 streak icon in `DateHeader` on the Home screen
+   - Keeps bottom nav focused: Home → Journaling → Library
+   - Less cluttered navigation, intentional access when user wants stats
+   - Uses `detail` layout with back button for clean navigation
+
+2. **Why Client-Side Metric Computation (Not Backend Aggregation)?**
+   - Offline-first: Works without internet (journals stored in SQLite)
+   - No additional backend tables needed (simpler architecture)
+   - Instant: No API call latency for metric display
+   - Data already available locally via `userJournalStore`
+   - Streak data from backend (`user_streaks`) supplements local computation
 
 2. **Why Journaling Metrics First?**
    - Core feature of the app (therapeutic journaling)
@@ -95,12 +98,11 @@ Provide users with clear, informative insights into their journaling habits and 
    - No badges, milestones, or congratulatory popups
    - Users in crisis shouldn't feel "behind"
 
-4. **Why Real-Time Updates?**
-   - Immediate feedback reinforces positive behavior
-   - Users see impact of their actions (wrote journal → count increases)
-   - Prevents confusion ("I just journaled, why doesn't it show?")
-   - Modern app expectation (users expect live data)
-   - Daily aggregation would feel outdated
+4. **Why Immediate Refresh on Page Visit?**
+   - Metrics recompute from local SQLite on each page load (fast, no API delay)
+   - Streak data fetched from backend if not cached
+   - No WebSocket or polling needed — data is local
+   - User navigates back from journaling → progress page recomputes
 
 5. **Why Mixed Visualization Style?**
    - Numbers for quick scanning (entry count, streak, lessons)
@@ -108,43 +110,46 @@ Provide users with clear, informative insights into their journaling habits and 
    - Balance: not overwhelming, not too sparse
    - Accessible to different user preferences (visual vs. numeric)
 
-6. **Why Default to "Last 30 Days"?**
-   - Meaningful timeframe for pattern recognition
-   - Not too short (daily = noisy) or too long (all time = overwhelming)
-   - Aligns with therapy session frequency (monthly check-ins)
-   - Users can toggle to Weekly for granular view or All Time for big picture
+6. **Why No Time Period Toggle for v1.0?**
+   - Client-side computation always uses all local journals (no period filtering yet)
+   - Simpler UX: users see their all-time stats on first visit
+   - Period filtering is a future enhancement when data grows large
+   - Heatmap calendar provides visual time context instead
 
-7. **Why Export Feature?**
-   - Enables therapy preparation (bring insights to sessions)
-   - Personal record-keeping without screenshots
-   - Privacy-friendly (user controls export, not auto-share)
-   - Future: Direct therapist sharing (requires consent flow)
+7. **Why ECharts for Charts?**
+   - Already installed in project (`echarts ^5.6.0`, `vue-echarts ^7.0.3`)
+   - Rich chart types: heatmap calendar, pie/radar, line charts
+   - Good mobile performance with Capacitor
+   - Plugin already set up: `plugins/echarts.client.ts`
 
 ### Metric Calculation Strategy
 
-**Real-Time Calculation Approach:**
+**Client-Side Computation Approach:**
 
 ```
-User Action (Journal/Lesson)
+User Opens Progress Page (taps 🔥 streak icon)
     ↓
-Backend saves data
+Frontend reads local SQLite journals (userJournalStore)
     ↓
-Trigger metric recalculation
+Computed properties calculate:
+  - totalCompletedDays (unique dates)
+  - totalWordsWritten (strip HTML/TipTap → word count)
+  - averageMoodLabel (mood_score avg → label mapping)
+  - emotionDistribution (group emotion_logs by emotion)
+  - heatmapData (journal dates → calendar grid)
     ↓
-Update aggregated tables:
-  - journal_metrics_daily
-  - lesson_progress_metrics
+Streak data from backend (useUserStreakStore)
+  - currentStreak, longestStreak, totalEntries
     ↓
-WebSocket/Polling: Frontend fetches latest
+ECharts renders emotion distribution + heatmap
     ↓
-UI updates immediately
+UI displays immediately (no API wait)
 ```
 
-**Performance Optimization:**
-- Pre-aggregate daily metrics (avoid recalculating from scratch)
-- Incremental updates (add new entry to existing count, not full scan)
-- Cache computed metrics (invalidate on new data)
-- Lazy-load charts (fetch only when user switches time period)
+**Data Sources:**
+- `userJournalStore.journals` — local SQLite via `JournalsRepository`
+- `useUserStreakStore` — backend `GET /v1/user_streaks`
+- `useLearnedStore` — local SQLite via `LearnedRepository`
 
 ### Empty State Philosophy
 
@@ -173,15 +178,16 @@ UI updates immediately
 
 ### Future Enhancements
 
-- [ ] Emotion heatmap calendar (GitHub-style contribution grid)
+- [ ] Time period toggle (Daily / Weekly / Monthly / All Time)
+- [ ] Sentiment trend line chart (mood_score over time)
 - [ ] Compare time periods (This Week vs. Last Week)
-- [ ] Insights/suggestions ("Your mood improved by 15% this month")
-- [ ] Custom date range picker (e.g., "Jan 1 - Jan 15")
-- [ ] Correlation analysis ("Better sleep → better mood")
+- [ ] AI-generated insights ("Your mood improved by 15% this month")
+- [ ] Custom date range picker
+- [ ] Export progress as PDF or screenshot
 - [ ] Share progress directly to therapist (secure, consent-based)
+- [ ] Learning topic distribution chart
 - [ ] Weekly summary notifications (opt-in)
-- [ ] Voice-over summary of progress (accessibility + convenience)
 
 ---
 
-**Last Updated**: November 23, 2025
+**Last Updated**: February 28, 2026

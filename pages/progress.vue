@@ -107,6 +107,28 @@
         </UCard>
       </div>
 
+      <!-- Emotion Distribution Section -->
+      <div v-if="activeJournals.length > 0" class="space-y-3">
+        <h2 class="text-xs font-semibold text-muted uppercase tracking-widest text-center">
+          Emotion Distribution
+        </h2>
+
+        <UCard>
+          <ProgressEmotionDistributionChart :journals="activeJournals" />
+        </UCard>
+      </div>
+
+      <!-- Journaling Activity Heatmap Section -->
+      <div v-if="activeJournals.length > 0" class="space-y-3">
+        <h2 class="text-xs font-semibold text-muted uppercase tracking-widest text-center">
+          Journaling Activity
+        </h2>
+
+        <UCard>
+          <ProgressJournalingHeatmap :journals="activeJournals" />
+        </UCard>
+      </div>
+
       <!-- Empty State -->
       <div v-if="streakStore.totalEntries === 0" class="text-center py-8 space-y-4">
         <p class="text-sm text-muted">
@@ -140,6 +162,13 @@ onMounted(async () => {
     await streakStore.fetchStreak();
   }
 });
+
+/**
+ * Active (non-deleted) journals — shared filter for all computed metrics and chart components.
+ */
+const activeJournals = computed(() =>
+  journalStore.journals.filter((j) => !j.is_deleted)
+);
 
 /**
  * Total unique days the user has journaled.

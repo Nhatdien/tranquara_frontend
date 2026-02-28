@@ -39,11 +39,10 @@ This documentation hub provides comprehensive design specifications for all Ther
 | Feature | Status | Priority | Documentation |
 |---------|--------|----------|---------------|
 | **User Registration & Auth** | ✅ Done | High | [📁 01. User register](./01.%20User%20register/) |
-| **Emotion Journaling** | 🧠 Planned | High | [📁 02. Emotion Journal](./02.%20Emotion%20Jounral%20Feature/) |
-| **Micro Learning** | 🧠 Planned | High | [📁 03. Micro learning](./03.%20Micro%20learning/) |
-| **Therapy Preparation** | 🧠 Planned | High | [📁 04. Prepare for Therapy](./04.%20Prepare%20for%20Therapy/) |
-| **Data Synchronization** | 🧠 Planned | Medium | [📁 05. Data sync](./05.%20Data%20sync/) |
-| **User Profile & Settings** | 🧠 Planned | High | [📁 06. User profile and Settings](./06.%20User%20profile%20and%20Settings/) |
+| **Emotion Journaling** | ✅ Done | High | [📁 02. Jounral Feature](./02.%20Jounral%20Feature/) |
+| **Micro Learning** | ✅ Done | High | [📁 03. Micro learning](./03.%20Micro%20learning/) |
+| **User Profile & Settings** | 🔄 In Progress | High | [📁 06. User profile and Settings](./06.%20User%20profile%20and%20Settings/) |
+| **Progress Tracking** | 🔄 In Progress | Medium | [📁 07. Progress](./07.%20Progress/) |
 
 ### Supporting Documentation
 
@@ -89,24 +88,23 @@ When providing context to AI assistants:
 **Frontend**:
 - **Framework**: Nuxt 3 (Vue 3) + Capacitor
 - **Mobile**: iOS & Android via Capacitor
-- **Web**: SSR/SPA with Nuxt 3
-- **Styling**: TailwindCSS + NativeWind principles
+- **Web**: SPA with Nuxt 3 (SSR disabled for Capacitor compatibility)
+- **Styling**: TailwindCSS + Nuxt UI 3
 - **State**: Pinia
-- **Storage**: Capacitor Preferences + SecureStorage
+- **Storage**: SQLite (heavy data) + Capacitor Preferences (settings) + SecureStorage (tokens)
 
 **Backend**:
 - **Core Service**: Golang (tranquara_core_service)
-- **AI Service**: Python (FastAPI) + HuggingFace models
+- **AI Service**: Python (FastAPI) + OpenAI (GPT-4o-mini) + LangChain
 
 **Database**: 
 - PostgreSQL (user data, journals, streaks, lessons)
-- Qdrant vector store (semantic search for lessons/journals)
+- Qdrant vector store (semantic search for journals via RAG)
 
 **Infrastructure**:
-- **Queue**: RabbitMQ (async AI processing)
-- **Authentication**: Keycloak (OAuth 2.0 / OpenID Connect)
-  - Email/password + social login (Apple, Google)
-- **Cache**: Redis (session management)
+- **Queue**: RabbitMQ (async AI processing + data sync)
+- **Authentication**: Keycloak (Direct Grant Flow for mobile)
+  - Email/password via Resource Owner Password Credentials
 
 ### System Architecture
 
@@ -227,4 +225,4 @@ If documentation is unclear or missing:
 
 ---
 
-**Last Updated**: November 21, 2025
+**Last Updated**: February 28, 2026

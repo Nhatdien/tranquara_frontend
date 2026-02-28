@@ -2,58 +2,15 @@
 
 ## Overview
 
-This document details the database schemas for the Progress feature. Most tables already exist in the database (created by Journaling and Learning features) - this documentation consolidates them for Progress screen queries.
+This document details the data sources used by the Progress feature. Unlike a traditional backend-aggregated approach, **Progress metrics are computed client-side** from local SQLite data. Only streak data comes from the backend PostgreSQL database.
 
 ---
 
-## 🗄️ PostgreSQL Schemas
+## 🗄️ Backend Database Tables (PostgreSQL)
 
-### Journaling Metrics Tables
+### `user_streaks` ✅ Exists
 
-#### `journal_metrics_daily`
-
-Daily aggregated metrics for journaling activity and emotional data.
-
-| Column                  | Type      | Constraints   | Description                           |
-|-------------------------|-----------|---------------|---------------------------------------|
-| `id`                    | UUID      | PK            | Unique daily metric ID                |
-| `user_id`               | UUID      | NOT NULL      | From Keycloak token                   |
-| `date`                  | DATE      | NOT NULL      | The day these metrics represent       |
-| `entry_count`           | INTEGER   | DEFAULT 0     | Number of entries that day            |
-| `streak_days`           | INTEGER   | DEFAULT 0     | Active streak count on that day       |
-| `avg_sentiment`         | FLOAT     |               | Average sentiment score (-1 to +1)    |
-| `emotion_variety_index` | FLOAT     |               | Diversity of emotions (0-1)           |
-| `emotional_intensity`   | FLOAT     |               | Average emotion intensity             |
-| `dominant_emotions`     | TEXT[]    |               | Most frequent emotions                |
-| `emotion_word_freq`     | JSONB     |               | `{"calm":3, "anxious":2, ...}`       |
-| `mood_stability_index`  | FLOAT     |               | Consistency of mood (higher = stable) |
-| `updated_at`            | TIMESTAMP | DEFAULT NOW() | Last calculation time                 |
-
-**Unique Constraint**: `(user_id, date)`
-
-**Indexes**:
-- `idx_jmd_user_date` on `(user_id, date)`
-- `idx_jmd_date_range` on `(user_id, date DESC)` for time-range queries
-
----
-
-##### `emotion_word_freq` JSONB Example
-
-_[JSON code implementation removed - to be added during development]_
-
-**Purpose**: Track frequency of each emotion word mentioned in journals for that day.
-
----
-
-##### Example Rows
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### `user_streaks`
-
-Tracks journaling streak data.
+Tracks journaling streak data. This is the **only backend table** directly used by the Progress page.
 
 | Column           | Type      | Constraints   | Description                      |
 |------------------|-----------|---------------|----------------------------------|
@@ -64,225 +21,149 @@ Tracks journaling streak data.
 | `total_entries`  | INTEGER   | DEFAULT 0     | Lifetime journal count           |
 | `updated_at`     | TIMESTAMP | DEFAULT NOW() | Last update timestamp            |
 
-**Purpose**: Fast access to streak data without scanning `journal_metrics_daily`.
+**Backend API**:
+- `GET /v1/user_streaks` — Fetch streak for authenticated user
+- `PUT /v1/user_streaks` — Update streak (called when user journals)
+
+**Go Model**: `internal/data/user_streaks.go`
+- `Get(userID)` → returns streak record
+- `Insert(streak)` → creates new streak record
+- `UpdateOrReset(streak)` → increments or resets streak based on last_active date
+
+**Frontend Store**: `stores/stores/user_streak.ts` (`useUserStreakStore`)
+- Fetches from backend via `TranquaraSDK.getInstance().getUserStreak()`
+- Getters: `currentStreak`, `longestStreak`, `totalEntries`, `isStreakActive`, `hasJournaledToday`
 
 ---
 
-##### Example Row
+### `emotion_logs` ✅ Exists
 
-_[SQL code implementation removed - to be added during development]_
+Basic emotion tracking. Can be used to enhance emotion distribution data.
 
-**Update Logic**:
+| Column        | Type      | Constraints        | Description                    |
+|---------------|-----------|--------------------|--------------------------------|
+| `id`          | UUID      | PK, DEFAULT gen    | Unique log ID                  |
+| `user_id`     | UUID      | NOT NULL           | From Keycloak token            |
+| `emotion`     | TEXT      | NOT NULL           | Emotion name (calm, anxious)   |
+| `source`      | TEXT      |                    | Source context                 |
+| `context`     | TEXT      |                    | Additional context             |
+| `created_at`  | TIMESTAMP | DEFAULT NOW()      | When logged                    |
 
-_[SQL code implementation removed - to be added during development]_
-
----
-
-#### `user_metrics`
-
-Weekly/monthly aggregated summary metrics (optional, for historical trends).
-
-| Column                    | Type        | Constraints   | Description                    |
-|---------------------------|-------------|---------------|--------------------------------|
-| `id`                      | UUID        | PK            | Unique metric summary ID       |
-| `user_id`                 | UUID        | NOT NULL      | From Keycloak token            |
-| `metric_period`           | VARCHAR(10) | NOT NULL      | 'weekly' or 'monthly'          |
-| `start_date`              | DATE        | NOT NULL      | Period start                   |
-| `end_date`                | DATE        | NOT NULL      | Period end                     |
-| `mood_avg`                | FLOAT       |               | Mean mood score                |
-| `sentiment_trend`         | FLOAT       |               | Slope of sentiment over period |
-| `top_emotions`            | TEXT[]      |               | Most frequent emotions         |
-| `emotion_diversity_score` | FLOAT       |               | Aggregated variety index       |
-| `stability_score`         | FLOAT       |               | Aggregated mood stability      |
-| `streak_score`            | INTEGER     |               | Weighted streak activity       |
-| `theme_counts`            | JSONB       |               | `{"stress":4, "sleep":3, ...}` |
-| `created_at`              | TIMESTAMP   | DEFAULT NOW() | Creation timestamp             |
-
-**Indexes**:
-- `idx_user_metrics_user_period` on `(user_id, metric_period, start_date)`
-
-**Purpose**: Pre-computed summaries for faster weekly/monthly views.
-
-**Note**: Optional for v1.0 - can calculate on-the-fly from `journal_metrics_daily` for now.
+**Backend API**:
+- `GET /v1/emotion_log` — Fetch emotion logs for user (with pagination)
+- `POST /v1/emotion_log` — Create new emotion log
 
 ---
 
-### Learning Metrics Tables
+### `user_learned_slide_groups` ✅ Exists
 
-#### `lesson_progress_metrics`
+Tracks completed learning slide groups. Used for future learning progress section.
 
-Aggregated learning progress for dashboard display.
+| Column           | Type      | Constraints                    | Description                    |
+|------------------|-----------|--------------------------------|--------------------------------|
+| `id`             | UUID      | PK, DEFAULT gen                | Unique completion record       |
+| `user_id`        | UUID      | NOT NULL                       | From Keycloak token            |
+| `collection_id`  | UUID      | FK → journal_templates         | Parent collection              |
+| `slide_group_id` | VARCHAR   | NOT NULL                       | Slide group identifier         |
+| `completed_at`   | TIMESTAMP | DEFAULT NOW()                  | Completion timestamp           |
 
-| Column                | Type      | Constraints   | Description                      |
-|-----------------------|-----------|---------------|----------------------------------|
-| `user_id`             | UUID      | PK            | From Keycloak token              |
-| `total_lessons`       | INTEGER   | DEFAULT 0     | Total lessons completed          |
-| `topic_distribution`  | JSONB     |               | Category breakdown               |
-| `last_completed_at`   | TIMESTAMP |               | Most recent lesson completion    |
-| `updated_at`          | TIMESTAMP | DEFAULT NOW() | Last recalculation               |
+**Unique Constraint**: `(user_id, collection_id, slide_group_id)`
 
-**Purpose**: Fast dashboard queries without scanning `user_learned_lessons`.
-
----
-
-##### `topic_distribution` JSONB Example
-
-_[JSON code implementation removed - to be added during development]_
+**Frontend Store**: `stores/stores/user_learned.ts` (`useLearnedStore`)
+- Offline-first via SQLite (`LearnedRepository`)
+- Getters: `completedByCollection`, `getProgress`
 
 ---
 
-##### Example Row
+## 📱 Local Data Sources (SQLite / Pinia Stores)
 
-_[SQL code implementation removed - to be added during development]_
+### Journal Data — Primary Metric Source
 
-**Update Trigger**: After `INSERT` into `user_learned_lessons`.
+**Store**: `stores/stores/user_journal.ts` (`userJournalStore`)
+**Repository**: `services/sqlite/journals_repository.ts`
 
-_[SQL code implementation removed - to be added during development]_
+Journals stored locally in SQLite contain all the data needed for Progress metrics:
 
----
+| Field         | Type      | Used For                                    |
+|---------------|-----------|---------------------------------------------|
+| `id`          | string    | Unique identifier                           |
+| `content`     | string    | Word count (strip HTML/TipTap JSON)         |
+| `mood_score`  | number    | Average mood label (1-10 scale)             |
+| `emotion_log` | string    | Emotion distribution chart                  |
+| `created_at`  | string    | Completed days count, heatmap calendar      |
+| `is_deleted`  | boolean   | Filter out deleted journals                 |
 
-#### `user_learned_lessons`
+**Computed Metrics from Journals**:
 
-Tracks individual lesson completions (for "Recently Completed" list).
-
-| Column           | Type      | Constraints   | Description                    |
-|------------------|-----------|---------------|--------------------------------|
-| `id`             | UUID      | PK            | Unique completion record       |
-| `user_id`        | UUID      | NOT NULL      | From Keycloak token            |
-| `slide_group_id` | UUID      | FK, NOT NULL  | References `slide_groups.id`   |
-| `collection_id`  | UUID      | FK            | Denormalized for quick queries |
-| `topic`          | VARCHAR(50)|              | Denormalized category          |
-| `completed_at`   | TIMESTAMP | DEFAULT NOW() | Completion timestamp           |
-
-**Indexes**:
-- `idx_ull_user_completed` on `(user_id, completed_at DESC)` for recent list
-
-**Query for Recently Completed** (used in Progress screen):
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-### Supporting Tables (for Sleep & Sentiment)
-
-#### `user_journal_responses` (NEW - Optional)
-
-Stores individual slide responses from journal sessions (for sleep_check, emotion_log).
-
-| Column        | Type      | Constraints   | Description                      |
-|---------------|-----------|---------------|----------------------------------|
-| `id`          | UUID      | PK            | Unique response ID               |
-| `user_id`     | UUID      | NOT NULL      | From Keycloak token              |
-| `journal_id`  | UUID      | FK            | References `user_journals.id`    |
-| `slide_type`  | VARCHAR(50)| NOT NULL     | 'sleep_check', 'emotion_log'     |
-| `response`    | JSONB     | NOT NULL      | Slide-specific data              |
-| `created_at`  | TIMESTAMP | DEFAULT NOW() | Response timestamp               |
-
-**Indexes**:
-- `idx_ujr_user_type` on `(user_id, slide_type, created_at)`
-
----
-
-##### `response` JSONB Examples
-
-**Sleep Check**:
-
-_[JSON code implementation removed - to be added during development]_
-
-**Emotion Log**:
-
-_[JSON code implementation removed - to be added during development]_
-
----
-
-##### Example Rows
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-## 📊 Progress Screen Queries
-
-### Query 1: Fetch Last 30 Days Summary
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-### Query 2: Fetch Learning Metrics
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-### Query 3: Time Period Toggle
-
-**Daily** (today only):
-
-_[SQL code implementation removed - to be added during development]_
-
-**Weekly** (last 7 days):
-
-_[SQL code implementation removed - to be added during development]_
-
-**Monthly** (last 30 days - DEFAULT):
-
-_[SQL code implementation removed - to be added during development]_
-
-**All Time**:
-
-_[SQL code implementation removed - to be added during development]_
+| Metric                | Computation                                          | Status |
+|-----------------------|------------------------------------------------------|--------|
+| `totalCompletedDays`  | Count unique dates from `created_at`                 | ✅     |
+| `totalWordsWritten`   | Strip HTML/JSON → split whitespace → count           | ✅     |
+| `averageMoodLabel`    | Avg `mood_score` → round → map to label (1-10)      | ✅     |
+| `emotionDistribution` | Group `emotion_log` by emotion → count frequency     | 🔜     |
+| `heatmapData`         | Count journals per day → calendar grid               | 🔜     |
 
 ---
 
 ## 🔄 Data Flow Diagram
 
 ```
-User Journals
-    ↓
-user_journals table
-    ↓
-RabbitMQ → Metric Calculator
-    ↓
-AI Service (sentiment/emotion extraction)
-    ↓
-Update journal_metrics_daily (today's record)
-    ↓
-Update user_streaks (check consecutive days)
-    ↓
-WebSocket → Frontend
-    ↓
-Progress Screen Refreshes
-```
-
-```
-User Completes Lesson
-    ↓
-user_learned_lessons table
-    ↓
-Trigger: Update lesson_progress_metrics
-    ↓
-Increment total_lessons
-    ↓
-Update topic_distribution[category]
-    ↓
-Frontend Polls/WebSocket
-    ↓
-Progress Screen Refreshes
+┌─────────────────────────────────────────────┐
+│              Progress Page                   │
+│           pages/progress.vue                │
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌─── Vue Computed Properties ───┐          │
+│  │                               │          │
+│  │  totalCompletedDays           │          │
+│  │  totalWordsWritten            │          │
+│  │  averageMoodLabel             │          │
+│  │  emotionDistribution  🔜     │          │
+│  │  heatmapData          🔜     │          │
+│  │                               │          │
+│  └──────────┬────────────────────┘          │
+│             │                               │
+│     ┌───────▼────────┐  ┌──────────────┐   │
+│     │ userJournalStore│  │ streakStore  │   │
+│     │ (SQLite local) │  │ (Backend API)│   │
+│     └───────┬────────┘  └──────┬───────┘   │
+│             │                  │            │
+└─────────────┼──────────────────┼────────────┘
+              │                  │
+    ┌─────────▼──────┐  ┌───────▼────────┐
+    │  Local SQLite  │  │  PostgreSQL    │
+    │  (journals)    │  │  user_streaks  │
+    └────────────────┘  └────────────────┘
 ```
 
 ---
 
-## 🗃️ Sample Data Export (for Testing)
+## 📝 Notes
 
-_[SQL code implementation removed - to be added during development]_
+### Tables NOT Used (Removed from Original Plan)
+
+The original design proposed several backend aggregation tables that are **not needed** because metrics are computed client-side:
+
+- ~~`journal_metrics_daily`~~ — Not needed (client computes from local journals)
+- ~~`user_metrics`~~ — Not needed (no weekly/monthly backend aggregation)
+- ~~`lesson_progress_metrics`~~ — Not needed (client computes from learned store)
+- ~~`user_journal_responses`~~ — Not needed (sleep/emotion data in journal fields)
+
+### Why Client-Side Works
+
+1. **Data size**: Even 1000+ journals is < 5MB — fast to compute in-memory
+2. **Offline-first**: Works without internet connection
+3. **No sync lag**: Metrics update immediately after saving a journal
+4. **Simpler architecture**: No background workers, no aggregation tables, no metric calculation queue
+
+### When to Reconsider Backend Aggregation
+
+Backend aggregation might become necessary if:
+- Users have 10,000+ journal entries (unlikely for therapy app)
+- Complex cross-user analytics are needed (admin dashboard)
+- AI-generated insights require historical aggregation
+- Multi-device metric consistency becomes critical
 
 ---
 
-## 📈 Database Indexes (Summary)
-
-_[SQL code implementation removed - to be added during development]_
-
----
-
-**Last Updated**: November 23, 2025
+**Last Updated**: February 28, 2026
