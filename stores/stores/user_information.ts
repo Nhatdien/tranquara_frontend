@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
 import { UserInformation, UserInformationResponse, OnboardingRequestPayload } from "~/types/user_information";
-import tranquaraSDKClient from "~/plugins/05.tranquaraSDK.client";
 
 
 export const userInformationStore = defineStore("user_info", {
@@ -25,6 +24,14 @@ export const userInformationStore = defineStore("user_info", {
             }).catch((error: Error) => {
                 this.isError = true
             })
-        }
+        },
+
+        async updateMe(info: Partial<UserInformation>) {
+            return TranquaraSDK.getInstance().updateUserInformation(info).then((response: UserInformationResponse) => {
+                this.userInfomation = response.user_info
+            }).catch((error: Error) => {
+                this.isError = true
+            })
+        },
     }
 })

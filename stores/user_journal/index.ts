@@ -1,7 +1,22 @@
 import { Base } from "../base";
 import { JournalTemplate, JournalTemplateResponse, Journal, UserJournalsResponse, CreateJournalRequest, LocalJournal } from "~/types/user_journal";
+import { useSettingsStore } from "~/stores/stores/settings_store";
 
 export class UserJournals extends Base {
+
+    /**
+     * Check if user has opted out of data collection (Qdrant indexing).
+     * When data_collection is false, journals won't be indexed in Qdrant
+     * and RAG-based AI features won't reference them.
+     */
+    private _shouldSkipAIIndexing(): boolean {
+        try {
+            const settingsStore = useSettingsStore();
+            return !settingsStore.dataCollection;
+        } catch {
+            return false; // Default to indexing if store unavailable
+        }
+    }
     async getAllTemplates(): Promise<JournalTemplateResponse> {        
         // Keeping the typo matching the backend
         return this.fetch(`${this.config.base_url}/tempalte-gallary`)
@@ -18,14 +33,20 @@ export class UserJournals extends Base {
     async createJournal(journal: CreateJournalRequest): Promise<Journal> {
         return this.fetch(`${this.config.base_url}/journal`, {
             method: "POST",
-            body: JSON.stringify(journal)
+            body: JSON.stringify({
+                ...journal,
+                skip_ai_indexing: this._shouldSkipAIIndexing(),
+            })
         })
     }
 
     async updateJournal(journal: Journal): Promise<Journal> {
         return this.fetch(`${this.config.base_url}/journal`, {
             method: "PUT",
-            body: JSON.stringify(journal)
+            body: JSON.stringify({
+                ...journal,
+                skip_ai_indexing: this._shouldSkipAIIndexing(),
+            })
         })
     }
 
@@ -56,6 +77,7 @@ export class UserJournals extends Base {
                 mood_label: journal.mood_label,
                 created_at: journal.created_at,
                 updated_at: journal.updated_at,
+                skip_ai_indexing: this._shouldSkipAIIndexing(),
             };
 
             // If has server_id, it's an update

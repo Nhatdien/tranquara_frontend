@@ -25,9 +25,11 @@
 <script lang="ts" setup>
 import TranquaraSDK from "~/stores/tranquara_sdk";
 import { useAuthStore } from "~/stores/stores/auth_store";
+import { useAIGuard } from "~/composables/useAIGuard";
 
 const currentNote = ref("");
 const isGeneratingQuestion = ref(false);
+const { canUseAI, yourStory } = useAIGuard();
 
 const editor = ref()
 const props = defineProps({
@@ -72,6 +74,7 @@ const onEditorUpdate = () => {
 
 const handleGoDeeper = async (direction: string) => {
   if (!hasContent.value || isGeneratingQuestion.value) return;
+  if (!canUseAI()) return;
   
   try {
     isGeneratingQuestion.value = true;
@@ -92,6 +95,7 @@ const handleGoDeeper = async (direction: string) => {
       current_slide_id: props.content?.id,            // Pass current slide ID
       collection_title: props.collectionTitle,         // Pass collection title
       direction: direction as 'why' | 'emotions' | 'patterns' | 'challenge' | 'growth',  // Pass selected direction
+      your_story: yourStory.value || undefined,
     });
     
     // Insert AI question into editor with muted styling

@@ -80,10 +80,12 @@ import { userJournalStore } from "~/stores/stores/user_journal";
 import { useAuthStore } from "~/stores/stores/auth_store";
 import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 import TranquaraSDK from "~/stores/tranquara_sdk";
+import { useAIGuard } from "~/composables/useAIGuard";
 
 const router = useRouter();
 const journalStore = userJournalStore();
 const authStore = useAuthStore();
+const { canUseAI, yourStory } = useAIGuard();
 
 // Form state
 const title = ref("");
@@ -164,6 +166,7 @@ const confirmMood = () => {
 
 const handleGoDeeper = async () => {
   if (!hasContent.value || isGeneratingQuestion.value) return;
+  if (!canUseAI()) return;
   
   try {
     isGeneratingQuestion.value = true;
@@ -180,6 +183,7 @@ const handleGoDeeper = async () => {
       content: plainText,
       mood_score: moodScore.value,
       slide_prompt: undefined, // No template for free-form journaling
+      your_story: yourStory.value || undefined,
     });
     
     // Insert AI question into editor with muted styling

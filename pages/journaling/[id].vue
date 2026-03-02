@@ -117,12 +117,14 @@ import { useAuthStore } from "~/stores/stores/auth_store";
 import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 import TranquaraSDK from "~/stores/tranquara_sdk";
 import type { LocalJournal } from "~/types/user_journal";
+import { useAIGuard } from "~/composables/useAIGuard";
 
 definePageMeta({ layout: "detail" });
 
 const route = useRoute();
 const router = useRouter();
 const journalStore = userJournalStore();
+const { canUseAI, yourStory } = useAIGuard();
 
 // State
 const isLoading = ref(true);
@@ -250,6 +252,7 @@ const confirmMood = () => {
 
 const handleGoDeeper = async () => {
   if (!hasContent.value || isGeneratingQuestion.value) return;
+  if (!canUseAI()) return;
   
   try {
     isGeneratingQuestion.value = true;
@@ -264,6 +267,7 @@ const handleGoDeeper = async () => {
       content: plainText,
       mood_score: moodScore.value,
       slide_prompt: undefined,
+      your_story: yourStory.value || undefined,
     });
     
     if (editorRef.value?.editor) {

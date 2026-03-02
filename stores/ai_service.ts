@@ -15,6 +15,7 @@ export class AIService extends Base {
     current_slide_id?: string;    // Current slide ID
     collection_title?: string;    // Collection name
     direction?: 'why' | 'emotions' | 'patterns' | 'challenge' | 'growth';
+    your_story?: string;          // User's personal context from settings
   }): Promise<{ question: string }> {
     const url = `${this.config.websocket_url || 'http://localhost:8000'}/api/analyze-journal`;
     

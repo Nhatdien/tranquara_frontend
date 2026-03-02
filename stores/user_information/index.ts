@@ -13,4 +13,11 @@ export class UserInformations extends Base {
         })
     }
 
+    async updateUserInformation(info: Partial<UserInformation>): Promise<UserInformationResponse> {
+        return this.fetch(`${this.config.base_url}/user_information`, {
+            method: "PUT",
+            body: JSON.stringify(info)
+        })
+    }
+
 }
