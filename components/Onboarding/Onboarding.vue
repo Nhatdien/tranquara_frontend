@@ -36,8 +36,9 @@
 import type { StepperItem } from "@nuxt/ui";
 import { onboardingSchema } from "~/data/onboardingSchema";
 import InitalJournal from "./InitalJournal.vue";
+import { useAuthStore } from '~/stores/stores/auth_store';
 
-const { $keycloak } = useNuxtApp();
+const authStore = useAuthStore();
 const currentStep = ref(0);
 const items: StepperItem[] = [
   {
@@ -70,13 +71,12 @@ const nextStep = async () => {
   if (stepper.value?.hasNext) {
     stepper.value?.next();
   } else {
-    await userInformationStore().sendOnboardingInfo({
-      name: $keycloak.getTokenParsed()?.preferred_username,
+    // TODO: Onboarding submission - user_information store removed
+    // Onboarding data: userProfileInfo + userPreferenceInfo
+    console.log('[Onboarding] Submit:', {
+      name: authStore.user?.preferred_username || '',
       ...userProfileInfo.value,
-      kyc_answers: {
-        ...userPreferenceInfo.value,
-      },
-      user_settings: {},
+      kyc_answers: { ...userPreferenceInfo.value },
     });
   }
 };

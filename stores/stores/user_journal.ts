@@ -165,26 +165,25 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     /**
-     * Get all templates (offline-first from cache)
+     * Get all templates (offline-first)
+     * 
+     * Strategy:
+     * 1. Load from local SQLite cache immediately (fast, works offline)
+     * 2. If online, refresh from server in background and update cache
      */
     async getAllTemplates() {
-      // If database not initialized, try to load from server only
-      console.log('[JournalStore] Database not ready - loading templates from server');
-      console.log(this.isOnline);
-
-      if (this.isOnline) {
-        try {
-          const response: JournalTemplateResponse = await TranquaraSDK.getInstance().getAllTemplates();
-          this.templates = response.templates as any[];
-          return this.templates;
-        } catch (error) {
-          console.error('[JournalStore] Error loading templates from server:', error);
-          return [];
-        }
-      }
+      // Step 1: Always load from local cache first (instant response)
       if (this.templates.length === 0) {
         await this.loadTemplatesFromLocal();
       }
+
+      // Step 2: If online, refresh from server in background (non-blocking)
+      if (this.isOnline) {
+        this.refreshTemplatesFromServer().catch((error) => {
+          console.warn('[JournalStore] Background template refresh failed:', error);
+        });
+      }
+
       return this.templates;
     },
 

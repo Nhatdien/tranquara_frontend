@@ -1,6 +1,5 @@
 import { parse } from "node-html-parser";
 import moment from "moment";
-import UserService from "~/stores/auth/keycloak_service";
 
 export function getInnerTextFromHTML(htmlString: string): string {
   // Parse the HTML string
@@ -46,22 +45,6 @@ export function timeInDays(date: string) {
     return "Evening";
   }
 
-}
-
-export async function waitForToken(callback: () => void = () => { }) {
-  return new Promise<void>((resolve, reject) => {
-    const interval = setInterval(() => {
-      if (UserService.getToken()) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 10);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      reject(callback());
-    }, 1000); // 2 seconds timeout
-  });
 }
 
 export const isEmptyObject = (obj: Object) => {

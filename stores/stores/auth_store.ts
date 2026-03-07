@@ -144,35 +144,25 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Sync user data to backend PostgreSQL database
+     * Sync user data to backend PostgreSQL database.
+     * Uses TranquaraSDK (not direct fetch) and gracefully handles offline.
+     * If offline, the sync will be retried on next login.
      */
     async syncUserToBackend() {
       try {
-        const token = await TranquaraSDK.getInstance().getAccessToken();
         const user = this.user;
+        if (!user) return;
 
-        if (!token || !user) return;
-
-        const response = await fetch('http://localhost:4000/v1/users/sync', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            email: user.email,
-            username: user.preferred_username,
-            oauth_provider: 'email',
-          }),
+        await TranquaraSDK.getInstance().syncUserToBackend({
+          email: user.email || '',
+          username: user.preferred_username || '',
+          oauth_provider: 'email',
         });
 
-        if (!response.ok) {
-          console.error('Failed to sync user to backend');
-        } else {
-          console.log('User synced to backend successfully');
-        }
+        console.log('[AuthStore] User synced to backend successfully');
       } catch (error) {
-        console.error('Error syncing user to backend:', error);
+        // Gracefully handle offline / network errors — don't block login
+        console.warn('[AuthStore] User sync to backend failed (will retry on next login):', error);
       }
     },
 

@@ -209,7 +209,6 @@ const closeWithoutSaving = () => {
 };
 
 const clearSession = () => {
-  useChatlogtore().chatlogs = [];
   store.currentWritingContent = {};
   store.currentJournal = null;
   useTiptapEditorStore().editors = [];

@@ -1,5 +1,3 @@
-import { UserInformation } from "./user_information"
-
 // Slide configuration types
 export type SlideConfig = {
   scale?: string;
@@ -150,16 +148,4 @@ export type LearnedSlideGroupResponse = {
 export type CreateLearnedRequest = {
   collection_id: string;
   slide_group_id: string;
-}
-
-// Legacy types for backwards compatibility
-export type TemplateData = {
-  content: string[];
-  title: string;
-  category: string;
-}
-
-export type InitConnectData = {
-  template_data: TemplateData;
-  user_info: UserInformation;
 }

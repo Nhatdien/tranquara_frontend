@@ -265,4 +265,30 @@ export class Auth {
   async clearTokens(): Promise<void> {
     await this.logout();
   }
+
+  /**
+   * Sync user data to backend PostgreSQL database.
+   * Called after login to ensure user exists in backend.
+   */
+  async syncUserToBackend(userData: {
+    email: string;
+    username: string;
+    oauth_provider: string;
+  }): Promise<void> {
+    const baseUrl = (this as any).config?.base_url || '';
+    const accessToken = (this as any).config?.access_token || '';
+
+    const response = await fetch(`${baseUrl}/users/sync`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: accessToken ? `Bearer ${accessToken}` : '',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Sync failed: ${response.status} ${response.statusText}`);
+    }
+  }
 }

@@ -1,5 +1,3 @@
-import { WebSocketClient } from "./websocket_client";
-
 export type Config = {
   base_url: string;
   base_frontend_url?: string;

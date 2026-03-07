@@ -1,21 +1,17 @@
 <template>
   <UApp>
     <NuxtLayout>
+      {{ config.public.baseUrl }}
       <NuxtPage />
     </NuxtLayout>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import { userJournalStore } from "./stores/stores/user_journal";
-import TranquaraSDK from "./stores/tranquara_sdk";
-import { useWebSocket } from "@vueuse/core";
-import { Capacitor } from "@capacitor/core";
 import { useSettingsStore } from "~/stores/stores/settings_store";
 import type { FontSize } from "~/types/settings";
 
 const config = useRuntimeConfig();
-const userInfoStore = userInformationStore();
 const settingsStore = useSettingsStore();
 
 // ─── Apply font size to <html> element reactively ─────────────────────────
