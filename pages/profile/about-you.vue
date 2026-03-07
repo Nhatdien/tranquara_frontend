@@ -3,8 +3,10 @@
     <SettingsSubpageHeader title="About You" />
 
     <UContainer>
-      <div class="py-6">
+      <div class="py-6 space-y-8">
         <SettingsAIPrivacySection />
+        <USeparator />
+        <SettingsMemoriesSection />
       </div>
     </UContainer>
   </div>

@@ -38,7 +38,7 @@
             <SettingsNavItem
               :icon="UserCircle"
               label="About You"
-              subtitle="AI personalization & your story"
+              subtitle="AI personalization & memories"
               @click="openSection('about-you')"
             />
           </div>
@@ -92,7 +92,11 @@
     </SettingsDetailView>
 
     <SettingsDetailView v-model:open="drawers.aboutYou" title="About You">
-      <SettingsAIPrivacySection />
+      <div class="space-y-8">
+        <SettingsAIPrivacySection />
+        <USeparator />
+        <SettingsMemoriesSection />
+      </div>
     </SettingsDetailView>
 
     <SettingsDetailView v-model:open="drawers.notifications" title="Notifications">

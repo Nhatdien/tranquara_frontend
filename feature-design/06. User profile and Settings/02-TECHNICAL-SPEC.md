@@ -200,23 +200,157 @@ _[TYPESCRIPT code implementation removed - to be added during development]_
 
 ## AI Memory Generation
 
-### Background Task
+### Overview
 
-**Trigger**: After each journal entry submission
+AI Memories are short, factual insights the AI extracts from the user's journal entries over time. They represent what the AI "knows" about the user — values, habits, relationships, struggles, goals, and preferences. Users can view and delete individual memories from the **About You** settings page.
 
-_[TYPESCRIPT code implementation removed - to be added during development]_
+**Examples**:
+- *"I value my family."* (category: values)
+- *"Sleep quality drops when stressed about deadlines."* (category: patterns)
+- *"Making progress on setting boundaries with coworkers."* (category: growth)
 
-**Worker Process** (RabbitMQ Consumer):
-_[PYTHON code implementation removed - to be added during development]_
+### Architecture
 
-### AI Memory Generation Algorithm
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     AI Memory Pipeline                              │
+│                                                                     │
+│  ┌─────────┐   12h cron    ┌──────────────┐   extract    ┌───────┐ │
+│  │ Journals │──────────────▶│ AI Processor │─────────────▶│ GPT   │ │
+│  │ (Qdrant) │              │ (Python)     │◀─────────────│ 4o-m  │ │
+│  └─────────┘               └──────┬───────┘  memories    └───────┘ │
+│                                   │                                 │
+│                    ┌──────────────┼──────────────┐                  │
+│                    ▼              ▼              ▼                  │
+│              ┌──────────┐  ┌──────────┐  ┌───────────┐             │
+│              │PostgreSQL│  │  Qdrant  │  │ RabbitMQ  │             │
+│              │(CRUD/    │  │(RAG      │  │(notify Go │             │
+│              │ source   │  │ inject)  │  │ backend)  │             │
+│              │ of truth)│  │          │  │           │             │
+│              └────┬─────┘  └──────────┘  └─────┬─────┘             │
+│                   │                            │                    │
+│                   ▼                            ▼                    │
+│              ┌──────────┐              ┌──────────────┐            │
+│              │ Go API   │◀─────────────│ Go Backend   │            │
+│              │ GET/DEL  │              │ (stores in   │            │
+│              │ memories │              │  PostgreSQL) │            │
+│              └────┬─────┘              └──────────────┘            │
+│                   │                                                 │
+│                   ▼                                                 │
+│              ┌──────────┐                                          │
+│              │ Frontend │                                          │
+│              │ (About   │                                          │
+│              │  You)    │                                          │
+│              └──────────┘                                          │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-_[PYTHON code implementation removed - to be added during development]_
+### Data Model
 
-### Caching Strategy
+```python
+# Memory record
+{
+    "id": "uuid",                           # Unique memory ID
+    "user_id": "uuid",                      # Owner
+    "content": "I value my family.",        # The insight (short sentence)
+    "category": "values",                   # One of: values, habits, relationships,
+                                            #         goals, struggles, preferences, patterns, growth
+    "source_journal_ids": ["uuid1", "uuid2"], # Journals this was derived from
+    "confidence": 0.85,                     # AI confidence score (0.0 - 1.0)
+    "created_at": "2026-03-04T12:00:00Z",
+    "updated_at": "2026-03-04T12:00:00Z"
+}
+```
 
-**Frontend Cache** (5-minute TTL):
-_[TYPESCRIPT code implementation removed - to be added during development]_
+### Periodic Generation Job (Every 12 Hours)
+
+**Trigger**: APScheduler cron job in the Python AI service (runs at 00:00 and 12:00 UTC).
+
+**Process**:
+1. Fetch list of active user IDs from Go backend (`GET /api/internal/active-users`)
+2. For each user:
+   a. Retrieve journals created/updated since the last memory generation run
+   b. If no new journals → skip user
+   c. Fetch existing memories for the user from PostgreSQL (via Go backend)
+   d. Send journal content + existing memories to GPT-4o-mini with extraction prompt
+   e. GPT returns a list of new candidate memories
+   f. **Deduplication**: For each candidate, compute semantic similarity against existing memories using embeddings. If similarity > 0.85 → skip (duplicate)
+   g. Store new unique memories → PostgreSQL (via Go backend) + Qdrant (for RAG)
+3. Log summary: `[memories] User {id}: {n} new memories extracted, {m} duplicates skipped`
+
+**Failure Handling**:
+- Per-user failures don't block other users
+- Failed users are retried in the next 12h cycle
+- Max 3 retries per user per cycle before logging and skipping
+
+### AI Memory Extraction Prompt
+
+```
+You are analyzing journal entries to extract factual insights about the user.
+
+Extract SHORT, FACTUAL statements about the user. Each statement should be:
+- Written in first person or third person observation (e.g., "I value..." or "Values family")
+- One sentence maximum
+- A genuine insight, NOT a summary of what they wrote
+- Categorized as one of: values, habits, relationships, goals, struggles, preferences, patterns, growth
+
+EXISTING MEMORIES (do NOT duplicate these):
+{existing_memories}
+
+JOURNAL ENTRIES TO ANALYZE:
+{journal_entries}
+
+Return a JSON array of new insights only:
+[
+  {"content": "I value my family.", "category": "values", "confidence": 0.9},
+  {"content": "Sleep quality drops when stressed about deadlines.", "category": "patterns", "confidence": 0.75}
+]
+
+Rules:
+- Only extract genuinely new insights not already covered by existing memories
+- Confidence should reflect how clearly the journal supports this insight (0.5-1.0)
+- Prefer fewer high-quality insights over many shallow ones
+- Maximum 5 new insights per batch
+- If no new insights can be extracted, return an empty array []
+```
+
+### Deduplication Strategy
+
+**Semantic deduplication** using OpenAI embeddings:
+1. Embed each candidate memory using `text-embedding-ada-002`
+2. Compare cosine similarity against all existing user memories
+3. If any existing memory has similarity ≥ 0.85 → candidate is a duplicate, skip it
+4. This catches paraphrases (e.g., "I love my family" ≈ "I value my family")
+
+### Dual Storage Strategy
+
+**PostgreSQL** (source of truth for CRUD):
+- User can list all memories via `GET /api/ai-memories`
+- User can delete individual memories via `DELETE /api/ai-memories/:id`
+- Hard delete — permanently removed, AI may regenerate from future journals
+- Supports cross-device sync via existing sync pipeline
+
+**Qdrant** (for RAG injection):
+- Memories indexed into a `user_memories` collection (separate from `journal_entries`)
+- When generating follow-up questions, RAG retrieves both past journals AND memories
+- Memories provide stable, distilled context (vs. raw journal text)
+- When a memory is deleted from PostgreSQL → also deleted from Qdrant
+
+### Frontend Caching
+
+**Pinia store** with simple fetch-on-mount:
+- Memories loaded when user opens the "About You" page
+- No TTL cache — always fetches fresh from API (memories change infrequently)
+- Optimistic delete: remove from local state immediately, API call in background
+- Error handling: re-add to local state if API delete fails
+
+### RAG Integration
+
+When generating journal follow-up questions, the AI processor now retrieves:
+1. **Past journal vectors** from `journal_entries` collection (existing)
+2. **Memory vectors** from `user_memories` collection (NEW)
+
+Both are injected into the prompt context. Memories provide stable, high-level user understanding while journals provide specific recent context.
 
 ---
 
@@ -292,9 +426,28 @@ DELETE /api/security/biometric        - Disable biometric
 ### AI Memory
 
 ```
-GET    /api/ai-memory                 - Get AI memory for user
-DELETE /api/ai-memory                 - Clear AI memory
-PUT    /api/ai-memory/story           - Update "Your Story"
+GET    /api/ai-memories               - List all memories for authenticated user
+                                        Query params: ?category=values (optional filter)
+                                        Response: { memories: [...], total: 12 }
+
+DELETE /api/ai-memories/:id           - Hard delete a single memory
+                                        Also removes from Qdrant
+
+PUT    /api/ai-memory/story           - Update "Your Story" (unchanged)
+```
+
+### AI Memory (Internal — AI Service → Go Backend)
+
+```
+POST   /api/internal/ai-memories/batch  - Batch create memories (called by Python AI service)
+                                          Body: { user_id, memories: [...] }
+                                          Handles dedup check server-side as fallback
+
+GET    /api/internal/ai-memories/:user_id - Get existing memories for a user
+                                            Used by Python service for dedup context
+
+GET    /api/internal/active-users       - Get list of user IDs with recent journal activity
+                                          Query: ?since=2026-03-04T00:00:00Z
 ```
 
 ### Data Management
@@ -325,7 +478,10 @@ GET    /api/account/deletion-status   - Check deletion status
 | Notification schedule | < 1s | Platform API call |
 | PIN verification | < 500ms | bcrypt comparison |
 | Biometric auth | < 2s | Device API + fallback |
-| AI memory fetch | < 1s | Cached with 5min TTL |
+| AI memory fetch | < 1s | REST API, no cache TTL |
+| AI memory delete | < 500ms | Optimistic UI, background API |
+| Memory generation (per user) | < 30s | GPT extraction + dedup + storage |
+| Memory generation (full cycle) | < 10min | All active users, parallel batches |
 | Export generation | < 5s (< 1000 entries) | Background job for larger |
 | Import validation | < 2s | File parsing + duplicate check |
 | Account deletion | < 3s | Immediate, or grace period marker |
@@ -363,12 +519,15 @@ _[GO code implementation removed - to be added during development]_
 ### Python (AI Service)
 
 ```txt
-# requirements.txt
-transformers==4.30.0         # HuggingFace models
-sentence-transformers==2.2.2 # Semantic search
-pika==1.3.0                  # RabbitMQ consumer
+# requirements.txt (relevant additions)
+langchain-openai              # OpenAI GPT-4o-mini + embeddings
+qdrant-client                 # Qdrant vector database client
+langchain-qdrant              # LangChain ↔ Qdrant integration
+pika                          # RabbitMQ consumer
+apscheduler==3.10.4           # Periodic job scheduler (12h memory generation)
+httpx                         # Async HTTP client (calls Go backend internal APIs)
 ```
 
 ---
 
-**Last Updated**: November 23, 2025
+**Last Updated**: March 4, 2026

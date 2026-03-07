@@ -82,12 +82,14 @@ Provide users with comprehensive control over their app experience through a uni
 ### 🤖 AI & Privacy
 - **AI Personalization Toggle**: Enable/disable AI-driven features (default: ON)
 - **Your Story**: Text input (short self-description for AI context)
-- **View AI Memory**: Tap to open full-screen view (separate screen)
-  - Shows: How AI understands user based on journals
-  - Actions: View only, Clear memory button
-  - Update: Background task after each journal entry
+- **AI Memories**: View insights the AI has learned from journals
+  - Shows: Categorized factual statements (values, habits, patterns, goals, etc.)
+  - Actions: View list, delete individual memories (hard delete)
+  - Generation: Periodic background job (every 12 hours)
+  - Deduplication: Semantic similarity check prevents duplicate insights
+  - Storage: PostgreSQL (CRUD) + Qdrant (RAG injection for personalized AI questions)
+  - Location: Inside "About You" subpage, below Your Story
 - **Data Collection**: Analytics opt-in/out
-- **Crash Reports**: Diagnostic data sharing
 
 ### 💾 Data Management
 - **Export Data**: 
@@ -120,7 +122,11 @@ Provide users with comprehensive control over their app experience through a uni
 - [ ] App lock inherits biometric/PIN from login flow
 - [ ] Auto-lock timeout options functional
 - [ ] Change PIN flow requires current PIN verification
-- [ ] AI Memory viewer shows generated summary with clear button
+- [ ] AI Memories shows categorized list of AI-extracted insights
+- [ ] Individual memories can be deleted (hard delete, removes from PostgreSQL + Qdrant)
+- [ ] Memories are auto-generated every 12 hours from new journal entries
+- [ ] Duplicate memories are deduplicated via semantic similarity (≥ 0.85 threshold)
+- [ ] Memories are injected into AI follow-up questions via Qdrant RAG
 - [ ] "Your Story" text input saves to user context
 - [ ] Data export dialog allows selective date ranges and options
 - [ ] Export includes all selected data in valid JSON format
@@ -167,12 +173,15 @@ Provide users with comprehensive control over their app experience through a uni
    - Sync mechanism: Background task when online (similar to journal sync)
    - Conflict resolution: Last-write-wins for global settings, merge for device-specific
 
-5. **AI Memory Transparency**
-   - Separate full-screen view (not inline) to give proper space
-   - Shows what AI "knows" about user (patterns, themes, emotional tendencies)
-   - Updated after each journal entry (background task)
-   - Users can clear memory (does not delete journals, only AI summary)
-   - "Your Story" provides manual context override
+5. **AI Memories Transparency**
+   - Displayed inside "About You" page (not a separate full-screen view)
+   - Categorized into: values, habits, relationships, goals, struggles, preferences, patterns, growth
+   - Each memory is a short factual statement (e.g., "I value my family.")
+   - Users can delete individual memories (hard delete — AI may regenerate from future journals)
+   - Generated periodically (every 12h) — NOT after each journal entry (reduces API costs)
+   - Semantic deduplication prevents "I love my family" and "I value my family" from both existing
+   - Dual storage: PostgreSQL (user CRUD) + Qdrant (RAG injection into AI follow-up questions)
+   - "Your Story" provides manual context override (complementary to auto-generated memories)
 
 6. **Data Export Flexibility**
    - **Selective export** (date range) to avoid huge files

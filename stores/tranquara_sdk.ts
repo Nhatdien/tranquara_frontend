@@ -10,6 +10,7 @@ import { UserJournals } from "./user_journal";
 import { UserLearned } from "./user_learned";
 import { Auth } from "./auth";
 import { AIService } from "./ai_service";
+import { AIMemories } from "./ai_memories";
 
 class TranquaraSDK extends Base {
   constructor(config?: null | Config) {
@@ -38,8 +39,8 @@ class TranquaraSDK extends Base {
 
 }
 
-interface TranquaraSDK extends Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService { }
+interface TranquaraSDK extends Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService, AIMemories { }
 
-applyMixins(TranquaraSDK, [Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService]);
+applyMixins(TranquaraSDK, [Exercises, UserCompletedExercises, UserInformations, UserStreaks, Chatlogs, UserJournals, UserLearned, Auth, AIService, AIMemories]);
 
 export default TranquaraSDK;
