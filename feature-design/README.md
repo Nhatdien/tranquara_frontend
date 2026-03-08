@@ -43,6 +43,7 @@ This documentation hub provides comprehensive design specifications for all Ther
 | **Micro Learning** | ✅ Done | High | [📁 03. Micro learning](./03.%20Micro%20learning/) |
 | **User Profile & Settings** | 🔄 In Progress | High | [📁 06. User profile and Settings](./06.%20User%20profile%20and%20Settings/) |
 | **Progress Tracking** | 🔄 In Progress | Medium | [📁 07. Progress](./07.%20Progress/) |
+| **Multi-Language Support** | 🧠 Planned | High | [📁 08. Multi-Language](./08.%20Multi-Language/) |
 
 ### Supporting Documentation
 
@@ -225,4 +226,4 @@ If documentation is unclear or missing:
 
 ---
 
-**Last Updated**: February 28, 2026
+**Last Updated**: March 8, 2026

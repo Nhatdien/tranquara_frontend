@@ -62,7 +62,6 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
   };
 
   const closeSlideGroup = () => {
-    useChatlogtore().chatlogs = [];
     userJournalStore().currentWritingContent = {} 
     userJournalStore().currentJournal = null
     useTiptapEditorStore().editors = []

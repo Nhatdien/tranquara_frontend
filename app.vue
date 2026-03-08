@@ -1,7 +1,6 @@
 <template>
   <UApp>
     <NuxtLayout>
-      {{ config.public.baseUrl }}
       <NuxtPage />
     </NuxtLayout>
   </UApp>
