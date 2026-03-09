@@ -6,7 +6,7 @@
         <!-- Illustration -->
 
         <!-- Greeting -->
-        <h2 class="text-2xl font-bold text-white mb-8">{{ greeting }}</h2>
+        <h2 class="text-2xl font-bold text-white mb-8">{{ $t(greeting) }}</h2>
 
         <!-- Begin Button -->
         <UButton
@@ -15,7 +15,7 @@
           variant="solid"
           class="px-8 rounded-full bg-neutral-100 text-neutral-900 hover:bg-white font-semibold"
           @click="beginCheckIn">
-          Begin Your Check-In
+          {{ $t('home.beginCheckIn') }}
         </UButton>
       </div>
     </div>
@@ -38,9 +38,9 @@ const EVENING_SLIDE_GROUP = "evening-reflection";
 const currentHour = ref(new Date().getHours());
 
 const greeting = computed(() => {
-  if (currentHour.value < 12) return "Good Morning";
-  if (currentHour.value < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (currentHour.value < 12) return "home.greeting.morning";
+  if (currentHour.value < 17) return "home.greeting.afternoon";
+  return "home.greeting.evening";
 });
 
 // Pick the right slide group based on time of day

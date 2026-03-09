@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col w-full min-h-screen pb-20 px-4">
     <div class="py-6">
-      <h1 class="text-3xl font-bold mb-2">Inspirations</h1>
-      <p class="text-muted text-sm">Daily prompts and writing ideas</p>
+      <h1 class="text-3xl font-bold mb-2">{{ $t('inspirations.title') }}</h1>
+      <p class="text-muted text-sm">{{ $t('inspirations.subtitle') }}</p>
     </div>
 
     <!-- Daily Prompt Featured -->
@@ -10,7 +10,7 @@
 
     <!-- Past Prompts List -->
     <div class="mt-8">
-      <h2 class="text-lg font-semibold mb-4 text-default">Past Prompts</h2>
+      <h2 class="text-lg font-semibold mb-4 text-default">{{ $t('inspirations.pastPrompts') }}</h2>
       
       <div class="space-y-3">
         <div 
@@ -27,7 +27,7 @@
 
     <!-- Quote Collection -->
     <div class="mt-8">
-      <h2 class="text-lg font-semibold mb-4 text-default">Inspirational Quotes</h2>
+      <h2 class="text-lg font-semibold mb-4 text-default">{{ $t('inspirations.inspirationalQuotes') }}</h2>
       
       <div class="space-y-4">
         <div 

@@ -9,7 +9,7 @@
           variant="ghost"
           @click="$router.back()"
         />
-        <h1 class="text-xl font-semibold text-highlighted">Stats</h1>
+        <h1 class="text-xl font-semibold text-highlighted">{{ $t('progress.title') }}</h1>
         <div class="w-10"></div>
       </div>
     </UContainer>
@@ -20,28 +20,28 @@
         <UCard class="text-center">
           <div>
             <p class="text-3xl font-bold text-highlighted">{{ totalCompletedDays }}</p>
-            <p class="text-xs text-muted mt-1">Total completed days</p>
+            <p class="text-xs text-muted mt-1">{{ $t('progress.totalCompletedDays') }}</p>
           </div>
         </UCard>
 
         <UCard class="text-center">
           <div>
             <p class="text-3xl font-bold text-highlighted">{{ totalWordsWritten }}</p>
-            <p class="text-xs text-muted mt-1">Words Written</p>
+            <p class="text-xs text-muted mt-1">{{ $t('progress.wordsWritten') }}</p>
           </div>
         </UCard>
 
         <UCard class="text-center">
           <div>
             <p class="text-3xl font-bold text-highlighted">{{ averageMoodLabel }}</p>
-            <p class="text-xs text-muted mt-1">Avg. Mood</p>
+            <p class="text-xs text-muted mt-1">{{ $t('progress.avgMood') }}</p>
           </div>
         </UCard>
 
         <UCard class="text-center">
           <div>
             <p class="text-3xl font-bold text-highlighted">{{ streakStore.totalEntries }}</p>
-            <p class="text-xs text-muted mt-1">Journal entries</p>
+            <p class="text-xs text-muted mt-1">{{ $t('progress.journalEntries') }}</p>
           </div>
         </UCard>
       </div>
@@ -49,7 +49,7 @@
       <!-- General Section -->
       <div class="space-y-3">
         <h2 class="text-xs font-semibold text-muted uppercase tracking-widest text-center">
-          General
+          {{ $t('progress.general') }}
         </h2>
 
         <UCard>
@@ -58,10 +58,10 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <Flame class="w-5 h-5 text-primary" />
-                <span class="text-sm font-medium text-default">Current streak</span>
+                <span class="text-sm font-medium text-default">{{ $t('progress.currentStreak') }}</span>
               </div>
               <span class="text-sm font-semibold text-highlighted">
-                {{ streakStore.currentStreak }} {{ streakStore.currentStreak === 1 ? 'day' : 'days' }}
+                {{ streakStore.currentStreak }} {{ $t('progress.day', streakStore.currentStreak) }}
               </span>
             </div>
 
@@ -71,10 +71,10 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <CalendarCheck class="w-5 h-5 text-primary" />
-                <span class="text-sm font-medium text-default">Total completed days</span>
+                <span class="text-sm font-medium text-default">{{ $t('progress.totalCompletedDays') }}</span>
               </div>
               <span class="text-sm font-semibold text-highlighted">
-                {{ totalCompletedDays }} {{ totalCompletedDays === 1 ? 'day' : 'days' }}
+                {{ totalCompletedDays }} {{ $t('progress.day', totalCompletedDays) }}
               </span>
             </div>
 
@@ -84,10 +84,10 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <Trophy class="w-5 h-5 text-primary" />
-                <span class="text-sm font-medium text-default">Longest streak</span>
+                <span class="text-sm font-medium text-default">{{ $t('progress.longestStreak') }}</span>
               </div>
               <span class="text-sm font-semibold text-highlighted">
-                {{ streakStore.longestStreak }} {{ streakStore.longestStreak === 1 ? 'day' : 'days' }}
+                {{ streakStore.longestStreak }} {{ $t('progress.day', streakStore.longestStreak) }}
               </span>
             </div>
 
@@ -97,7 +97,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <SmilePlus class="w-5 h-5 text-primary" />
-                <span class="text-sm font-medium text-default">Average mood</span>
+                <span class="text-sm font-medium text-default">{{ $t('progress.averageMood') }}</span>
               </div>
               <span class="text-sm font-semibold text-highlighted">
                 {{ averageMoodLabel }}
@@ -110,7 +110,7 @@
       <!-- Emotion Distribution Section -->
       <div v-if="activeJournals.length > 0" class="space-y-3">
         <h2 class="text-xs font-semibold text-muted uppercase tracking-widest text-center">
-          Emotion Distribution
+          {{ $t('progress.emotionDistribution') }}
         </h2>
 
         <UCard>
@@ -121,7 +121,7 @@
       <!-- Journaling Activity Heatmap Section -->
       <div v-if="activeJournals.length > 0" class="space-y-3">
         <h2 class="text-xs font-semibold text-muted uppercase tracking-widest text-center">
-          Journaling Activity
+          {{ $t('progress.journalingActivity') }}
         </h2>
 
         <UCard>
@@ -132,10 +132,10 @@
       <!-- Empty State -->
       <div v-if="streakStore.totalEntries === 0" class="text-center py-8 space-y-4">
         <p class="text-sm text-muted">
-          Your progress journey starts here. Write your first journal to begin tracking your reflections.
+          {{ $t('progress.emptyState') }}
         </p>
         <UButton
-          label="Start Journaling"
+          :label="$t('progress.startJournaling')"
           color="primary"
           @click="$router.push('/journaling')"
         />
@@ -152,6 +152,7 @@ import { computed, onMounted } from "vue";
 
 const streakStore = useUserStreakStore();
 const journalStore = userJournalStore();
+const { t } = useI18n();
 
 definePageMeta({
   layout: "detail",
@@ -203,14 +204,11 @@ const totalWordsWritten = computed(() => {
 });
 
 // Mood labels matching the journaling emotion slider (1-10 scale)
-const moodLabels: Record<number, string> = {
-  1: 'Terrible', 2: 'Very Bad', 3: 'Bad', 4: 'Poor', 5: 'Okay',
-  6: 'Fine', 7: 'Good', 8: 'Very Good', 9: 'Great', 10: 'Fantastic',
-};
+// Uses i18n keys for translation
 
 /**
  * Average mood as a text label.
- * Rounds the average score to the nearest integer and maps to a label.
+ * Rounds the average score to the nearest integer and maps to a translated label.
  */
 const averageMoodLabel = computed(() => {
   const journalsWithMood = journalStore.journals.filter(
@@ -222,7 +220,7 @@ const averageMoodLabel = computed(() => {
     journalsWithMood.reduce((sum, j) => sum + (j.mood_score || 0), 0) /
     journalsWithMood.length;
   const rounded = Math.round(avg);
-  return moodLabels[rounded] || 'Okay';
+  return t(`progress.mood.${rounded}`);
 });
 
 /**

@@ -16,7 +16,7 @@
     <UContainer>
       <!-- Title -->
       <div class="py-8 pb-6">
-        <h1 class="text-3xl font-bold text-highlighted italic">your profile.</h1>
+        <h1 class="text-3xl font-bold text-highlighted italic">{{ $t('profile.title') }}</h1>
       </div>
 
       <!-- Account Card (avatar, name, email) -->
@@ -25,20 +25,20 @@
       <!-- ─── PERSONALIZE ──────────────────────────────────────────── -->
       <div class="mt-8">
         <h2 class="text-xs font-semibold text-muted uppercase tracking-[0.2em] text-center mb-4">
-          Personalize
+          {{ $t('profile.personalize') }}
         </h2>
         <UCard>
           <div class="divide-y divide-default">
             <SettingsNavItem
               :icon="Palette"
-              label="Color Theme"
+              :label="$t('profile.personalize')"
               :subtitle="themeLabel"
               @click="openSection('theme')"
             />
             <SettingsNavItem
               :icon="UserCircle"
-              label="About You"
-              subtitle="AI personalization & memories"
+              :label="$t('profile.aboutYou')"
+              :subtitle="$t('profile.aboutYouSubtitle')"
               @click="openSection('about-you')"
             />
           </div>
@@ -48,20 +48,20 @@
       <!-- ─── ACCOUNT ──────────────────────────────────────────────── -->
       <div class="mt-8">
         <h2 class="text-xs font-semibold text-muted uppercase tracking-[0.2em] text-center mb-4">
-          Account
+          {{ $t('profile.account') }}
         </h2>
         <UCard>
           <div class="divide-y divide-default">
             <SettingsNavItem
               :icon="Bell"
-              label="Notifications"
-              subtitle="Morning & evening reminders"
+              :label="$t('profile.notifications')"
+              :subtitle="$t('profile.notificationsSubtitle')"
               @click="openSection('notifications')"
             />
             <SettingsNavItem
               :icon="Database"
-              label="Your Data"
-              subtitle="Export, sync & manage data"
+              :label="$t('profile.yourData')"
+              :subtitle="$t('profile.yourDataSubtitle')"
               @click="openSection('data')"
             />
           </div>
@@ -77,21 +77,21 @@
       <div class="text-center py-6 space-y-2">
         <p class="text-xs text-muted">TheraPrep v1.0.0</p>
         <div class="flex items-center justify-center gap-3">
-          <UButton to="/terms" size="xs" color="neutral" variant="link">Terms</UButton>
+          <UButton to="/terms" size="xs" color="neutral" variant="link">{{ $t('profile.terms') }}</UButton>
           <span class="text-dimmed">•</span>
-          <UButton to="/privacy" size="xs" color="neutral" variant="link">Privacy</UButton>
+          <UButton to="/privacy" size="xs" color="neutral" variant="link">{{ $t('profile.privacy') }}</UButton>
           <span class="text-dimmed">•</span>
-          <UButton to="/support" size="xs" color="neutral" variant="link">Support</UButton>
+          <UButton to="/support" size="xs" color="neutral" variant="link">{{ $t('profile.support') }}</UButton>
         </div>
       </div>
     </UContainer>
 
     <!-- ─── Desktop Slideover Drawers ──────────────────────────────── -->
-    <SettingsDetailView v-model:open="drawers.theme" title="Color Theme">
+    <SettingsDetailView v-model:open="drawers.theme" :title="$t('profile.personalize')">
       <SettingsPersonalizationSection />
     </SettingsDetailView>
 
-    <SettingsDetailView v-model:open="drawers.aboutYou" title="About You">
+    <SettingsDetailView v-model:open="drawers.aboutYou" :title="$t('profile.aboutYou')">
       <div class="space-y-8">
         <SettingsAIPrivacySection />
         <USeparator />
@@ -99,14 +99,14 @@
       </div>
     </SettingsDetailView>
 
-    <SettingsDetailView v-model:open="drawers.notifications" title="Notifications">
+    <SettingsDetailView v-model:open="drawers.notifications" :title="$t('profile.notifications')">
       <SettingsNotificationSection />
     </SettingsDetailView>
 
-    <SettingsDetailView v-model:open="drawers.data" title="Your Data">
+    <SettingsDetailView v-model:open="drawers.data" :title="$t('profile.yourData')">
       <div class="space-y-6">
         <div class="space-y-4">
-          <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">data & sync.</h2>
+          <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('profile.dataSync') }}</h2>
           <SyncStatusDashboard
             :show-stats="true"
             :show-history="true"
@@ -129,6 +129,7 @@ definePageMeta({
 
 const { width } = useWindowSize();
 const isMobile = computed(() => width.value < 768);
+const { t: $t } = useI18n();
 
 // ─── Drawer State (desktop only) ────────────────────────────────────────────
 const drawers = reactive({
@@ -163,7 +164,10 @@ const openSection = (section: SectionKey) => {
 const settingsStore = useSettingsStore();
 
 const themeLabel = computed(() => {
-  const labels = { light: 'Light', dark: 'Dark', auto: 'Auto' };
-  return labels[settingsStore.theme];
+  return settingsStore.theme === 'auto'
+    ? $t('settings.themeOptions.auto')
+    : settingsStore.theme === 'light'
+      ? $t('settings.themeOptions.light')
+      : $t('settings.themeOptions.dark');
 });
 </script>

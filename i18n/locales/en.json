@@ -1,0 +1,275 @@
+{
+  "app": {
+    "name": "TheraPrep"
+  },
+  "nav": {
+    "today": "Today",
+    "inspirations": "Inspirations",
+    "library": "Library",
+    "history": "History"
+  },
+  "home": {
+    "today": "today.",
+    "yourEntries": "Your Entries",
+    "greeting": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+    "beginCheckIn": "Begin Your Check-In",
+    "dailyPrompt": "Daily Prompt",
+    "startWriting": "Start Writing",
+    "dayOf": "Day {day} of {total}"
+  },
+  "entries": {
+    "reflection": "REFLECTION",
+    "noEntries": "No journal entries yet",
+    "startFirst": "Start Your First Entry",
+    "seeAll": "See all entries"
+  },
+  "history": {
+    "title": "History",
+    "subtitle": "Your journal entries over time",
+    "noMatchingEntries": "No matching entries found",
+    "noEntries": "No journal entries yet",
+    "clearFilters": "Clear Filters",
+    "startFirst": "Start Your First Entry",
+    "filters": "filters.",
+    "search": "Search",
+    "searchPlaceholder": "Search entries...",
+    "dateRange": "Date Range",
+    "dateRangePlaceholder": "Select date range...",
+    "clearDates": "Clear dates",
+    "selectDateRange": "Select Date Range",
+    "clear": "Clear",
+    "done": "Done",
+    "filterByType": "Filter by type",
+    "allEntries": "All Entries",
+    "journalFreeForm": "Journal (Free-form)",
+    "reset": "Reset",
+    "applyFilters": "Apply Filters",
+    "activeFilters": "Active filters:",
+    "clearAll": "Clear all",
+    "journal": "Journal"
+  },
+  "inspirations": {
+    "title": "Inspirations",
+    "subtitle": "Daily prompts and writing ideas",
+    "pastPrompts": "Past Prompts",
+    "inspirationalQuotes": "Inspirational Quotes"
+  },
+  "progress": {
+    "title": "Stats",
+    "totalCompletedDays": "Total completed days",
+    "wordsWritten": "Words Written",
+    "avgMood": "Avg. Mood",
+    "journalEntries": "Journal entries",
+    "general": "General",
+    "currentStreak": "Current streak",
+    "longestStreak": "Longest streak",
+    "averageMood": "Average mood",
+    "emotionDistribution": "Emotion Distribution",
+    "journalingActivity": "Journaling Activity",
+    "emptyState": "Your progress journey starts here. Write your first journal to begin tracking your reflections.",
+    "startJournaling": "Start Journaling",
+    "day": "day | days",
+    "mood": {
+      "1": "Terrible",
+      "2": "Very Bad",
+      "3": "Bad",
+      "4": "Poor",
+      "5": "Okay",
+      "6": "Fine",
+      "7": "Good",
+      "8": "Very Good",
+      "9": "Great",
+      "10": "Fantastic"
+    }
+  },
+  "profile": {
+    "title": "your profile.",
+    "personalize": "Personalize",
+    "account": "Account",
+    "colorTheme": "Color Theme",
+    "aboutYou": "About You",
+    "aboutYouSubtitle": "AI personalization & memories",
+    "notifications": "Notifications",
+    "notificationsSubtitle": "Morning & evening reminders",
+    "yourData": "Your Data",
+    "yourDataSubtitle": "Export, sync & manage data",
+    "dataSync": "data & sync.",
+    "logout": "Log Out",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "support": "Support"
+  },
+  "settings": {
+    "personalization": "personalization.",
+    "theme": "Theme",
+    "fontSize": "Font Size",
+    "reduceMotion": "Reduce Motion",
+    "minimizeAnimations": "Minimize animations",
+    "themeOptions": {
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Auto"
+    },
+    "fontSizeOptions": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "language": "Language",
+    "languageSubtitle": "App display language",
+    "aiPrivacy": {
+      "heading": "ai & privacy.",
+      "aiPersonalization": "AI Personalization",
+      "aiPersonalizationDesc": "Personalized questions & insights",
+      "yourStory": "Your Story",
+      "yourStoryDesc": "Help AI understand your context",
+      "yourStoryPlaceholder": "e.g. I'm preparing for my first therapy session and dealing with work-related anxiety...",
+      "yourStoryUpdated": "Your story updated",
+      "analytics": "Analytics",
+      "analyticsDesc": "Help improve the app",
+      "aiDisabledTitle": "AI features disabled",
+      "aiDisabledDesc": "Journal entries will be saved normally but won't receive personalized follow-up questions or AI insights."
+    },
+    "dataManagement": {
+      "heading": "data management.",
+      "exportData": "Export Data",
+      "exportDataDesc": "Download your entries as JSON",
+      "deleteAccount": "Delete Account",
+      "deleteAccountDesc": "Permanently delete all data",
+      "deleteWarning": "This will permanently delete all your data including:",
+      "deleteItems": {
+        "journals": "Journal entries",
+        "learning": "Learning progress",
+        "aiMemory": "AI memory & context",
+        "accountSettings": "Account settings"
+      },
+      "downloadFirst": "Download your data first?",
+      "downloadFirstDesc": "We recommend exporting your data before deleting your account.",
+      "confirmDeletePrompt": "Enter your username {username} to confirm deletion:",
+      "enterUsername": "Enter username",
+      "usernameNoMatch": "Username does not match",
+      "exportFirst": "Export First",
+      "continue": "Continue",
+      "exportComingSoon": "Export coming soon",
+      "exportComingSoonDesc": "Data export will be available in a future update.",
+      "accountDeleted": "Account deleted",
+      "accountDeletedDesc": "All your data has been removed.",
+      "deletionFailed": "Deletion failed",
+      "deletionFailedDesc": "Please try again later."
+    },
+    "logout": {
+      "button": "Logout",
+      "confirmTitle": "Log out of TheraPrep?",
+      "confirmDesc": "Your data will remain synced when you log back in. Local data will be preserved on this device.",
+      "confirmButton": "Log Out"
+    },
+    "notifications": {
+      "heading": "reminders.",
+      "morningCheckin": "Morning Check-in",
+      "morningCheckinDesc": "Start your day mindfully",
+      "eveningReflection": "Evening Reflection",
+      "eveningReflectionDesc": "Wind down with journaling",
+      "permissionNote": "Notification scheduling requires device permissions. Actual push notifications will be available in a future update.",
+      "morningEnabled": "Morning reminder enabled",
+      "morningDisabled": "Morning reminder disabled",
+      "eveningEnabled": "Evening reminder enabled",
+      "eveningDisabled": "Evening reminder disabled"
+    },
+    "memories": {
+      "heading": "memories.",
+      "description": "Insights TheraPrep AI has learned from your journals. Used to personalize your experience. Only you can see them.",
+      "noMemories": "No memories yet",
+      "noMemoriesDesc": "Keep journaling and TheraPrep will learn about you over time.",
+      "memoryRemoved": "Memory removed",
+      "memoryRemoveFailed": "Failed to delete memory",
+      "categories": {
+        "values": "Values",
+        "habits": "Habits",
+        "relationships": "Relationships",
+        "goals": "Goals",
+        "struggles": "Struggles",
+        "preferences": "Preferences",
+        "patterns": "Patterns",
+        "growth": "Growth"
+      }
+    },
+    "account": {
+      "defaultName": "User"
+    }
+  },
+  "goDeeper": {
+    "title": "Choose Reflection Direction",
+    "subtitle": "How would you like to explore this further?",
+    "button": "Go Deeper",
+    "thinking": "Thinking...",
+    "directions": {
+      "why": {
+        "label": "Understand why",
+        "description": "Explore the root causes and reasoning behind your thoughts"
+      },
+      "emotions": {
+        "label": "Explore emotions",
+        "description": "Dive deeper into your feelings and emotional responses"
+      },
+      "patterns": {
+        "label": "Look for patterns",
+        "description": "Identify recurring themes and behaviors in your experiences"
+      },
+      "challenge": {
+        "label": "Challenge my thinking",
+        "description": "Question assumptions and explore alternative perspectives"
+      },
+      "growth": {
+        "label": "Focus on growth",
+        "description": "Find actionable steps and opportunities for positive change"
+      }
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInSubtitle": "Sign in to continue your journey",
+    "usernameOrEmail": "Username or Email",
+    "enterUsername": "Enter your username",
+    "password": "Password",
+    "enterPassword": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "dontHaveAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "joinTheraPrep": "Join TheraPrep today",
+    "email": "Email",
+    "enterEmail": "Enter your email",
+    "username": "Username",
+    "chooseUsername": "Choose a username",
+    "usernameHint": "Your unique identifier on TheraPrep",
+    "createPassword": "Create a password",
+    "passwordHint": "At least 8 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmYourPassword": "Confirm your password",
+    "agreeToTerms": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "passwordsNoMatch": "Passwords do not match",
+    "registrationSuccess": "Account created successfully! Redirecting to login...",
+    "registrationFailed": "Registration failed. Please try again."
+  }
+}

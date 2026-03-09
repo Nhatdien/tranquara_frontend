@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-default pb-20">
-    <SettingsSubpageHeader title="Color Theme" />
+    <SettingsSubpageHeader :title="$t('settings.personalization')" />
 
     <UContainer>
       <div class="py-6">

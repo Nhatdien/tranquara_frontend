@@ -1,21 +1,21 @@
 export const bottomNavSchema = [
     {
-        title: "Today",
+        titleKey: "nav.today",
         icon: "home",
         link: "/",
     },
     {
-        title: "Inspirations",
+        titleKey: "nav.inspirations",
         icon: "lightbulb",
         link: "/inspirations",
     },
     {
-        title: "Library",
+        titleKey: "nav.library",
         icon: "book-open",
         link: "/learn_and_prepare",
     },
     {
-        title: "History",
+        titleKey: "nav.history",
         icon: "clock",
         link: "/history",
     },

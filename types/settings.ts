@@ -10,6 +10,7 @@
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
 export type FontSize = 'small' | 'medium' | 'large';
+export type AppLocale = 'en' | 'vi';
 
 // ─── Personalization ──────────────────────────────────────────────────────────
 
@@ -20,6 +21,8 @@ export interface PersonalizationSettings {
   font_size: FontSize;
   /** Reduce animations for accessibility */
   reduce_motion: boolean;
+  /** App display language */
+  language: AppLocale;
 }
 
 // ─── AI & Privacy ─────────────────────────────────────────────────────────────
@@ -77,6 +80,7 @@ export const DEFAULT_PERSONALIZATION: PersonalizationSettings = {
   theme: 'dark',
   font_size: 'medium',
   reduce_motion: false,
+  language: 'en',
 };
 
 export const DEFAULT_AI_PRIVACY: AIPrivacySettings = {

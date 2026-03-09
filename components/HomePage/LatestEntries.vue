@@ -27,7 +27,7 @@
       <!-- Header: Category & Time -->
       <div class="flex justify-between items-start mb-3 pr-16">
         <span class="text-xs text-muted uppercase tracking-wide font-semibold">
-          REFLECTION
+          {{ $t('entries.reflection') }}
         </span>
         <span class="text-xs text-muted">
           {{ formatTime(journal.created_at) }}
@@ -52,9 +52,9 @@
 
     <!-- Empty State -->
     <div v-if="!userJournalStore().journals || userJournalStore().journals.length === 0" class="text-center py-12">
-      <p class="text-muted mb-4">No journal entries yet</p>
+      <p class="text-muted mb-4">{{ $t('entries.noEntries') }}</p>
       <UButton @click="navigateTo('/journaling')" variant="outline">
-        Start Your First Entry
+        {{ $t('entries.startFirst') }}
       </UButton>
     </div>
 
@@ -65,7 +65,7 @@
         @click="navigateTo('/history')"
         class="text-muted hover:text-default"
       >
-        See all entries
+        {{ $t('entries.seeAll') }}
         <template #trailing>
           <ChevronRight class="w-4 h-4" />
         </template>

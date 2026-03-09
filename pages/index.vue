@@ -12,7 +12,7 @@
     <!-- Journal Entries Section -->
     <div class="px-4">
       <h3 class="text-xs font-semibold text-gray-500 tracking-wide uppercase mb-4 text-center">
-        Your Entries
+        {{ $t('home.yourEntries') }}
       </h3>
       <HomePageLatestEntries />
     </div>

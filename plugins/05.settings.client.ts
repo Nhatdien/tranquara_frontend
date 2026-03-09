@@ -2,7 +2,7 @@
  * Settings Plugin
  *
  * Loads user settings from Capacitor Preferences on app start.
- * Applies the persisted theme and font size to the DOM immediately.
+ * Applies the persisted theme, font size, and language to the DOM/runtime immediately.
  *
  * Load order: Runs after auth (01) and database (02) plugins.
  */
@@ -16,7 +16,7 @@ const fontSizeClasses: Record<FontSize, string> = {
   large: 'app-font-large',
 };
 
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   const settingsStore = useSettingsStore();
 
   // Load settings from local storage (Capacitor Preferences)
@@ -36,7 +36,17 @@ export default defineNuxtPlugin(async () => {
     if (settingsStore.reduceMotion) {
       html.classList.add('reduce-motion');
     }
+
+    // Apply persisted language to i18n
+    const savedLanguage = settingsStore.language;
+    if (savedLanguage && savedLanguage !== 'en') {
+      // Access i18n from nuxtApp context
+      const i18n = nuxtApp.$i18n as any;
+      if (i18n && i18n.setLocale) {
+        await i18n.setLocale(savedLanguage);
+      }
+    }
   }
 
-  console.log('[SettingsPlugin] Settings initialized, theme:', settingsStore.theme);
+  console.log('[SettingsPlugin] Settings initialized, theme:', settingsStore.theme, 'language:', settingsStore.language);
 });

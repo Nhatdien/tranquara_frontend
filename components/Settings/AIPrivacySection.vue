@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">ai & privacy.</h2>
+    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('settings.aiPrivacy.heading') }}</h2>
 
     <UCard>
       <div class="divide-y divide-default">
@@ -12,8 +12,8 @@
                 <Bot class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">AI Personalization</p>
-                <p class="text-xs text-muted">Personalized questions & insights</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.aiPrivacy.aiPersonalization') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.aiPrivacy.aiPersonalizationDesc') }}</p>
               </div>
             </div>
             <USwitch
@@ -31,14 +31,14 @@
               <BookOpen class="w-5 h-5 text-muted" />
             </div>
             <div>
-              <p class="text-sm font-medium text-default">Your Story</p>
-              <p class="text-xs text-muted">Help AI understand your context</p>
+              <p class="text-sm font-medium text-default">{{ $t('settings.aiPrivacy.yourStory') }}</p>
+              <p class="text-xs text-muted">{{ $t('settings.aiPrivacy.yourStoryDesc') }}</p>
             </div>
           </div>
           <div :class="{ 'opacity-50 pointer-events-none': !settingsStore.aiEnabled }">
             <UTextarea
               v-model="storyDraft"
-              placeholder="e.g. I'm preparing for my first therapy session and dealing with work-related anxiety..."
+              :placeholder="$t('settings.aiPrivacy.yourStoryPlaceholder')"
               :rows="3"
               :maxlength="500"
               autoresize
@@ -57,8 +57,8 @@
                 <BarChart3 class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Analytics</p>
-                <p class="text-xs text-muted">Help improve the app</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.aiPrivacy.analytics') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.aiPrivacy.analyticsDesc') }}</p>
               </div>
             </div>
             <USwitch
@@ -76,8 +76,8 @@
       v-if="showAIDisabledWarning"
       color="warning"
       icon="i-lucide-alert-triangle"
-      title="AI features disabled"
-      description="Journal entries will be saved normally but won't receive personalized follow-up questions or AI insights."
+      :title="$t('settings.aiPrivacy.aiDisabledTitle')"
+      :description="$t('settings.aiPrivacy.aiDisabledDesc')"
       :close="true"
       @close="showAIDisabledWarning = false"
     />
@@ -90,6 +90,7 @@ import { useSettingsStore } from '~/stores/stores/settings_store';
 
 const settingsStore = useSettingsStore();
 const toast = useToast();
+const { t } = useI18n();
 
 // ─── Your Story ─────────────────────────────────────────────────────────────
 
@@ -104,7 +105,7 @@ const saveStory = async () => {
   if (storyDraft.value !== settingsStore.yourStory) {
     await settingsStore.setYourStory(storyDraft.value);
     toast.add({
-      title: 'Your story updated',
+      title: t('settings.aiPrivacy.yourStoryUpdated'),
       icon: 'i-lucide-check',
       color: 'success',
     });

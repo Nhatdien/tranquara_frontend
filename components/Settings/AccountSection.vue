@@ -24,7 +24,8 @@ import { User } from 'lucide-vue-next';
 import { useAuthStore } from '~/stores/stores/auth_store';
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
-const displayName = computed(() => authStore.user?.preferred_username || 'User');
+const displayName = computed(() => authStore.user?.preferred_username || t('settings.account.defaultName'));
 const email = computed(() => authStore.user?.email || '');
 </script>

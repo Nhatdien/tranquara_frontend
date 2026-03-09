@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-default pb-20">
-    <SettingsSubpageHeader title="About You" />
+    <SettingsSubpageHeader :title="$t('profile.aboutYou')" />
 
     <UContainer>
       <div class="py-6 space-y-8">

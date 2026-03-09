@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 mb-6">
-    <h2 class="text-lg font-semibold mb-3 text-default">Daily Prompt</h2>
+    <h2 class="text-lg font-semibold mb-3 text-default">{{ $t('home.dailyPrompt') }}</h2>
     
     <!-- Prompt Card -->
     <div class="bg-muted rounded-xl p-6 mb-4">
@@ -9,7 +9,7 @@
       </p>
       
       <p class="text-xs text-center text-muted mb-4">
-        {{ prompt.template }} • Day {{ prompt.day }} of {{ prompt.totalDays }}
+        {{ prompt.template }} • {{ $t('home.dayOf', { day: prompt.day, total: prompt.totalDays }) }}
       </p>
       
       <UButton
@@ -19,7 +19,7 @@
         @click="startWriting"
         class="font-semibold"
       >
-        Start Writing
+        {{ $t('home.startWriting') }}
       </UButton>
     </div>
 

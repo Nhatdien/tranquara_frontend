@@ -4,10 +4,10 @@
     <UCard class="shadow-2xl">
       <template #header>
         <h2 class="text-2xl font-semibold text-highlighted">
-          Welcome Back
+          {{ $t('auth.welcomeBack') }}
         </h2>
         <p class="text-sm text-muted mt-1">
-          Sign in to continue your journey
+          {{ $t('auth.signInSubtitle') }}
         </p>
       </template>
 
@@ -26,11 +26,11 @@
         <!-- Login Form -->
         <form @submit.prevent="handleLogin">
           <!-- Username/Email Field -->
-          <UFormField label="Username or Email" name="username" required class="w-full">
+          <UFormField :label="$t('auth.usernameOrEmail')" name="username" required class="w-full">
             <UInput
               v-model="username"
               type="text"
-              placeholder="Enter your username"
+              :placeholder="$t('auth.enterUsername')"
               icon="i-heroicons-user"
               size="xl"
               :disabled="isLoading"
@@ -40,11 +40,11 @@
           </UFormField>
 
           <!-- Password Field -->
-          <UFormField label="Password" name="password" required class="w-full">
+          <UFormField :label="$t('auth.password')" name="password" required class="w-full">
             <UInput
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Enter your password"
+              :placeholder="$t('auth.enterPassword')"
               icon="i-heroicons-lock-closed"
               size="xl"
               :disabled="isLoading"
@@ -65,12 +65,12 @@
 
           <!-- Remember Me & Forgot Password -->
           <div class="flex items-center justify-between pt-4">
-            <UCheckbox v-model="rememberMe" label="Remember me" />
+            <UCheckbox v-model="rememberMe" :label="$t('auth.rememberMe')" />
             <NuxtLink
               to="/forgot-password"
               class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400"
             >
-              Forgot password?
+              {{ $t('auth.forgotPassword') }}
             </NuxtLink>
           </div>
 
@@ -83,7 +83,7 @@
             :disabled="!username || !password"
             class="w-full mt-8 py-4 text-lg"
           >
-            Sign In
+            {{ $t('auth.signIn') }}
           </UButton>
         </form>
       </div>
@@ -96,7 +96,7 @@
           </div>
           <div class="relative flex justify-center text-sm">
             <span class="px-2 bg-elevated text-muted">
-              Don't have an account?
+              {{ $t('auth.dontHaveAccount') }}
             </span>
           </div>
         </div>
@@ -104,7 +104,7 @@
         <!-- Register Link -->
         <NuxtLink to="/register">
           <UButton variant="outline" block size="lg">
-            Create Account
+            {{ $t('auth.createAccount') }}
           </UButton>
         </NuxtLink>
       </template>
@@ -121,6 +121,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 // Form state
 const username = ref('');
@@ -144,7 +145,7 @@ const handleLogin = async () => {
     // Navigate to home page
     await navigateTo('/', { replace: true });
   } catch (error: any) {
-    errorMessage.value = error.message || 'Login failed. Please check your credentials.';
+    errorMessage.value = error.message || t('auth.loginFailed');
   } finally {
     isLoading.value = false;
   }

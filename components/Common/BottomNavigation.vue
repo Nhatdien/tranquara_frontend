@@ -13,7 +13,7 @@
           :size="24"
           :stroke-width="isActive(item.link) ? 2.5 : 2"
         />
-        <span class="text-xs font-medium">{{ item.title }}</span>
+        <span class="text-xs font-medium">{{ $t(item.titleKey) }}</span>
       </NuxtLink>
     </div>
   </nav>

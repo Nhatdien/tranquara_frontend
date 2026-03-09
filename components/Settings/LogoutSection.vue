@@ -11,19 +11,18 @@
       <template #leading>
         <LogOut class="w-5 h-5" />
       </template>
-      Logout
+      {{ $t('settings.logout.button') }}
     </UButton>
 
     <!-- Logout Confirmation Modal -->
     <UModal v-model:open="showLogoutConfirm">
       <template #header>
-        <span class="font-semibold text-highlighted">Log out of TheraPrep?</span>
+        <span class="font-semibold text-highlighted">{{ $t('settings.logout.confirmTitle') }}</span>
       </template>
 
       <template #body>
         <p class="text-sm text-muted">
-          Your data will remain synced when you log back in.
-          Local data will be preserved on this device.
+          {{ $t('settings.logout.confirmDesc') }}
         </p>
       </template>
 
@@ -34,13 +33,13 @@
             variant="ghost"
             @click="showLogoutConfirm = false"
           >
-            Cancel
+            {{ $t('common.cancel') }}
           </UButton>
           <UButton
             color="primary"
             @click="handleLogout"
           >
-            Log Out
+            {{ $t('settings.logout.confirmButton') }}
           </UButton>
         </div>
       </template>

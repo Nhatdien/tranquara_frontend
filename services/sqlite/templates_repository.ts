@@ -33,8 +33,9 @@ export class TemplatesRepository {
       const query = `
         INSERT INTO journal_templates (
           id, title, description, category, type, slide_groups, 
-          is_active, created_at, updated_at, cached_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+          is_active, created_at, updated_at, cached_at,
+          title_vi, description_vi
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
 
       for (const template of templates) {
@@ -49,6 +50,8 @@ export class TemplatesRepository {
           template.created_at || null,
           template.updated_at || null,
           new Date().toISOString(),
+          template.title_vi || null,
+          template.description_vi || null,
         ]);
       }
 
@@ -224,6 +227,8 @@ export class TemplatesRepository {
       created_at: row.created_at,
       updated_at: row.updated_at,
       cached_at: row.cached_at,
+      title_vi: row.title_vi || undefined,
+      description_vi: row.description_vi || undefined,
     };
   }
 }

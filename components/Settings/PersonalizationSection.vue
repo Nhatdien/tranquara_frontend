@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">personalization.</h2>
+    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('settings.personalization') }}</h2>
 
     <UCard>
       <div class="divide-y divide-default">
@@ -12,7 +12,7 @@
                 <component :is="themeIcon" class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Theme</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.theme') }}</p>
                 <p class="text-xs text-muted">{{ themeLabel }}</p>
               </div>
             </div>
@@ -37,7 +37,7 @@
                 <Type class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Font Size</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.fontSize') }}</p>
                 <p class="text-xs text-muted">{{ fontSizeLabel }}</p>
               </div>
             </div>
@@ -62,8 +62,8 @@
                 <Zap class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Reduce Motion</p>
-                <p class="text-xs text-muted">Minimize animations</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.reduceMotion') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.minimizeAnimations') }}</p>
               </div>
             </div>
             <USwitch
@@ -73,18 +73,44 @@
             />
           </div>
         </div>
+
+        <!-- Language -->
+        <div class="py-4 first:pt-0 last:pb-0">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                <Globe class="w-5 h-5 text-muted" />
+              </div>
+              <div>
+                <p class="text-sm font-medium text-default">{{ $t('settings.language') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.languageSubtitle') }}</p>
+              </div>
+            </div>
+            <UDropdownMenu :items="languageItems">
+              <UButton
+                color="neutral"
+                variant="outline"
+                size="sm"
+                trailing-icon="i-lucide-chevron-down"
+              >
+                {{ currentLanguageName }}
+              </UButton>
+            </UDropdownMenu>
+          </div>
+        </div>
       </div>
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Sun, Moon, Monitor, Type, Zap } from 'lucide-vue-next';
+import { Sun, Moon, Monitor, Type, Zap, Globe } from 'lucide-vue-next';
 import { useSettingsStore } from '~/stores/stores/settings_store';
-import type { ThemeMode, FontSize } from '~/types/settings';
+import type { ThemeMode, FontSize, AppLocale } from '~/types/settings';
 
 const settingsStore = useSettingsStore();
 const colorMode = useColorMode();
+const { t } = useI18n();
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 
@@ -94,8 +120,8 @@ const themeIcon = computed(() => {
 });
 
 const themeLabel = computed(() => {
-  const labels: Record<ThemeMode, string> = { light: 'Light', dark: 'Dark', auto: 'Auto' };
-  return labels[settingsStore.theme];
+  const key = `settings.themeOptions.${settingsStore.theme}`;
+  return t(key);
 });
 
 const handleThemeChange = async (mode: ThemeMode) => {
@@ -107,17 +133,17 @@ const handleThemeChange = async (mode: ThemeMode) => {
 const themeItems = computed(() => [
   [
     {
-      label: 'Light',
+      label: t('settings.themeOptions.light'),
       icon: 'i-lucide-sun',
       onSelect: () => handleThemeChange('light'),
     },
     {
-      label: 'Dark',
+      label: t('settings.themeOptions.dark'),
       icon: 'i-lucide-moon',
       onSelect: () => handleThemeChange('dark'),
     },
     {
-      label: 'Auto',
+      label: t('settings.themeOptions.auto'),
       icon: 'i-lucide-monitor',
       onSelect: () => handleThemeChange('auto'),
     },
@@ -127,8 +153,8 @@ const themeItems = computed(() => [
 // ─── Font Size ────────────────────────────────────────────────────────────────
 
 const fontSizeLabel = computed(() => {
-  const labels: Record<FontSize, string> = { small: 'Small', medium: 'Medium', large: 'Large' };
-  return labels[settingsStore.fontSize];
+  const key = `settings.fontSizeOptions.${settingsStore.fontSize}`;
+  return t(key);
 });
 
 const handleFontSizeChange = async (size: FontSize) => {
@@ -138,15 +164,15 @@ const handleFontSizeChange = async (size: FontSize) => {
 const fontSizeItems = computed(() => [
   [
     {
-      label: 'Small',
+      label: t('settings.fontSizeOptions.small'),
       onSelect: () => handleFontSizeChange('small'),
     },
     {
-      label: 'Medium',
+      label: t('settings.fontSizeOptions.medium'),
       onSelect: () => handleFontSizeChange('medium'),
     },
     {
-      label: 'Large',
+      label: t('settings.fontSizeOptions.large'),
       onSelect: () => handleFontSizeChange('large'),
     },
   ],
@@ -157,4 +183,27 @@ const fontSizeItems = computed(() => [
 const handleReduceMotion = async (value: boolean) => {
   await settingsStore.setReduceMotion(value);
 };
+
+// ─── Language ─────────────────────────────────────────────────────────────────
+
+const { changeLanguage, currentLanguage, languageName } = useLanguage();
+
+const currentLanguageName = computed(() => languageName.value);
+
+const handleLanguageChange = async (locale: AppLocale) => {
+  await changeLanguage(locale);
+};
+
+const languageItems = computed(() => [
+  [
+    {
+      label: 'English',
+      onSelect: () => handleLanguageChange('en'),
+    },
+    {
+      label: 'Tiếng Việt',
+      onSelect: () => handleLanguageChange('vi'),
+    },
+  ],
+]);
 </script>

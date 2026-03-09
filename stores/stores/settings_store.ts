@@ -18,6 +18,7 @@ import type {
   DeviceSettings,
   ThemeMode,
   FontSize,
+  AppLocale,
   PersonalizationSettings,
   AIPrivacySettings,
   NotificationSettings,
@@ -43,6 +44,7 @@ export const useSettingsStore = defineStore('settings', {
     theme: (state): ThemeMode => state.global.personalization.theme,
     fontSize: (state): FontSize => state.global.personalization.font_size,
     reduceMotion: (state): boolean => state.global.personalization.reduce_motion,
+    language: (state): AppLocale => state.global.personalization.language,
 
     // ─── AI & Privacy ───────────────────────────────────────────────────
     aiEnabled: (state): boolean => state.global.ai_privacy.ai_enabled,
@@ -146,6 +148,11 @@ export const useSettingsStore = defineStore('settings', {
 
     async setReduceMotion(enabled: boolean) {
       this.global.personalization.reduce_motion = enabled;
+      await this._saveGlobal();
+    },
+
+    async setLanguage(locale: AppLocale) {
+      this.global.personalization.language = locale;
       await this._saveGlobal();
     },
 

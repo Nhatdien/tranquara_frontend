@@ -8,7 +8,7 @@
 
     <!-- Date Display -->
     <div class="text-center flex-1">
-      <h1 class="text-2xl font-bold text-primary">today.</h1>
+      <h1 class="text-2xl font-bold text-primary">{{ $t('home.today') }}</h1>
       <p class="text-sm text-muted">{{ formattedDate }}</p>
     </div>
 

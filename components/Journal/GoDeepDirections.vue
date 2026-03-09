@@ -4,8 +4,8 @@
     <USlideover
       v-if="isMobile"
       v-model:open="isOpen"
-      title="Choose Reflection Direction"
-      description="How would you like to explore this further?"
+      :title="$t('goDeeper.title')"
+      :description="$t('goDeeper.subtitle')"
       :overlay="true"
     >
       <UButton
@@ -30,8 +30,8 @@
           >
             <div class="direction-icon">{{ dir.icon }}</div>
             <div class="direction-content">
-              <div class="direction-label">{{ dir.label }}</div>
-              <div class="direction-description">{{ dir.description }}</div>
+              <div class="direction-label">{{ $t(`goDeeper.directions.${dir.value}.label`) }}</div>
+              <div class="direction-description">{{ $t(`goDeeper.directions.${dir.value}.description`) }}</div>
             </div>
           </button>
         </div>
@@ -98,48 +98,25 @@ const isMobile = computed(() => {
 });
 
 // Button label
+const { t } = useI18n();
+
 const buttonLabel = computed(() => {
-  return props.loading ? 'Thinking...' : 'Go Deeper';
+  return props.loading ? t('goDeeper.thinking') : t('goDeeper.button');
 });
 
-// Direction options
+// Direction options (icons + values only; labels come from i18n)
 const directions = [
-  {
-    value: 'why',
-    icon: '🧠',
-    label: 'Understand why',
-    description: 'Explore the root causes and reasoning behind your thoughts',
-  },
-  {
-    value: 'emotions',
-    icon: '💭',
-    label: 'Explore emotions',
-    description: 'Dive deeper into your feelings and emotional responses',
-  },
-  {
-    value: 'patterns',
-    icon: '🔁',
-    label: 'Look for patterns',
-    description: 'Identify recurring themes and behaviors in your experiences',
-  },
-  {
-    value: 'challenge',
-    icon: '🧩',
-    label: 'Challenge my thinking',
-    description: 'Question assumptions and explore alternative perspectives',
-  },
-  {
-    value: 'growth',
-    icon: '🌱',
-    label: 'Focus on growth',
-    description: 'Find actionable steps and opportunities for positive change',
-  },
+  { value: 'why', icon: '🧠' },
+  { value: 'emotions', icon: '💭' },
+  { value: 'patterns', icon: '🔁' },
+  { value: 'challenge', icon: '🧩' },
+  { value: 'growth', icon: '🌱' },
 ];
 
 // Dropdown items for desktop
 const dropdownItems = computed(() => [
   directions.map((dir) => ({
-    label: dir.label,
+    label: t(`goDeeper.directions.${dir.value}.label`),
     icon: dir.icon,
     onSelect: () => selectDirection(dir.value),
   })),

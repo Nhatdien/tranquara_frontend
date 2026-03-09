@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">reminders.</h2>
+    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('settings.notifications.heading') }}</h2>
 
     <UCard>
       <div class="divide-y divide-default">
@@ -12,8 +12,8 @@
                 <Sunrise class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Morning Check-in</p>
-                <p class="text-xs text-muted">Start your day mindfully</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.notifications.morningCheckin') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.notifications.morningCheckinDesc') }}</p>
               </div>
             </div>
             <USwitch
@@ -46,8 +46,8 @@
                 <Sunset class="w-5 h-5 text-muted" />
               </div>
               <div>
-                <p class="text-sm font-medium text-default">Evening Reflection</p>
-                <p class="text-xs text-muted">Wind down with journaling</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.notifications.eveningReflection') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.notifications.eveningReflectionDesc') }}</p>
               </div>
             </div>
             <USwitch
@@ -76,7 +76,7 @@
 
     <!-- Info note -->
     <p class="text-xs text-dimmed px-1">
-      Notification scheduling requires device permissions. Actual push notifications will be available in a future update.
+      {{ $t('settings.notifications.permissionNote') }}
     </p>
   </div>
 </template>
@@ -87,13 +87,14 @@ import { useSettingsStore } from '~/stores/stores/settings_store';
 
 const settingsStore = useSettingsStore();
 const toast = useToast();
+const { t } = useI18n();
 
 // ─── Morning Reminder ───────────────────────────────────────────────────────
 
 const handleMorningToggle = async (enabled: boolean) => {
   await settingsStore.setMorningReminder(enabled);
   toast.add({
-    title: enabled ? 'Morning reminder enabled' : 'Morning reminder disabled',
+    title: enabled ? t('settings.notifications.morningEnabled') : t('settings.notifications.morningDisabled'),
     icon: enabled ? 'i-lucide-bell' : 'i-lucide-bell-off',
     color: 'neutral',
   });
@@ -111,7 +112,7 @@ const handleMorningTimeChange = async (event: Event) => {
 const handleEveningToggle = async (enabled: boolean) => {
   await settingsStore.setEveningReminder(enabled);
   toast.add({
-    title: enabled ? 'Evening reminder enabled' : 'Evening reminder disabled',
+    title: enabled ? t('settings.notifications.eveningEnabled') : t('settings.notifications.eveningDisabled'),
     icon: enabled ? 'i-lucide-bell' : 'i-lucide-bell-off',
     color: 'neutral',
   });

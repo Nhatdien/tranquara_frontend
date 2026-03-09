@@ -4,10 +4,10 @@
     <UCard class="shadow-2xl">
       <template #header>
         <h2 class="text-2xl font-semibold text-highlighted">
-          Create Account
+          {{ $t('auth.createAccount') }}
         </h2>
         <p class="text-sm text-muted mt-1">
-          Join TheraPrep today
+          {{ $t('auth.joinTheraPrep') }}
         </p>
       </template>
 
@@ -36,11 +36,11 @@
         <!-- Registration Form -->
         <form @submit.prevent="handleRegister">
           <!-- Email Field -->
-          <UFormField label="Email" name="email" required class="w-full">
+          <UFormField :label="$t('auth.email')" name="email" required class="w-full">
             <UInput
               v-model="email"
               type="email"
-              placeholder="Enter your email"
+              :placeholder="$t('auth.enterEmail')"
               icon="i-heroicons-envelope"
               size="xl"
               :disabled="isLoading"
@@ -50,11 +50,11 @@
           </UFormField>
 
           <!-- Username Field -->
-          <UFormField label="Username" name="username" required class="w-full">
+          <UFormField :label="$t('auth.username')" name="username" required class="w-full">
             <UInput
               v-model="username"
               type="text"
-              placeholder="Choose a username"
+              :placeholder="$t('auth.chooseUsername')"
               icon="i-heroicons-user"
               size="xl"
               :disabled="isLoading"
@@ -63,17 +63,17 @@
             />
             <template #hint>
               <span class="text-xs text-muted">
-                Your unique identifier on TheraPrep
+                {{ $t('auth.usernameHint') }}
               </span>
             </template>
           </UFormField>
 
           <!-- Password Field -->
-          <UFormField label="Password" name="password" required class="w-full">
+          <UFormField :label="$t('auth.password')" name="password" required class="w-full">
             <UInput
               v-model="password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Create a password"
+              :placeholder="$t('auth.createPassword')"
               icon="i-heroicons-lock-closed"
               size="xl"
               :disabled="isLoading"
@@ -92,17 +92,17 @@
             </UInput>
             <template #hint>
               <span class="text-xs text-muted">
-                At least 8 characters
+                {{ $t('auth.passwordHint') }}
               </span>
             </template>
           </UFormField>
 
           <!-- Confirm Password Field -->
-          <UFormField label="Confirm Password" name="confirmPassword" required class="w-full">
+          <UFormField :label="$t('auth.confirmPassword')" name="confirmPassword" required class="w-full">
             <UInput
               v-model="confirmPassword"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Confirm your password"
+              :placeholder="$t('auth.confirmYourPassword')"
               icon="i-heroicons-lock-closed"
               size="xl"
               :disabled="isLoading"
@@ -120,10 +120,10 @@
           >
             <template #label>
               <span class="text-sm">
-                I agree to the
-                <NuxtLink to="/terms" class="text-primary-600 hover:underline">Terms of Service</NuxtLink>
-                and
-                <NuxtLink to="/privacy" class="text-primary-600 hover:underline">Privacy Policy</NuxtLink>
+                {{ $t('auth.agreeToTerms') }}
+                <NuxtLink to="/terms" class="text-primary-600 hover:underline">{{ $t('auth.termsOfService') }}</NuxtLink>
+                {{ $t('auth.and') }}
+                <NuxtLink to="/privacy" class="text-primary-600 hover:underline">{{ $t('auth.privacyPolicy') }}</NuxtLink>
               </span>
             </template>
           </UCheckbox>
@@ -137,7 +137,7 @@
             :disabled="!isFormValid"
             class="w-full mt-8 py-4 text-lg"
           >
-            Create Account
+            {{ $t('auth.createAccount') }}
           </UButton>
         </form>
       </div>
@@ -150,7 +150,7 @@
           </div>
           <div class="relative flex justify-center text-sm">
             <span class="px-2 bg-elevated text-muted">
-              Already have an account?
+              {{ $t('auth.alreadyHaveAccount') }}
             </span>
           </div>
         </div>
@@ -158,7 +158,7 @@
         <!-- Login Link -->
         <NuxtLink to="/login">
           <UButton variant="outline" block size="lg">
-            Sign In
+            {{ $t('auth.signIn') }}
           </UButton>
         </NuxtLink>
       </template>
@@ -175,6 +175,7 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 // Form state
 const email = ref('');
@@ -207,13 +208,13 @@ const handleRegister = async () => {
 
   // Validate passwords match
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = 'Passwords do not match';
+    errorMessage.value = t('auth.passwordsNoMatch');
     return;
   }
 
   // Validate password length
   if (password.value.length < 8) {
-    errorMessage.value = 'Password must be at least 8 characters';
+    errorMessage.value = t('auth.passwordHint');
     return;
   }
 
@@ -226,14 +227,14 @@ const handleRegister = async () => {
       password: password.value,
     });
 
-    successMessage.value = 'Account created successfully! Redirecting...';
+    successMessage.value = t('auth.registrationSuccess');
 
     // Navigate to home page
     setTimeout(async () => {
       await navigateTo('/', { replace: true });
     }, 1000);
   } catch (error: any) {
-    errorMessage.value = error.message || 'Registration failed. Please try again.';
+    errorMessage.value = error.message || t('auth.registrationFailed');
   } finally {
     isLoading.value = false;
   }

@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
 );`;
 
 // Database version tracking
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -128,5 +128,10 @@ export const MIGRATIONS: Record<number, string[]> = {
     CREATE_USER_LEARNED_SLIDE_GROUPS_TABLE,
     CREATE_USER_LEARNED_INDEX_USER_ID,
     CREATE_USER_LEARNED_INDEX_COLLECTION,
+  ],
+  // v3: Add multi-language columns for template title/description
+  3: [
+    `ALTER TABLE journal_templates ADD COLUMN title_vi TEXT;`,
+    `ALTER TABLE journal_templates ADD COLUMN description_vi TEXT;`,
   ],
 };

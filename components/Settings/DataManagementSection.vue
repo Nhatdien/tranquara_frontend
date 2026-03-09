@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">data management.</h2>
+    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('settings.dataManagement.heading') }}</h2>
 
     <UCard>
       <div class="divide-y divide-default">
@@ -19,8 +19,8 @@
                 <Download class="w-5 h-5 text-muted" />
               </div>
               <div class="text-left">
-                <p class="text-sm font-medium text-default">Export Data</p>
-                <p class="text-xs text-muted">Download your entries as JSON</p>
+                <p class="text-sm font-medium text-default">{{ $t('settings.dataManagement.exportData') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.dataManagement.exportDataDesc') }}</p>
               </div>
             </div>
             <ChevronRight class="w-5 h-5 text-muted" />
@@ -42,8 +42,8 @@
                 <Trash2 class="w-5 h-5 text-error" />
               </div>
               <div class="text-left">
-                <p class="text-sm font-medium text-error">Delete Account</p>
-                <p class="text-xs text-muted">Permanently delete all data</p>
+                <p class="text-sm font-medium text-error">{{ $t('settings.dataManagement.deleteAccount') }}</p>
+                <p class="text-xs text-muted">{{ $t('settings.dataManagement.deleteAccountDesc') }}</p>
               </div>
             </div>
             <ChevronRight class="w-5 h-5 text-muted" />
@@ -57,7 +57,7 @@
       <template #header>
         <div class="flex items-center gap-2">
           <AlertTriangle class="w-5 h-5 text-error" />
-          <span class="font-semibold text-highlighted">Delete Account</span>
+          <span class="font-semibold text-highlighted">{{ $t('settings.dataManagement.deleteAccount') }}</span>
         </div>
       </template>
 
@@ -66,46 +66,46 @@
           <!-- Step 1: Warning -->
           <div v-if="deleteStep === 1" class="space-y-4">
             <p class="text-sm text-muted">
-              This will permanently delete all your data including:
+              {{ $t('settings.dataManagement.deleteWarning') }}
             </p>
             <ul class="text-sm text-muted space-y-1 ml-4">
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-error rounded-full" />
-                Journal entries
+                {{ $t('settings.dataManagement.deleteItems.journals') }}
               </li>
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-error rounded-full" />
-                Learning progress
+                {{ $t('settings.dataManagement.deleteItems.learning') }}
               </li>
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-error rounded-full" />
-                AI memory & context
+                {{ $t('settings.dataManagement.deleteItems.aiMemory') }}
               </li>
               <li class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-error rounded-full" />
-                Account settings
+                {{ $t('settings.dataManagement.deleteItems.accountSettings') }}
               </li>
             </ul>
             <UAlert
               color="warning"
               icon="i-lucide-download"
-              title="Download your data first?"
-              description="We recommend exporting your data before deleting your account."
+              :title="$t('settings.dataManagement.downloadFirst')"
+              :description="$t('settings.dataManagement.downloadFirstDesc')"
             />
           </div>
 
           <!-- Step 2: Confirm with username -->
           <div v-if="deleteStep === 2" class="space-y-4">
             <p class="text-sm text-muted">
-              Enter your username <strong class="text-highlighted">{{ username }}</strong> to confirm deletion:
+              {{ $t('settings.dataManagement.confirmDeletePrompt', { username }) }}
             </p>
             <UInput
               v-model="confirmUsername"
-              placeholder="Enter username"
+              :placeholder="$t('settings.dataManagement.enterUsername')"
               :color="confirmError ? 'error' : undefined"
             />
             <p v-if="confirmError" class="text-xs text-error">
-              Username does not match
+              {{ $t('settings.dataManagement.usernameNoMatch') }}
             </p>
           </div>
         </div>
@@ -118,7 +118,7 @@
             variant="ghost"
             @click="cancelDelete"
           >
-            Cancel
+            {{ $t('common.cancel') }}
           </UButton>
 
           <template v-if="deleteStep === 1">
@@ -130,13 +130,13 @@
               <template #leading>
                 <Download class="w-4 h-4" />
               </template>
-              Export First
+              {{ $t('settings.dataManagement.exportFirst') }}
             </UButton>
             <UButton
               color="error"
               @click="deleteStep = 2"
             >
-              Continue
+              {{ $t('settings.dataManagement.continue') }}
             </UButton>
           </template>
 
@@ -147,7 +147,7 @@
               :disabled="!confirmUsername"
               @click="confirmDelete"
             >
-              Delete Account
+              {{ $t('settings.dataManagement.deleteAccount') }}
             </UButton>
           </template>
         </div>
@@ -164,6 +164,7 @@ import { useSettingsStore } from '~/stores/stores/settings_store';
 const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
 const toast = useToast();
+const { t } = useI18n();
 
 const username = computed(() => authStore.user?.preferred_username || '');
 
@@ -172,8 +173,8 @@ const username = computed(() => authStore.user?.preferred_username || '');
 const handleExportData = () => {
   // TODO: Implement data export in a future phase
   toast.add({
-    title: 'Export coming soon',
-    description: 'Data export will be available in a future update.',
+    title: t('settings.dataManagement.exportComingSoon'),
+    description: t('settings.dataManagement.exportComingSoonDesc'),
     icon: 'i-lucide-info',
     color: 'info',
   });
@@ -213,16 +214,16 @@ const confirmDelete = async () => {
     await authStore.logout();
 
     toast.add({
-      title: 'Account deleted',
-      description: 'All your data has been removed.',
+      title: t('settings.dataManagement.accountDeleted'),
+      description: t('settings.dataManagement.accountDeletedDesc'),
       icon: 'i-lucide-check',
       color: 'success',
     });
   } catch (error) {
     console.error('Failed to delete account:', error);
     toast.add({
-      title: 'Deletion failed',
-      description: 'Please try again later.',
+      title: t('settings.dataManagement.deletionFailed'),
+      description: t('settings.dataManagement.deletionFailedDesc'),
       icon: 'i-lucide-alert-circle',
       color: 'error',
     });

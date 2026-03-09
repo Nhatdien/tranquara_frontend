@@ -1,10 +1,9 @@
 <template>
   <div class="space-y-4">
-    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">memories.</h2>
+    <h2 class="text-sm font-semibold text-muted uppercase tracking-wider px-1">{{ $t('settings.memories.heading') }}</h2>
 
     <p class="text-xs text-muted px-1">
-      Insights TheraPrep AI has learned from your journals.
-      Used to personalize your experience. Only you can see them.
+      {{ $t('settings.memories.description') }}
     </p>
 
     <!-- Loading skeleton -->
@@ -16,9 +15,9 @@
     <UCard v-else-if="!memoriesStore.hasMemories" class="text-center">
       <div class="py-6 space-y-2">
         <Brain class="w-10 h-10 text-muted mx-auto" />
-        <p class="text-sm text-muted">No memories yet</p>
+        <p class="text-sm text-muted">{{ $t('settings.memories.noMemories') }}</p>
         <p class="text-xs text-dimmed">
-          Keep journaling and TheraPrep will learn about you over time.
+          {{ $t('settings.memories.noMemoriesDesc') }}
         </p>
       </div>
     </UCard>
@@ -78,6 +77,7 @@ import { useMemoriesStore } from "~/stores/stores/memories_store";
 
 const memoriesStore = useMemoriesStore();
 const toast = useToast();
+const { t } = useI18n();
 const deletingId = ref<string | null>(null);
 
 // Fetch memories on mount
@@ -99,14 +99,14 @@ const categoryIcons: Record<string, Component> = {
 };
 
 const categoryLabels: Record<string, string> = {
-  values: "Values",
-  habits: "Habits",
-  relationships: "Relationships",
-  goals: "Goals",
-  struggles: "Struggles",
-  preferences: "Preferences",
-  patterns: "Patterns",
-  growth: "Growth",
+  values: "values",
+  habits: "habits",
+  relationships: "relationships",
+  goals: "goals",
+  struggles: "struggles",
+  preferences: "preferences",
+  patterns: "patterns",
+  growth: "growth",
 };
 
 const categoryIcon = (category: string): Component => {
@@ -114,7 +114,8 @@ const categoryIcon = (category: string): Component => {
 };
 
 const categoryLabel = (category: string): string => {
-  return categoryLabels[category] || category;
+  const key = categoryLabels[category] || category;
+  return t(`settings.memories.categories.${key}`);
 };
 
 // ─── Delete Handler ─────────────────────────────────────────────────────────
@@ -124,13 +125,13 @@ const handleDelete = async (memoryId: string) => {
   try {
     await memoriesStore.deleteMemory(memoryId);
     toast.add({
-      title: "Memory removed",
+      title: t('settings.memories.memoryRemoved'),
       icon: "i-lucide-check",
       color: "success",
     });
   } catch {
     toast.add({
-      title: "Failed to delete memory",
+      title: t('settings.memories.memoryRemoveFailed'),
       icon: "i-lucide-alert-triangle",
       color: "error",
     });

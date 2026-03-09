@@ -23,7 +23,16 @@ export default defineNuxtConfig({
   },
   compatibilityDate: "2024-04-03",
   // devtools: { enabled: true },
-  modules: ["@pinia/nuxt", "@nuxt/image", '@nuxt/ui'],
+  modules: ["@pinia/nuxt", "@nuxt/image", '@nuxt/ui', '@nuxtjs/i18n'],
+  i18n: {
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' },
+    ],
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: false,
+  },
   vite: {
     css: {
       preprocessorOptions: {

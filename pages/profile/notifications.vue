@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-default pb-20">
-    <SettingsSubpageHeader title="Notifications" />
+    <SettingsSubpageHeader :title="$t('profile.notifications')" />
 
     <UContainer>
       <div class="py-6">

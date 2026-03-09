@@ -3,8 +3,8 @@
     <!-- Header with Filter Button -->
     <div class="py-6 flex justify-between items-start">
       <div>
-        <h1 class="text-3xl font-bold mb-2">History</h1>
-        <p class="text-muted text-sm">Your journal entries over time</p>
+        <h1 class="text-3xl font-bold mb-2">{{ $t('history.title') }}</h1>
+        <p class="text-muted text-sm">{{ $t('history.subtitle') }}</p>
       </div>
       
       <!-- Filter Button (Top Right) -->
@@ -19,7 +19,7 @@
 
     <!-- Active Filters Display -->
     <div v-if="hasActiveFilters" class="mb-4 flex flex-wrap gap-2 items-center">
-      <span class="text-xs text-muted">Active filters:</span>
+      <span class="text-xs text-muted">{{ $t('history.activeFilters') }}</span>
       
       <UBadge v-if="searchQuery" color="primary" variant="soft" class="gap-1">
         <Icon name="i-lucide-search" class="w-3 h-3" />
@@ -46,7 +46,7 @@
       </UBadge>
       
       <UButton variant="link" size="xs" @click="clearAllFilters">
-        Clear all
+        {{ $t('history.clearAll') }}
       </UButton>
     </div>
 
@@ -70,13 +70,13 @@
     <div v-else-if="filteredJournals.length === 0" class="text-center py-12">
       <Icon name="i-lucide-book-open" class="w-12 h-12 text-muted mx-auto mb-4" />
       <p class="text-muted mb-4">
-        {{ hasActiveFilters ? 'No matching entries found' : 'No journal entries yet' }}
+        {{ hasActiveFilters ? $t('history.noMatchingEntries') : $t('history.noEntries') }}
       </p>
       <UButton v-if="hasActiveFilters" @click="clearAllFilters" variant="outline">
-        Clear Filters
+        {{ $t('history.clearFilters') }}
       </UButton>
       <UButton v-else @click="navigateTo('/learn_and_prepare')" variant="outline">
-        Start Your First Entry
+        {{ $t('history.startFirst') }}
       </UButton>
     </div>
 
@@ -106,7 +106,7 @@
             <!-- Template Name & Time -->
             <div class="flex justify-between items-start mb-2 pr-12">
               <h3 class="font-semibold text-highlighted">
-                {{ entry.title || getTemplateName(entry.collection_id) || 'Journal' }}
+                {{ entry.title || getTemplateName(entry.collection_id) || $t('history.journal') }}
               </h3>
               <span class="text-xs text-muted">{{ formatTime(entry.created_at) }}</span>
             </div>
@@ -139,17 +139,17 @@
     <UDrawer 
       v-model:open="isFilterDrawerOpen" 
       direction="bottom"
-      title="filters."
+      :title="$t('history.filters')"
       :handle="true"
     >
       <template #body>
         <div class="space-y-6">
           <!-- Search Bar -->
           <div>
-            <label class="text-sm font-medium text-muted mb-2 block">Search</label>
+            <label class="text-sm font-medium text-muted mb-2 block">{{ $t('history.search') }}</label>
             <UInput 
               v-model="tempSearchQuery"
-              placeholder="Search entries..."
+              :placeholder="$t('history.searchPlaceholder')"
               icon="i-lucide-search"
               size="lg"
             />
@@ -157,10 +157,10 @@
 
           <!-- Date Range -->
           <div>
-            <label class="text-sm font-medium text-muted mb-2 block">Date Range</label>
+            <label class="text-sm font-medium text-muted mb-2 block">{{ $t('history.dateRange') }}</label>
             <UInput 
               :model-value="formatTempDateRange()"
-              placeholder="Select date range..."
+              :placeholder="$t('history.dateRangePlaceholder')"
               readonly
               icon="i-lucide-calendar"
               class="w-full cursor-pointer"
@@ -174,7 +174,7 @@
               class="mt-1"
               @click="tempDateRange = null"
             >
-              Clear dates
+              {{ $t('history.clearDates') }}
             </UButton>
           </div>
 
@@ -182,11 +182,11 @@
           <UModal v-model:open="showDateRangePicker">
             <template #content>
               <div class="p-4">
-                <h3 class="text-lg font-semibold mb-4">Select Date Range</h3>
+                <h3 class="text-lg font-semibold mb-4">{{ $t('history.selectDateRange') }}</h3>
                 <UCalendar v-model="tempDateRange" range class="mx-auto" />
                 <div class="flex justify-end gap-2 mt-4">
-                  <UButton variant="outline" @click="tempDateRange = null">Clear</UButton>
-                  <UButton @click="showDateRangePicker = false">Done</UButton>
+                  <UButton variant="outline" @click="tempDateRange = null">{{ $t('history.clear') }}</UButton>
+                  <UButton @click="showDateRangePicker = false">{{ $t('history.done') }}</UButton>
                 </div>
               </div>
             </template>
@@ -194,11 +194,11 @@
 
           <!-- Template/Collection Filter -->
           <div>
-            <label class="text-sm font-medium text-muted mb-2 block">Filter by type</label>
+            <label class="text-sm font-medium text-muted mb-2 block">{{ $t('history.filterByType') }}</label>
             <USelect
               v-model="tempSelectedCollection"
               :items="collectionOptions"
-              placeholder="All Entries"
+              :placeholder="$t('history.allEntries')"
               value-key="value"
               class="w-full"
             />
@@ -214,13 +214,13 @@
             class="flex-1"
             @click="resetFilters"
           >
-            Reset
+            {{ $t('history.reset') }}
           </UButton>
           <UButton 
             class="flex-1"
             @click="applyFiltersFromDrawer"
           >
-            Apply Filters
+            {{ $t('history.applyFilters') }}
           </UButton>
         </div>
       </template>
