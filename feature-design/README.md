@@ -44,6 +44,7 @@ This documentation hub provides comprehensive design specifications for all Ther
 | **User Profile & Settings** | 🔄 In Progress | High | [📁 06. User profile and Settings](./06.%20User%20profile%20and%20Settings/) |
 | **Progress Tracking** | 🔄 In Progress | Medium | [📁 07. Progress](./07.%20Progress/) |
 | **Multi-Language Support** | 🧠 Planned | High | [📁 08. Multi-Language](./08.%20Multi-Language/) |
+| **Therapy Toolkit** | 🧠 Planned | High | [📁 09. Therapy Toolkit](./09.%20Therapy%20Toolkit/) |
 
 ### Supporting Documentation
 
