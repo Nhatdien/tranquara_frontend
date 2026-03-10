@@ -7,7 +7,7 @@
     >
       <Icon name="i-lucide-wifi-off" class="w-5 h-5 text-yellow-500 flex-shrink-0" />
       <span class="text-sm text-yellow-600 dark:text-yellow-400">
-        Working offline - your changes will sync when connected
+        {{ $t('sync.offlineMessage') }}
       </span>
     </div>
 
@@ -18,7 +18,7 @@
     >
       <Icon name="i-lucide-loader-2" class="w-5 h-5 text-blue-500 animate-spin flex-shrink-0" />
       <span class="text-sm text-blue-600 dark:text-blue-400">
-        Syncing your journals...
+        {{ $t('sync.syncingJournals') }}
       </span>
     </div>
 
@@ -30,7 +30,7 @@
       <div class="flex items-center gap-2">
         <Icon name="i-lucide-cloud-upload" class="w-5 h-5 text-blue-500 flex-shrink-0" />
         <span class="text-sm text-blue-600 dark:text-blue-400">
-          {{ pendingCount }} {{ pendingCount === 1 ? 'entry' : 'entries' }} pending sync
+          {{ $t('sync.pendingSync', { count: pendingCount }) }}
         </span>
       </div>
       <UButton 
@@ -42,7 +42,7 @@
         variant="ghost"
         class="text-blue-600 dark:text-blue-400"
       >
-        Sync Now
+        {{ $t('sync.syncNow') }}
       </UButton>
     </div>
 
@@ -64,7 +64,7 @@
         variant="ghost"
         class="text-red-600 dark:text-red-400"
       >
-        Retry
+        {{ $t('sync.retry') }}
       </UButton>
     </div>
   </div>

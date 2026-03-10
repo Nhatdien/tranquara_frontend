@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center justify-center h-full px-4">
-    <h2 class="text-2xl font-bold mb-4 text-center text-highlighted">{{ question }}</h2>
-    <p class="text-sm text-muted mb-6 text-center">Move the slider to reflect how you're feeling</p>
+    <h2 class="text-2xl font-bold mb-4 text-center text-highlighted">{{ displayQuestion }}</h2>
+    <p class="text-sm text-muted mb-6 text-center">{{ $t('slide.moodInstruction') }}</p>
     <EmotionSliderV2 v-model="moodValue" />
   </div>
 </template>
@@ -11,14 +11,19 @@ import EmotionSliderV2 from "~/components/Common/EmotionSliderV2.vue";
 import { computed, ref, watch } from "vue";
 import { userJournalStore } from "~/stores/stores/user_journal";
 
+const { t } = useI18n();
+
 const props = withDefaults(defineProps<{
   /**
    * Question text to display
    */
   question?: string;
 }>(), {
-  question: 'How are you feeling right now?',
+  question: '',
 });
+
+// Use prop if provided, otherwise fall back to translated default
+const displayQuestion = computed(() => props.question || t('slide.defaultMoodQuestion'));
 
 const store = userJournalStore();
 
@@ -32,21 +37,8 @@ watch(() => store.currentMoodScore, (newScore) => {
   }
 }, { immediate: true });
 
-// Mood labels for 1-10 scale
-const moodLabels: Record<number, string> = {
-  1: 'Terrible',
-  2: 'Very Bad',
-  3: 'Bad',
-  4: 'Poor',
-  5: 'Okay',
-  6: 'Fine',
-  7: 'Good',
-  8: 'Very Good',
-  9: 'Great',
-  10: 'Fantastic',
-};
-
-const moodLabel = computed(() => moodLabels[moodValue.value] || 'Okay');
+// Mood labels for 1-10 scale (use i18n)
+const moodLabel = computed(() => t(`slide.moodLabels.${moodValue.value}`) || t('slide.moodLabels.5'));
 
 // Update store when value changes
 watch(moodValue, (val) => {

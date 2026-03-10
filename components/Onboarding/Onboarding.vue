@@ -9,10 +9,10 @@
         <OnboardingUserProfileForm
           v-model="userProfileInfo"
           class="flex flex-col items-center mt-20"
-          v-if="item.title == 'Profile'">
+          v-if="currentStep === 0">
         </OnboardingUserProfileForm>
         <div class="flex flex-col items-center">
-          <OnboardingPreferenceForm v-model="userPreferenceInfo" v-if="item.title == 'Preferences'" />
+          <OnboardingPreferenceForm v-model="userPreferenceInfo" v-if="currentStep === 1" />
         </div>
       </template>
     </UStepper>
@@ -22,7 +22,7 @@
         leading-icon="i-lucide-arrow-left"
         :disabled="!stepper?.hasPrev"
         @click="stepper?.prev()">
-        Prev
+        {{ $t('common.prev') }}
       </UButton>
 
       <UButton trailing-icon="i-lucide-arrow-right" @click="nextStep">
@@ -39,19 +39,20 @@ import InitalJournal from "./InitalJournal.vue";
 import { useAuthStore } from '~/stores/stores/auth_store';
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 const currentStep = ref(0);
-const items: StepperItem[] = [
+const items = computed<StepperItem[]>(() => [
   {
-    title: "Profile",
-    description: "Tell us about yourself",
+    title: t('onboarding.profile'),
+    description: t('onboarding.profileDesc'),
     icon: "i-lucide-user",
   },
   {
-    title: "Preferences",
-    description: "Choose your goals and therapy experience",
+    title: t('onboarding.preferences'),
+    description: t('onboarding.preferencesDesc'),
     icon: "i-lucide-settings",
   },
-];
+]);
 
 const userPreferenceInfo = ref({
   goal: "",
@@ -64,7 +65,7 @@ const userProfileInfo = ref({
 });
 
 const nextStepButtonText = computed((): string => {
-  return stepper.value?.hasNext ? "Next" : "Submit";
+  return stepper.value?.hasNext ? t('common.next') : t('common.submit');
 });
 
 const nextStep = async () => {

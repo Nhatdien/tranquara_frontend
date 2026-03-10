@@ -9,7 +9,7 @@
         @click="emit('back')" />
       <div class="flex items-center gap-2">
         <h1 class="text-xl font-bold truncate max-w-[180px]">
-          {{ journal.title || 'Untitled Journal' }}
+          {{ journal.title || $t('journal.untitledJournal') }}
         </h1>
         <SyncBadge
           :needs-sync="journal.needs_sync"
@@ -35,7 +35,7 @@
           <span
             v-if="journal.mood_score !== null && journal.mood_score !== undefined"
             class="text-xs text-muted">
-            Score: {{ journal.mood_score }}/10
+            {{ $t('journal.score', { score: journal.mood_score }) }}
           </span>
         </div>
       </div>
@@ -50,24 +50,23 @@
     <UModal v-model:open="showDeleteConfirm">
       <template #content>
         <div class="p-6">
-          <h3 class="text-lg font-semibold mb-2">Delete Journal</h3>
+          <h3 class="text-lg font-semibold mb-2">{{ $t('journal.deleteJournal') }}</h3>
           <p class="text-muted mb-6">
-            Are you sure you want to delete this journal entry? This action
-            cannot be undone.
+            {{ $t('journal.deleteConfirmMessage') }}
           </p>
           <div class="flex gap-3">
             <UButton
               variant="outline"
               block
               @click="showDeleteConfirm = false">
-              Cancel
+              {{ $t('common.cancel') }}
             </UButton>
             <UButton
               color="error"
               block
               @click="handleDelete"
               :loading="isDeleting">
-              Delete
+              {{ $t('common.delete') }}
             </UButton>
           </div>
         </div>
@@ -79,6 +78,9 @@
 <script setup lang="ts">
 import type { LocalJournal } from '~/types/user_journal';
 import type { DropdownMenuItem } from '@nuxt/ui';
+
+const { t, locale } = useI18n();
+const { formatDateTime } = useLocalizedDate();
 
 const props = defineProps<{
   journal: LocalJournal;
@@ -97,14 +99,14 @@ const showDeleteConfirm = ref(false);
 const menuItems = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: 'Edit',
+      label: t('common.edit'),
       icon: 'i-lucide-edit',
       onSelect: () => emit('edit'),
     },
   ],
   [
     {
-      label: 'Delete',
+      label: t('common.delete'),
       icon: 'i-lucide-trash-2',
       color: 'error' as const,
       onSelect: () => { showDeleteConfirm.value = true; },
@@ -113,7 +115,7 @@ const menuItems = computed<DropdownMenuItem[][]>(() => [
 ]);
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleString('en-US', {
+  return formatDateTime(dateString, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

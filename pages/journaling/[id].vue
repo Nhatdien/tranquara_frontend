@@ -22,7 +22,7 @@
       <!-- Header -->
       <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
         <UButton variant="ghost" icon="i-lucide-arrow-left" @click="onEditClosed" />
-        <h1 class="text-lg font-semibold">Edit Journal</h1>
+        <h1 class="text-lg font-semibold">{{ $t('journal.editJournal') }}</h1>
         <UButton variant="ghost" icon="i-lucide-check" @click="saveAndClose" :disabled="!hasContent" />
       </header>
 
@@ -31,7 +31,7 @@
         <input
           v-model="title"
           type="text"
-          placeholder="Title (optional)"
+          :placeholder="$t('journal.titlePlaceholder')"
           class="w-full text-xl font-semibold bg-transparent border-none outline-none placeholder-gray-400 dark:placeholder-gray-600"
         />
       </div>
@@ -72,12 +72,12 @@
             @click="handleGoDeeper"
             icon="i-lucide-sparkles"
           >
-            <span class="text-sm">Go Deeper</span>
+            <span class="text-sm">{{ $t('journal.goDeeper') }}</span>
           </UButton>
         </div>
         
         <div class="flex items-center gap-2">
-          <span class="text-xs text-muted">{{ autoSaveStatus }}</span>
+          <span class="text-xs text-muted">{{ autoSaveStatusText }}</span>
         </div>
       </div>
 
@@ -85,9 +85,9 @@
       <UModal v-model:open="showMoodPicker">
         <template #content>
           <div class="p-6">
-            <h3 class="text-lg font-semibold mb-4 text-center">How are you feeling?</h3>
+            <h3 class="text-lg font-semibold mb-4 text-center">{{ $t('journal.howFeeling') }}</h3>
             <EmotionSliderV2 v-model="moodScore" />
-            <UButton block class="mt-4" @click="confirmMood">Confirm</UButton>
+            <UButton block class="mt-4" @click="confirmMood">{{ $t('common.confirm') }}</UButton>
           </div>
         </template>
       </UModal>
@@ -106,7 +106,7 @@
 
     <!-- Not Found -->
     <div v-else class="flex items-center justify-center h-full">
-      <p class="text-muted">Journal not found</p>
+      <p class="text-muted">{{ $t('journal.notFound') }}</p>
     </div>
   </div>
 </template>
@@ -125,6 +125,8 @@ const route = useRoute();
 const router = useRouter();
 const journalStore = userJournalStore();
 const { canUseAI, yourStory } = useAIGuard();
+const { t, locale } = useI18n();
+const { formatDate: formatLocalDate } = useLocalizedDate();
 
 // State
 const isLoading = ref(true);
@@ -139,8 +141,13 @@ const moodScore = ref(5);
 const moodLabel = ref("Okay");
 const showMoodPicker = ref(false);
 const editorRef = ref<any>(null);
-const autoSaveStatus = ref("Ready");
+const autoSaveStatus = ref("ready");
 const isGeneratingQuestion = ref(false);
+
+// Map autoSaveStatus keys to i18n
+const autoSaveStatusText = computed(() => {
+  return t(`journal.autoSave.${autoSaveStatus.value}`);
+});
 
 let autoSaveTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -169,7 +176,7 @@ onMounted(async () => {
 
 const formattedDate = computed(() => {
   if (journal.value?.created_at) {
-    return new Date(journal.value.created_at).toLocaleDateString("en-US", {
+    return formatLocalDate(journal.value.created_at, {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -198,7 +205,7 @@ const moodLabels: Record<number, string> = {
   6: 'Fine', 7: 'Good', 8: 'Very Good', 9: 'Great', 10: 'Fantastic',
 };
 
-const computedMoodLabel = computed(() => moodLabels[moodScore.value] || 'Okay');
+const computedMoodLabel = computed(() => t(`journal.moodLabels.${moodScore.value}`) || t('journal.moodLabels.5'));
 
 const onSaved = async () => {
   // Reload journal data and return to view mode
@@ -238,10 +245,10 @@ const deleteJournal = async () => {
 };
 
 const onContentUpdate = () => {
-  autoSaveStatus.value = "Typing...";
+  autoSaveStatus.value = "typing";
   if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
   autoSaveTimeout = setTimeout(() => {
-    autoSaveStatus.value = "Unsaved changes";
+    autoSaveStatus.value = "unsavedChanges";
   }, 1000);
 };
 
@@ -256,7 +263,7 @@ const handleGoDeeper = async () => {
   
   try {
     isGeneratingQuestion.value = true;
-    autoSaveStatus.value = "Thinking...";
+    autoSaveStatus.value = "thinking";
     
     const sdk = TranquaraSDK.getInstance();
     const plainText = content.value.replace(/<[^>]*>/g, '').trim();
@@ -280,12 +287,12 @@ const handleGoDeeper = async () => {
         .run();
     }
     
-    autoSaveStatus.value = "Question added!";
-    setTimeout(() => { autoSaveStatus.value = "Unsaved changes"; }, 2000);
+    autoSaveStatus.value = "questionAdded";
+    setTimeout(() => { autoSaveStatus.value = "unsavedChanges"; }, 2000);
   } catch (error) {
     console.error("[GoDeeper] Error:", error);
-    autoSaveStatus.value = "Error";
-    setTimeout(() => { autoSaveStatus.value = "Unsaved changes"; }, 2000);
+    autoSaveStatus.value = "error";
+    setTimeout(() => { autoSaveStatus.value = "unsavedChanges"; }, 2000);
   } finally {
     isGeneratingQuestion.value = false;
   }
@@ -295,11 +302,11 @@ const saveAndClose = async () => {
   if (!hasContent.value || !journal.value) return;
 
   try {
-    autoSaveStatus.value = "Saving...";
+    autoSaveStatus.value = "saving";
     
     await journalStore.updateJournal({
       id: journal.value.id,
-      title: title.value || "Untitled Journal",
+      title: title.value || t('journal.untitledJournal'),
       content: content.value,
       content_html: content.value,
       mood_score: moodScore.value,
@@ -310,10 +317,10 @@ const saveAndClose = async () => {
     const updated = await journalStore.getJournalById(journal.value.id);
     if (updated) journal.value = updated;
     isEditing.value = false;
-    autoSaveStatus.value = "Saved!";
+    autoSaveStatus.value = "saved";
   } catch (error) {
     console.error("[EditJournal] Error saving:", error);
-    autoSaveStatus.value = "Error saving";
+    autoSaveStatus.value = "errorSaving";
   }
 };
 

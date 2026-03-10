@@ -6,6 +6,7 @@ export type Config = {
   access_token?: string;
   client_id?: string;
   keycloakURL?: string; // Add Keycloak URL to config
+  locale?: string; // Current app locale for Accept-Language header
 };
 
 const readResponseBody = async (response: Response) => {
@@ -69,6 +70,7 @@ export abstract class Base {
       access_token: config?.access_token || "",
       client_id: config?.client_id || "",
       keycloakURL: config?.keycloakURL || "",
+      locale: config?.locale || "en",
     };
   }
 
@@ -94,6 +96,7 @@ export abstract class Base {
       ...init,
       headers: {
         "Content-Type": "application/json",
+        "Accept-Language": this.config.locale || "en",
         Authorization: this.config.access_token
           ? `Bearer ${this.config.access_token}`
           : "",

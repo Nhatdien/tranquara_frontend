@@ -1,7 +1,7 @@
 <template>
   <UForm :state="model" :schema="schema">
     <div>
-      <h3>What is you goal using this webiste ?</h3>
+      <h3>{{ $t('onboarding.goalQuestion') }}</h3>
       <URadioGroup
       
         :variant="'table'"
@@ -14,7 +14,7 @@
         }" />
     </div>
     <div class="mt-8">
-      <h3>Have you had any experience with mental therapy?</h3>
+      <h3>{{ $t('onboarding.experienceQuestion') }}</h3>
       <URadioGroup
         :variant="'table'"
         class="mt-2"
@@ -32,6 +32,8 @@
 import type { RadioGroupItem, RadioGroupValue } from "@nuxt/ui";
 import * as z from "zod";
 
+const { t } = useI18n();
+
 const schema = z.object({
   goal: z
     .string()
@@ -42,45 +44,40 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const model = defineModel<Schema>({required: true});
-const goalItems = ref<RadioGroupItem[]>([
+const goalItems = computed<RadioGroupItem[]>(() => [
   {
-    label: "Journaling emotions",
-    // description: "This is the first option.",
+    label: t('onboarding.goals.journaling'),
     value: "Journaling emotions",
   },
   {
-    label: "Preparing for a therapy session",
-    // description: "This is the second option.",
+    label: t('onboarding.goals.therapy'),
     value: "Preparing for a therapy session",
   },
   {
-    label: "Tracking emotional patterns",
-    // description: "This is the third option.",
+    label: t('onboarding.goals.tracking'),
     value: "Tracking emotional patterns",
   },
   {
-    label: "Self-reflection",
-    // description: "This is the third option.",
+    label: t('onboarding.goals.selfReflection'),
     value: "Self-reflection",
   },
   {
-    label: "Other",
-    // description: "This is the third option.",
+    label: t('onboarding.goals.other'),
     value: "Other",
   },
 ]);
 
-const experienceItems = ref<RadioGroupItem[]>([
+const experienceItems = computed<RadioGroupItem[]>(() => [
   {
-    label: "Yes",
+    label: t('onboarding.experience.yes'),
     value: "Yes",
   },
   {
-    label: "No",
+    label: t('onboarding.experience.no'),
     value: "No",
   },
   {
-    label: "Prefer not to say",
+    label: t('onboarding.experience.preferNotToSay'),
     value: "Prefer not to say",
   },
 ]);

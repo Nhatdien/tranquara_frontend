@@ -126,6 +126,7 @@ export type LocalTemplate = JournalTemplate & {
   cached_at: string;              // When downloaded from server
   title_vi?: string;              // Vietnamese title
   description_vi?: string;        // Vietnamese description
+  slide_groups_vi?: SlideGroup[]; // Vietnamese slide groups
 }
 
 // Learned Slide Group (progress tracking for learn-type collections)

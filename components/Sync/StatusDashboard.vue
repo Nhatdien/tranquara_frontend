@@ -14,7 +14,7 @@
             />
           </div>
           <div>
-            <h3 class="text-base font-semibold text-highlighted">Data Sync</h3>
+            <h3 class="text-base font-semibold text-highlighted">{{ $t('sync.dataSync') }}</h3>
             <p class="text-xs text-muted">{{ syncStore.statusText }}</p>
           </div>
         </div>
@@ -30,7 +30,7 @@
           icon="i-lucide-refresh-cw"
           @click="handleSync"
         >
-          Sync Now
+          {{ $t('sync.syncNow') }}
         </UButton>
       </div>
     </template>
@@ -55,14 +55,14 @@
             class="w-4 h-4"
             :class="syncStore.isOnline ? 'text-success-500' : 'text-muted'"
           />
-          <span class="text-sm text-default">Network Status</span>
+          <span class="text-sm text-default">{{ $t('sync.networkStatus') }}</span>
         </div>
         <UBadge 
           :color="syncStore.isOnline ? 'success' : 'neutral'" 
           variant="subtle"
           size="sm"
         >
-          {{ syncStore.isOnline ? 'Online' : 'Offline' }}
+          {{ $t(syncStore.isOnline ? 'sync.online' : 'sync.offline') }}
         </UBadge>
       </div>
 
@@ -72,14 +72,14 @@
       <div class="flex items-center justify-between py-2">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-cloud-upload" class="w-4 h-4 text-muted" />
-          <span class="text-sm text-default">Pending Uploads</span>
+          <span class="text-sm text-default">{{ $t('sync.pendingUploads') }}</span>
         </div>
         <UBadge 
           :color="syncStore.pendingCount > 0 ? 'warning' : 'success'" 
           variant="subtle"
           size="sm"
         >
-          {{ syncStore.pendingCount }} item{{ syncStore.pendingCount === 1 ? '' : 's' }}
+          {{ $t('sync.items', { count: syncStore.pendingCount }) }}
         </UBadge>
       </div>
 
@@ -89,9 +89,9 @@
       <div class="flex items-center justify-between py-2">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-clock" class="w-4 h-4 text-muted" />
-          <span class="text-sm text-default">Last Sync</span>
+          <span class="text-sm text-default">{{ $t('sync.lastSync') }}</span>
         </div>
-        <span class="text-sm text-muted">{{ syncStore.lastSyncTimeFormatted }}</span>
+        <span class="text-sm text-muted">{{ localizedLastSync }}</span>
       </div>
 
       <!-- Error Message -->
@@ -100,7 +100,7 @@
           color="error"
           variant="subtle"
           icon="i-lucide-alert-circle"
-          :title="syncStore.lastSyncResult === 'partial' ? 'Partial Sync' : 'Sync Error'"
+          :title="$t(syncStore.lastSyncResult === 'partial' ? 'sync.partialSync' : 'sync.syncError')"
           :description="syncStore.lastSyncError"
         >
           <template #actions>
@@ -110,7 +110,7 @@
               size="xs"
               @click="handleRetry"
             >
-              Retry
+              {{ $t('sync.retry') }}
             </UButton>
             <UButton 
               color="neutral" 
@@ -118,7 +118,7 @@
               size="xs"
               @click="syncStore.clearError()"
             >
-              Dismiss
+              {{ $t('sync.dismiss') }}
             </UButton>
           </template>
         </UAlert>
@@ -128,28 +128,28 @@
       <div v-if="showStats && !compact" class="mt-4">
         <USeparator class="my-4" />
         
-        <h4 class="text-sm font-medium text-muted mb-3">Sync Statistics</h4>
+        <h4 class="text-sm font-medium text-muted mb-3">{{ $t('sync.syncStatistics') }}</h4>
         
         <div class="grid grid-cols-3 gap-4 text-center">
           <div class="p-3 rounded-lg bg-muted">
             <p class="text-2xl font-bold text-highlighted">{{ syncStore.stats.totalUploads }}</p>
-            <p class="text-xs text-muted">Uploaded</p>
+            <p class="text-xs text-muted">{{ $t('sync.uploaded') }}</p>
           </div>
           <div class="p-3 rounded-lg bg-muted">
             <p class="text-2xl font-bold text-highlighted">{{ syncStore.stats.totalDownloads }}</p>
-            <p class="text-xs text-muted">Downloaded</p>
+            <p class="text-xs text-muted">{{ $t('sync.downloaded') }}</p>
           </div>
           <div class="p-3 rounded-lg bg-muted">
             <p class="text-2xl font-bold" :class="syncStore.stats.totalErrors > 0 ? 'text-error-500' : 'text-highlighted'">
               {{ syncStore.stats.totalErrors }}
             </p>
-            <p class="text-xs text-muted">Errors</p>
+            <p class="text-xs text-muted">{{ $t('sync.errors') }}</p>
           </div>
         </div>
 
         <!-- Last Successful Sync -->
         <p v-if="syncStore.stats.lastSuccessfulSync" class="text-xs text-muted mt-3 text-center">
-          Last successful: {{ formatDate(syncStore.stats.lastSuccessfulSync) }}
+          {{ $t('sync.lastSuccessful', { date: formatDate(syncStore.stats.lastSuccessfulSync) }) }}
         </p>
       </div>
 
@@ -158,7 +158,7 @@
         <USeparator class="my-4" />
         
         <div class="flex items-center justify-between mb-3">
-          <h4 class="text-sm font-medium text-muted">Recent Activity</h4>
+          <h4 class="text-sm font-medium text-muted">{{ $t('sync.recentActivity') }}</h4>
           <UButton 
             v-if="syncStore.syncHistory.length > 5"
             color="neutral" 
@@ -166,7 +166,7 @@
             size="xs"
             @click="$emit('viewHistory')"
           >
-            View All
+            {{ $t('sync.viewAll') }}
           </UButton>
         </div>
 
@@ -211,7 +211,7 @@
             icon="i-lucide-trash-2"
             @click="handleClearHistory"
           >
-            Clear History
+            {{ $t('sync.clearHistory') }}
           </UButton>
           <UButton
             color="neutral"
@@ -221,7 +221,7 @@
             icon="i-lucide-refresh-ccw"
             @click="handleResetStats"
           >
-            Reset Stats
+            {{ $t('sync.resetStats') }}
           </UButton>
         </div>
       </div>
@@ -241,7 +241,7 @@
         <template #leading>
           <UIcon name="i-lucide-refresh-cw" class="w-4 h-4" />
         </template>
-        {{ syncStore.pendingCount > 0 ? `Sync ${syncStore.pendingCount} item${syncStore.pendingCount === 1 ? '' : 's'}` : 'Sync Now' }}
+        {{ syncStore.pendingCount > 0 ? $t('sync.syncItems', { count: syncStore.pendingCount }) : $t('sync.syncNow') }}
       </UButton>
     </template>
   </UCard>
@@ -250,6 +250,9 @@
 <script setup lang="ts">
 import { useSyncStatusStore } from '~/stores/stores/sync_status';
 import { userJournalStore } from '~/stores/stores/user_journal';
+
+const { t } = useI18n();
+const { formatDateTime, formatDate: formatDateLocalized } = useLocalizedDate();
 
 const props = withDefaults(defineProps<{
   /**
@@ -283,6 +286,12 @@ const emit = defineEmits<{
 const syncStore = useSyncStatusStore();
 const journalStore = userJournalStore();
 
+// Localized last sync time (replaces store's English-only getter)
+const localizedLastSync = computed(() => {
+  if (!syncStore.lastSyncTime) return t('sync.notSynced');
+  return formatRelativeTime(syncStore.lastSyncTime);
+});
+
 // Computed classes for status indicator
 const statusBgClass = computed(() => {
   const colorMap: Record<string, string> = {
@@ -313,7 +322,7 @@ const recentHistory = computed(() => {
 
 // Format date helper
 const formatDate = (isoString: string) => {
-  return new Date(isoString).toLocaleString();
+  return formatDateTime(isoString);
 };
 
 // Format relative time helper
@@ -325,27 +334,27 @@ const formatRelativeTime = (isoString: string) => {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffMins < 1) return t('sync.justNow');
+  if (diffMins < 60) return t('sync.minutesAgo', { count: diffMins });
+  if (diffHours < 24) return t('sync.hoursAgo', { count: diffHours });
+  if (diffDays < 7) return t('sync.daysAgo', { count: diffDays });
   
-  return date.toLocaleDateString();
+  return formatDateLocalized(date);
 };
 
 // Get history entry label
 const getHistoryLabel = (entry: { type: string; success: boolean; error?: string }) => {
   const typeLabels: Record<string, string> = {
-    upload: 'Uploaded to cloud',
-    download: 'Downloaded from cloud',
-    full: 'Full sync',
+    upload: t('sync.uploadedToCloud'),
+    download: t('sync.downloadedFromCloud'),
+    full: t('sync.fullSync'),
   };
   
   if (!entry.success && entry.error) {
     return entry.error;
   }
   
-  return typeLabels[entry.type] || 'Synced';
+  return typeLabels[entry.type] || t('sync.synced');
 };
 
 // Handle sync button click

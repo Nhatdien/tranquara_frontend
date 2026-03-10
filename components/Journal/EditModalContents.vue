@@ -3,7 +3,7 @@
     <div class="flex justify-between w-full">
       <ChevronLeft @click="prevNode" />
       <div class="flex items-center gap-2">
-        <span class="text-sm text-muted">Editing</span>
+        <span class="text-sm text-muted">{{ $t('journal.editing') }}</span>
         <X @click="closeWithoutSaving"/>
       </div>
     </div>
@@ -37,7 +37,7 @@
       <div class="flex items-center gap-2">
         <UButton :variant="'outline'" @click="saveJournalChanges" :loading="isSaving">
           <Check class="w-4 h-4 mr-1" />
-          Save
+          {{ $t('common.save') }}
         </UButton>
         <UButton :variant="'soft'" @click="nextNode"><ChevronRight /></UButton>
       </div>

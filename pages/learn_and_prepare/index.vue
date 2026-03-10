@@ -2,7 +2,7 @@
   <section class="px-4 py-6 pb-20">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Library</h1>
+      <h1 class="text-2xl font-bold">{{ $t('learn.library') }}</h1>
       <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full" />
     </div>
 
@@ -11,7 +11,7 @@
       v-if="!journalStore.isOnline"
       class="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-center gap-2">
       <Icon name="i-lucide-wifi-off" class="w-5 h-5 text-yellow-500" />
-      <span class="text-sm text-yellow-500">Working offline - templates from cache</span>
+      <span class="text-sm text-yellow-500">{{ $t('learn.workingOffline') }}</span>
     </div>
 
     <!-- Loading State -->
@@ -31,7 +31,7 @@
             <component :is="getFeaturedIcon(featured.category)" class="w-10 h-10 text-neutral-300" />
           </div>
           <div class="flex-1 px-4 py-3">
-            <p class="text-xs text-neutral-400 mb-1">Featured</p>
+            <p class="text-xs text-neutral-400 mb-1">{{ $t('learn.featured') }}</p>
             <p class="font-medium">{{ featured.title }}</p>
           </div>
           <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-neutral-500 mr-4" />
@@ -41,9 +41,9 @@
       <!-- Collections Section -->
       <div class="mb-8">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold">Collections</h2>
+          <h2 class="text-xl font-semibold">{{ $t('learn.collections') }}</h2>
           <NuxtLink to="/learn_and_prepare/collections" class="text-sm text-neutral-400 flex items-center gap-1 hover:text-neutral-200">
-            See All
+            {{ $t('learn.seeAll') }}
             <Icon name="i-lucide-chevron-right" class="w-4 h-4" />
           </NuxtLink>
         </div>
@@ -61,7 +61,7 @@
               </div>
               <div class="flex-1">
                 <h3 class="font-semibold mb-1">{{ collection.title }}</h3>
-                <p class="text-sm text-neutral-400 mb-3">{{ collection.slide_groups?.length || 0 }} chapters</p>
+                <p class="text-sm text-neutral-400 mb-3">{{ $t('learn.chapters', { count: collection.slide_groups?.length || 0 }) }}</p>
                 <UProgress :model-value="getCollectionProgress(collection.id)" size="sm" color="neutral" />
               </div>
             </div>
@@ -71,7 +71,7 @@
 
       <!-- All Categories Section -->
       <div class="mb-8">
-        <h2 class="text-xl font-semibold mb-4">All Categories</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ $t('learn.allCategories') }}</h2>
         
         <!-- Category Tabs (Horizontal Scroll) -->
         <div class="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 scrollbar-hide mb-4">
@@ -94,7 +94,7 @@
             class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 cursor-pointer hover:bg-neutral-800/50 transition-colors"
             @click="navigateTo(`/learn_and_prepare/collection/${item.collectionId}/${item.slideGroup.id}`)">
             <h3 class="font-medium text-base mb-1">{{ item.slideGroup.title }}</h3>
-            <p class="text-xs text-neutral-400">{{ item.slideGroup.slides?.length || 0 }} questions</p>
+            <p class="text-xs text-neutral-400">{{ $t('learn.questions', { count: item.slideGroup.slides?.length || 0 }) }}</p>
           </div>
         </div>
 
@@ -103,7 +103,7 @@
           v-if="categorySlideGroups.length > 0"
           :to="`/learn_and_prepare/category/${selectedCategory}`" 
           class="flex items-center justify-center gap-1 text-sm text-neutral-400 hover:text-neutral-200">
-          See All {{ totalCategoryCount }} Journals on {{ selectedCategoryLabel }}
+          {{ $t('learn.seeAllOnCategory', { count: totalCategoryCount, category: selectedCategoryLabel }) }}
           <Icon name="i-lucide-chevron-right" class="w-4 h-4" />
         </NuxtLink>
       </div>

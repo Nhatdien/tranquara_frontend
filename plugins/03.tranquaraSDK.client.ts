@@ -10,6 +10,10 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   console.log('[TranquaraSDK Plugin] Full Runtime Config:', config.public);
   const authStore = useAuthStore();
 
+  // Get initial locale from i18n
+  const i18n = nuxtApp.$i18n as { locale: { value: string } };
+  const initialLocale = i18n?.locale?.value || 'en';
+
   // Initialize the SDK
   const tranquaraSDK = TranquaraSDK.getInstance({
     base_url: config.public.baseURL,
@@ -18,6 +22,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     client_id: config.public.clientId,
     access_token: "",
     current_username: "",
+    locale: initialLocale,
   });
 
   // Don't initialize database on plugin load - wait for Keycloak to be ready
@@ -92,6 +97,15 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       authStore.logout();
     }
   };
+
+  // Watch for locale changes and update SDK
+  watch(
+    () => i18n.locale.value,
+    (newLocale) => {
+      tranquaraSDK.config.locale = newLocale;
+      console.log('[Plugin] SDK locale updated to:', newLocale);
+    }
+  );
 
   return {
     provide: {

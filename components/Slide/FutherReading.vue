@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h2>Further reading</h2>
+    <h2>{{ $t('slide.furtherReading') }}</h2>
     <ul class="p-4">
       <li class="mb-2" v-for="item in (content?.config?.links || content?.contents || [])">
         {{ item.type }}

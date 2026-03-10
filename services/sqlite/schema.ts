@@ -47,7 +47,10 @@ CREATE TABLE IF NOT EXISTS journal_templates (
   is_active INTEGER DEFAULT 1,
   created_at TEXT,
   updated_at TEXT,
-  cached_at TEXT NOT NULL
+  cached_at TEXT NOT NULL,
+  title_vi TEXT,
+  description_vi TEXT,
+  slide_groups_vi TEXT
 );`;
 
 export const CREATE_JOURNAL_TEMPLATES_INDEX_CATEGORY = `
@@ -93,7 +96,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
 );`;
 
 // Database version tracking
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -133,5 +136,9 @@ export const MIGRATIONS: Record<number, string[]> = {
   3: [
     `ALTER TABLE journal_templates ADD COLUMN title_vi TEXT;`,
     `ALTER TABLE journal_templates ADD COLUMN description_vi TEXT;`,
+  ],
+  // v4: Add slide_groups_vi column for Vietnamese slide content
+  4: [
+    `ALTER TABLE journal_templates ADD COLUMN slide_groups_vi TEXT;`,
   ],
 };

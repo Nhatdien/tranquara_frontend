@@ -19,9 +19,9 @@
     <template v-else>
       <!-- Header -->
       <div class="px-6 pt-8 pb-8 text-center">
-        <h1 class="text-3xl font-bold mb-3">collections.</h1>
+        <h1 class="text-3xl font-bold mb-3">{{ $t('learnSub.collections') }}</h1>
         <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
-          Lessons on essential life topics - designed to inspire reflection and personal growth.
+          {{ $t('learnSub.collectionsDescription') }}
         </p>
       </div>
 
@@ -41,7 +41,7 @@
             <!-- Content -->
             <div class="flex-1">
               <h3 class="font-semibold text-lg mb-1">{{ collection.title }}</h3>
-              <p class="text-sm text-neutral-400 mb-4">{{ collection.slide_groups?.length || 0 }} chapters</p>
+              <p class="text-sm text-neutral-400 mb-4">{{ $t('learnSub.chapters', { count: collection.slide_groups?.length || 0 }) }}</p>
               <UProgress :model-value="getCollectionProgress(collection.id)" size="md" color="neutral" />
             </div>
           </div>

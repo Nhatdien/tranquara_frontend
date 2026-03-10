@@ -18,9 +18,9 @@
 
     <!-- Category Not Found -->
     <div v-else-if="categoryTemplates.length === 0" class="text-center py-24 px-4">
-      <p class="text-neutral-400 mb-4">No templates found in this category</p>
+      <p class="text-neutral-400 mb-4">{{ $t('learnSub.noTemplatesFound') }}</p>
       <UButton @click="navigateTo('/learn_and_prepare')" variant="outline">
-        Back to Library
+        {{ $t('journal.backToLibrary') }}
       </UButton>
     </div>
 
@@ -28,7 +28,7 @@
     <template v-else>
       <!-- Header -->
       <div class="px-6 pt-8 pb-12 text-center">
-        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">Collection</p>
+        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
         <h1 class="text-2xl font-bold mb-4">{{ categoryLabel }}</h1>
         <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
           {{ categoryDescription }}
@@ -68,7 +68,7 @@
                 size="lg"
                 class="px-8 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
                 @click="openSlideGroup(slideGroup.id, template.id)">
-                Begin
+                {{ $t('common.begin') }}
               </UButton>
             </div>
           </div>
@@ -86,6 +86,7 @@ definePageMeta({ layout: "detail" });
 const { openSlideGroup } = useSlideGroup();
 const route = useRoute();
 const journalStore = userJournalStore();
+const { t } = useI18n();
 
 const isLoading = ref(true);
 const categoryId = computed(() => route.params?.id as string);
@@ -115,18 +116,18 @@ const categoryLabel = computed(() => {
 const categoryDescription = computed(() => {
   const label = categoryLabel.value.toLowerCase();
   if (label.includes("check")) {
-    return "Quick check-ins and reflections to help you stay connected with your thoughts and emotions throughout the day.";
+    return t('learnSub.categoryDescriptions.check');
   }
   if (label.includes("daily") || label.includes("essential")) {
-    return "Essential daily practices and prompts to build healthy habits and maintain mental wellness.";
+    return t('learnSub.categoryDescriptions.daily');
   }
   if (label.includes("well") || label.includes("sos")) {
-    return "Support and guidance for challenging moments when you need immediate help and comfort.";
+    return t('learnSub.categoryDescriptions.well');
   }
   if (label.includes("bed") || label.includes("sleep")) {
-    return "Calming exercises and reflections to help you unwind and prepare for restful sleep.";
+    return t('learnSub.categoryDescriptions.sleep');
   }
-  return `A collection of lessons and journal prompts to help you explore and understand ${categoryLabel.value}.`;
+  return t('learnSub.categoryDescriptions.default', { category: categoryLabel.value });
 });
 
 // Filter only journal-type templates by category

@@ -4,30 +4,30 @@
     <div 
       v-if="needsSync && !syncing" 
       class="flex items-center gap-1 px-2 py-0.5 bg-yellow-500/10 border border-yellow-500/30 rounded-full"
-      :title="'Not synced - changes pending upload'"
+      :title="$t('sync.notSyncedTitle')"
     >
       <div class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></div>
-      <span v-if="showLabel" class="text-xs text-yellow-600 dark:text-yellow-400">Not synced</span>
+      <span v-if="showLabel" class="text-xs text-yellow-600 dark:text-yellow-400">{{ $t('sync.notSynced') }}</span>
     </div>
 
     <!-- Syncing Badge -->
     <div 
       v-else-if="syncing" 
       class="flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 border border-blue-500/30 rounded-full"
-      :title="'Syncing...'"
+      :title="$t('sync.syncingTitle')"
     >
       <Icon name="i-lucide-loader-2" class="w-3 h-3 text-blue-500 animate-spin" />
-      <span v-if="showLabel" class="text-xs text-blue-600 dark:text-blue-400">Syncing</span>
+      <span v-if="showLabel" class="text-xs text-blue-600 dark:text-blue-400">{{ $t('sync.syncing') }}</span>
     </div>
 
     <!-- Synced Badge (optional - can be hidden) -->
     <div 
       v-else-if="showSynced" 
       class="flex items-center gap-1 px-2 py-0.5 bg-green-500/10 border border-green-500/30 rounded-full"
-      :title="'Synced'"
+      :title="$t('sync.syncedTitle')"
     >
       <Icon name="i-lucide-check" class="w-3 h-3 text-green-500" />
-      <span v-if="showLabel" class="text-xs text-green-600 dark:text-green-400">Synced</span>
+      <span v-if="showLabel" class="text-xs text-green-600 dark:text-green-400">{{ $t('sync.synced') }}</span>
     </div>
   </div>
 </template>

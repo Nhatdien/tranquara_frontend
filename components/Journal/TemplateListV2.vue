@@ -18,9 +18,9 @@
 
     <!-- Collection Not Found -->
     <div v-else-if="!currentCollection" class="text-center py-24 px-4">
-      <p class="text-neutral-400 mb-4">Collection not found</p>
+      <p class="text-neutral-400 mb-4">{{ $t('journal.collectionNotFound') }}</p>
       <UButton @click="navigateTo('/learn_and_prepare')" variant="outline">
-        Back to Library
+        {{ $t('journal.backToLibrary') }}
       </UButton>
     </div>
 
@@ -28,7 +28,7 @@
     <template v-else>
       <!-- Header -->
       <div class="px-6 pt-8 pb-12 text-center">
-        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">Collection</p>
+        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
         <h1 class="text-2xl font-bold mb-4">{{ currentCollection.title }}</h1>
         <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
           {{ currentCollection.description }}
@@ -64,7 +64,7 @@
               size="lg"
               class="px-8 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
               @click="openSlideGroup(slideGroup.id, currentCollection.id)">
-              Begin
+              {{ $t('common.begin') }}
             </UButton>
             <!-- Completed tick -->
             <div v-if="learnedStore.isSlideGroupCompleted(currentCollection.id, slideGroup.id)" class="flex items-center gap-1">

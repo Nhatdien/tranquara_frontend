@@ -241,6 +241,7 @@ interface DateRangeValue {
 
 const journalStore = userJournalStore();
 const authStore = useAuthStore();
+const { formatDateGroupHeader, formatTime } = useLocalizedDate();
 
 // Filter drawer state
 const isFilterDrawerOpen = ref(false);
@@ -409,10 +410,7 @@ const groupedEntries = computed(() => {
   
   filteredJournals.value.forEach(journal => {
     const date = new Date(journal.created_at);
-    // Format: "WEDNESDAY, 28.01" style
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-    const dayMonth = date.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' }).replace('/', '.');
-    const dateKey = `${dayName}, ${dayMonth}`;
+    const dateKey = formatDateGroupHeader(date);
     
     if (!groups[dateKey]) {
       groups[dateKey] = [];
@@ -458,12 +456,6 @@ const getTemplateName = (collectionId: string | null | undefined) => {
   if (!collectionId) return null;
   const template = journalStore.templates.find(t => t.id === collectionId);
   return template?.title;
-};
-
-// Format time
-const formatTime = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 };
 
 // Get mood icon based on score

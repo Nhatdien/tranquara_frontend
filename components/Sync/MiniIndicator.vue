@@ -47,6 +47,8 @@ const emit = defineEmits<{
 }>();
 
 const syncStore = useSyncStatusStore();
+const { t } = useI18n();
+const { formatDate: formatDateLocalized } = useLocalizedDate();
 
 // Icon size based on button size
 const iconSizeClass = computed(() => {
@@ -73,22 +75,25 @@ const buttonColorClass = computed(() => {
 // Tooltip text
 const tooltipText = computed(() => {
   if (!syncStore.isOnline) {
-    return 'Offline - Changes will sync when online';
+    return t('sync.offlineTooltip');
   }
   
   if (syncStore.currentState === 'syncing') {
-    return 'Syncing...';
+    return t('sync.syncingTooltip');
   }
   
   if (syncStore.currentState === 'error') {
-    return `Sync error: ${syncStore.lastSyncError}`;
+    return t('sync.syncErrorTooltip', { error: syncStore.lastSyncError });
   }
   
   if (syncStore.hasPendingSync) {
-    return `${syncStore.pendingCount} item${syncStore.pendingCount === 1 ? '' : 's'} pending sync`;
+    return t('sync.pendingSyncTooltip', { count: syncStore.pendingCount });
   }
   
-  return `Last synced: ${syncStore.lastSyncTimeFormatted}`;
+  const lastSyncFormatted = syncStore.lastSyncTime
+    ? formatDateLocalized(syncStore.lastSyncTime)
+    : t('sync.notSynced');
+  return t('sync.lastSyncedTooltip', { time: lastSyncFormatted });
 });
 
 // Handle click
