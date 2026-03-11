@@ -160,8 +160,8 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
   const markSlideGroupCompleted = async () => {
     if (!currentCollecton.value || !slideGroupId.value) return;
 
-    // Only track progress for learn-type collections
-    if (currentCollecton.value.type !== 'learn') return;
+    // Only track progress for learn-type and prepare-type collections
+    if (currentCollecton.value.type !== 'learn' && currentCollecton.value.type !== 'prepare') return;
 
     const learnedStore = useLearnedStore();
     await learnedStore.markCompleted(collectionId.value, slideGroupId.value);

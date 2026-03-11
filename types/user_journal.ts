@@ -29,7 +29,7 @@ export type SlideGroup = {
 }
 
 // Collection type discriminator
-export type CollectionType = 'journal' | 'learn';
+export type CollectionType = 'journal' | 'learn' | 'prepare';
 
 // Journal Template (Collection)
 export type JournalTemplate = {

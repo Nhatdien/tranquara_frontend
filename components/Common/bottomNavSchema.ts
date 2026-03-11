@@ -5,9 +5,9 @@ export const bottomNavSchema = [
         link: "/",
     },
     {
-        titleKey: "nav.inspirations",
-        icon: "lightbulb",
-        link: "/inspirations",
+        titleKey: "nav.toolkit",
+        icon: "heart-handshake",
+        link: "/toolkit",
     },
     {
         titleKey: "nav.library",

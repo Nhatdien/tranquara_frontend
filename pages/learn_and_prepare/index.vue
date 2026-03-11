@@ -134,6 +134,7 @@
 <script lang="ts" setup>
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useLearnedStore } from "~/stores/stores/user_learned";
+import { TOOLKIT_COLLECTION_IDS } from "~/types/therapy_toolkit";
 import { 
   Feather, 
   Sun, 
@@ -180,14 +181,18 @@ const featuredCollections = computed(() => {
   return learnCollections.value.slice(0, 2);
 });
 
-// Learn-type collections (for Collections section)
+// Learn-type collections (for Collections section) — exclude Toolkit collections
 const learnCollections = computed(() => {
-  return journalStore.templates.filter(t => t.type === 'learn');
+  return journalStore.templates.filter(
+    t => t.type === 'learn' && !TOOLKIT_COLLECTION_IDS.includes(t.id)
+  );
 });
 
-// Journal-type templates (for Categories section)
+// Journal-type templates (for Categories section) — exclude Toolkit collections
 const journalTemplates = computed(() => {
-  return journalStore.templates.filter(t => t.type === 'journal' || !t.type);
+  return journalStore.templates.filter(
+    t => (t.type === 'journal' || !t.type) && !TOOLKIT_COLLECTION_IDS.includes(t.id)
+  );
 });
 
 // Display collections (for horizontal scroll, max 5)

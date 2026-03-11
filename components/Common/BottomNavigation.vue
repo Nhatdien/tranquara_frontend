@@ -21,13 +21,13 @@
 
 <script setup lang="ts">
 import { bottomNavSchema } from "./bottomNavSchema";
-import { Home, Lightbulb, BookOpen, Clock } from "lucide-vue-next";
+import { Home, HeartHandshake, BookOpen, Clock } from "lucide-vue-next";
 
 const route = useRoute();
 
 const iconComponents = {
   "home": Home,
-  "lightbulb": Lightbulb,
+  "heart-handshake": HeartHandshake,
   "book-open": BookOpen,
   "clock": Clock,
 } as Record<string, any>;

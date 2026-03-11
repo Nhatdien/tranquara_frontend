@@ -4,7 +4,7 @@
   },
   "nav": {
     "today": "Hôm nay",
-    "inspirations": "Cảm hứng",
+    "toolkit": "Bộ công cụ",
     "library": "Thư viện",
     "history": "Lịch sử"
   },
@@ -51,12 +51,6 @@
     "activeFilters": "Bộ lọc đang dùng:",
     "clearAll": "Xoá tất cả",
     "journal": "Nhật ký"
-  },
-  "inspirations": {
-    "title": "Cảm hứng",
-    "subtitle": "Câu hỏi và ý tưởng viết hàng ngày",
-    "pastPrompts": "Câu hỏi trước đây",
-    "inspirationalQuotes": "Trích dẫn truyền cảm hứng"
   },
   "learn": {
     "library": "Thư viện",
@@ -447,6 +441,58 @@
       "8": "Rất tốt",
       "9": "Tuyệt vời",
       "10": "Xuất sắc"
+    }
+  },
+  "toolkit": {
+    "title": "Bộ công cụ trị liệu",
+    "subtitle": "Bạn đồng hành chuẩn bị cho buổi trị liệu",
+    "journey": {
+      "title": "Hành trình chuẩn bị",
+      "description": "Hướng dẫn từng bước để chuẩn bị cho buổi trị liệu.",
+      "overallProgress": "Hoàn thành {percent}%",
+      "chaptersProgress": "{completed}/{total} chương",
+      "step1": {
+        "label": "Gói chuẩn bị",
+        "description": "Tìm hiểu những gì cần chuẩn bị cho buổi trị liệu"
+      },
+      "step2": {
+        "label": "Theo dõi buổi trị liệu",
+        "description": "Theo dõi các buổi trị liệu và tiến trình"
+      },
+      "step3": {
+        "label": "Bài tập hít thở",
+        "description": "Kỹ thuật giúp bạn bình tĩnh và tập trung"
+      },
+      "step4": {
+        "label": "Bài tập về nhà",
+        "description": "Hoạt động để củng cố những gì bạn học trong trị liệu"
+      }
+    },
+    "prepPack": {
+      "title": "Gói chuẩn bị",
+      "description": "Tạo bản tóm tắt AI từ nhật ký gần đây để chuẩn bị cho buổi trị liệu.",
+      "generate": "Tạo gói chuẩn bị",
+      "noJournals": "Hãy viết nhật ký trước để tạo gói chuẩn bị"
+    },
+    "session": {
+      "title": "Theo dõi buổi trị liệu",
+      "noSession": "Chưa có buổi trị liệu. Hãy lên lịch buổi trị liệu tiếp theo.",
+      "schedule": "Lên lịch buổi trị liệu"
+    },
+    "grounding": {
+      "title": "Bài tập hít thở",
+      "breathing": {
+        "title": "Hít thở vuông",
+        "description": "Kỹ thuật thư giãn với nhịp 4 giây",
+        "start": "Bắt đầu hít thở",
+        "stop": "Dừng",
+        "inhale": "Hít vào",
+        "holdIn": "Giữ",
+        "exhale": "Thở ra",
+        "holdOut": "Giữ",
+        "elapsed": "Đã {time}",
+        "complete": "Tuyệt vời! Bạn đã tập {duration}."
+      }
     }
   }
 }

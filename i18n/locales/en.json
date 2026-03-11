@@ -4,7 +4,7 @@
   },
   "nav": {
     "today": "Today",
-    "inspirations": "Inspirations",
+    "toolkit": "Toolkit",
     "library": "Library",
     "history": "History"
   },
@@ -51,12 +51,6 @@
     "activeFilters": "Active filters:",
     "clearAll": "Clear all",
     "journal": "Journal"
-  },
-  "inspirations": {
-    "title": "Inspirations",
-    "subtitle": "Daily prompts and writing ideas",
-    "pastPrompts": "Past Prompts",
-    "inspirationalQuotes": "Inspirational Quotes"
   },
   "learn": {
     "library": "Library",
@@ -447,6 +441,58 @@
       "8": "Very Good",
       "9": "Great",
       "10": "Fantastic"
+    }
+  },
+  "toolkit": {
+    "title": "Therapy Toolkit",
+    "subtitle": "Your companion for therapy preparation",
+    "journey": {
+      "title": "Preparation Journey",
+      "description": "Your step-by-step guide to preparing for therapy sessions.",
+      "overallProgress": "{percent}% complete",
+      "chaptersProgress": "{completed}/{total} chapters",
+      "step1": {
+        "label": "Preparation Pack",
+        "description": "Learn what to expect and how to prepare for therapy"
+      },
+      "step2": {
+        "label": "Session Tracker",
+        "description": "Track your therapy sessions and progress"
+      },
+      "step3": {
+        "label": "Grounding Exercises",
+        "description": "Techniques to stay calm and centered"
+      },
+      "step4": {
+        "label": "Homework & Practice",
+        "description": "Activities to reinforce what you learn in therapy"
+      }
+    },
+    "prepPack": {
+      "title": "Prep Pack",
+      "description": "Generate an AI summary of your recent journals to prepare for your next session.",
+      "generate": "Generate Prep Pack",
+      "noJournals": "Write some journal entries first to generate a prep pack"
+    },
+    "session": {
+      "title": "Session Tracker",
+      "noSession": "No upcoming sessions. Schedule your next therapy session.",
+      "schedule": "Schedule Session"
+    },
+    "grounding": {
+      "title": "Grounding Exercises",
+      "breathing": {
+        "title": "Box Breathing",
+        "description": "A calming technique using 4-second intervals",
+        "start": "Start Breathing",
+        "stop": "Stop",
+        "inhale": "Breathe In",
+        "holdIn": "Hold",
+        "exhale": "Breathe Out",
+        "holdOut": "Hold",
+        "elapsed": "{time} elapsed",
+        "complete": "Well done! You practiced for {duration}."
+      }
     }
   }
 }
