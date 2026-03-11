@@ -145,8 +145,34 @@ CREATE INDEX IF NOT EXISTS idx_homework_session ON homework_items(session_id);`;
 export const CREATE_HOMEWORK_ITEMS_INDEX_USER = `
 CREATE INDEX IF NOT EXISTS idx_homework_user ON homework_items(user_id);`;
 
+// Prep Packs cache table schema (Phase 3 — AI Prep Pack)
+export const CREATE_PREP_PACKS_TABLE = `
+CREATE TABLE IF NOT EXISTS prep_packs (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  date_range_start TEXT NOT NULL,
+  date_range_end TEXT NOT NULL,
+  mood_overview TEXT,
+  key_themes TEXT,
+  emotional_highlights TEXT,
+  patterns TEXT,
+  discussion_points TEXT,
+  growth_moments TEXT,
+  personal_notes TEXT,
+  journal_count INTEGER DEFAULT 0,
+  created_at TEXT NOT NULL,
+  needs_sync INTEGER DEFAULT 1,
+  synced_at TEXT
+);`;
+
+export const CREATE_PREP_PACKS_INDEX_USER = `
+CREATE INDEX IF NOT EXISTS idx_prep_packs_user ON prep_packs(user_id);`;
+
+export const CREATE_PREP_PACKS_INDEX_CREATED = `
+CREATE INDEX IF NOT EXISTS idx_prep_packs_created ON prep_packs(created_at DESC);`;
+
 // Database version tracking
-export const DB_VERSION = 5;
+export const DB_VERSION = 6;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -199,5 +225,11 @@ export const MIGRATIONS: Record<number, string[]> = {
     CREATE_HOMEWORK_ITEMS_TABLE,
     CREATE_HOMEWORK_ITEMS_INDEX_SESSION,
     CREATE_HOMEWORK_ITEMS_INDEX_USER,
+  ],
+  // v6: Add prep packs cache table
+  6: [
+    CREATE_PREP_PACKS_TABLE,
+    CREATE_PREP_PACKS_INDEX_USER,
+    CREATE_PREP_PACKS_INDEX_CREATED,
   ],
 };

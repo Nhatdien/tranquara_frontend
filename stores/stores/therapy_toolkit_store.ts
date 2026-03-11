@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
 import { ToolkitRepository } from "~/services/sqlite/toolkit_repository";
 import { useAuthStore } from "./auth_store";
-import type { TherapySession, HomeworkItem, CreateSessionInput, UpdateSessionInput } from "~/types/therapy_toolkit";
+import type { TherapySession, HomeworkItem, PrepPack, CreateSessionInput, UpdateSessionInput } from "~/types/therapy_toolkit";
 
 const getUserId = (): string | undefined => {
   const authStore = useAuthStore();
@@ -14,6 +14,9 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
     sessions: [] as TherapySession[],
     currentSession: null as TherapySession | null,
     homeworkItems: [] as HomeworkItem[],
+    prepPacks: [] as PrepPack[],
+    currentPrepPack: null as PrepPack | null,
+    isGeneratingPrepPack: false,
     isLoading: false,
     isOnline: false,
     error: null as string | null,
@@ -39,10 +42,15 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
     getHomeworkForSession: (state) => {
       return (sessionId: string) => state.homeworkItems.filter(h => h.session_id === sessionId);
     },
+
+    /** Most recently generated prep pack */
+    latestPrepPack: (state) => {
+      return state.prepPacks.length > 0 ? state.prepPacks[0] : null;
+    },
   },
 
   actions: {
-    /** Load sessions + homework from SQLite */
+    /** Load sessions + homework + prep packs from SQLite */
     async loadFromLocal() {
       const userId = getUserId();
       if (!userId) return;
@@ -51,6 +59,7 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         const repo = new ToolkitRepository();
         this.sessions = await repo.getSessionsByUser(userId);
         this.homeworkItems = await repo.getHomeworkByUser(userId);
+        this.prepPacks = await repo.getPrepPacksByUser(userId);
       } catch (error) {
         console.error('[ToolkitStore] Error loading from local:', error);
       }
@@ -186,6 +195,92 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         this.homeworkItems = this.homeworkItems.filter(h => h.id !== id);
       } catch (error) {
         console.error('[ToolkitStore] Error deleting homework:', error);
+      }
+    },
+
+    // ─── Prep Packs ───────────────────────────
+
+    /** Generate an AI prep pack for the given date range */
+    async generatePrepPack(dateRangeStart: string, dateRangeEnd: string): Promise<PrepPack | null> {
+      const userId = getUserId();
+      if (!userId) return null;
+
+      this.isGeneratingPrepPack = true;
+      this.error = null;
+
+      try {
+        const response = await TranquaraSDK.getInstance().generatePrepPack({
+          user_id: userId,
+          date_range_start: dateRangeStart,
+          date_range_end: dateRangeEnd,
+          language: useNuxtApp().$i18n?.locale?.value || 'en',
+        });
+
+        // Build local prep pack object with a local ID
+        const prepPack: PrepPack = {
+          ...response.prep_pack,
+          id: crypto.randomUUID(),
+          user_id: userId,
+          date_range_start: dateRangeStart,
+          date_range_end: dateRangeEnd,
+          journal_count: response.meta.journals_analyzed,
+          created_at: response.meta.generated_at,
+        };
+
+        // Persist to SQLite cache
+        try {
+          const repo = new ToolkitRepository();
+          await repo.savePrepPack(prepPack);
+        } catch (e) {
+          console.warn('[ToolkitStore] Failed to cache prep pack locally:', e);
+        }
+
+        // Add to state (newest first)
+        this.prepPacks.unshift(prepPack);
+        this.currentPrepPack = prepPack;
+        return prepPack;
+      } catch (error: any) {
+        console.error('[ToolkitStore] Error generating prep pack:', error);
+        this.error = error?.message || 'Failed to generate prep pack';
+        return null;
+      } finally {
+        this.isGeneratingPrepPack = false;
+      }
+    },
+
+    /** Load a specific prep pack by ID from local cache */
+    async loadPrepPack(id: string): Promise<PrepPack | null> {
+      // Check if already in memory
+      const cached = this.prepPacks.find(p => p.id === id);
+      if (cached) {
+        this.currentPrepPack = cached;
+        return cached;
+      }
+
+      try {
+        const repo = new ToolkitRepository();
+        const pack = await repo.getPrepPackById(id);
+        if (pack) {
+          this.currentPrepPack = pack;
+        }
+        return pack;
+      } catch (error) {
+        console.error('[ToolkitStore] Error loading prep pack:', error);
+        return null;
+      }
+    },
+
+    /** Delete a prep pack from local cache */
+    async deletePrepPack(id: string) {
+      try {
+        const repo = new ToolkitRepository();
+        await repo.deletePrepPack(id);
+        this.prepPacks = this.prepPacks.filter(p => p.id !== id);
+        if (this.currentPrepPack?.id === id) {
+          this.currentPrepPack = null;
+        }
+      } catch (error) {
+        console.error('[ToolkitStore] Error deleting prep pack:', error);
       }
     },
 

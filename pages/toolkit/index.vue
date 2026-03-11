@@ -30,13 +30,27 @@
       </div>
     </div>
 
-    <!-- Section 2: Prep Pack (Phase 3 — placeholder) -->
+    <!-- Section 2: Prep Pack -->
     <div class="mb-8">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.prepPack.title') }}
       </h2>
       <div class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50">
         <p class="text-neutral-400 text-sm mb-3">{{ $t('toolkit.prepPack.description') }}</p>
+
+        <!-- Last generated info -->
+        <div v-if="toolkitStore.latestPrepPack" class="flex items-center justify-between mb-3">
+          <span class="text-xs text-neutral-500">
+            {{ $t('toolkit.prepPack.lastGenerated') }}: {{ formatDate(toolkitStore.latestPrepPack.created_at) }}
+          </span>
+          <button
+            class="text-xs text-neutral-400 hover:text-white transition-colors underline"
+            @click="navigateTo(`/toolkit/prep-pack/${toolkitStore.latestPrepPack.id}`)"
+          >
+            {{ $t('common.view') }}
+          </button>
+        </div>
+
         <UButton
           variant="soft"
           color="neutral"
@@ -45,7 +59,7 @@
           :disabled="!hasJournals"
           @click="navigateTo('/toolkit/prep-pack')"
         >
-          {{ $t('toolkit.prepPack.generate') }}
+          {{ toolkitStore.latestPrepPack ? $t('toolkit.prepPack.viewAll') : $t('toolkit.prepPack.generate') }}
         </UButton>
         <p v-if="!hasJournals" class="text-xs text-neutral-500 mt-2 text-center">
           {{ $t('toolkit.prepPack.noJournals') }}

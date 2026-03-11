@@ -61,7 +61,8 @@ export class TherapyToolkit extends Base {
   // ─── Prep Packs (Phase 3) ──────────────
 
   async generatePrepPack(request: any): Promise<GeneratePrepPackResponse> {
-    return this.fetch(`${this.config.base_url}/prep-pack`, {
+    const aiBaseUrl = this.config.websocket_url || 'http://localhost:8000';
+    return this.fetch(`${aiBaseUrl}/api/prep-pack`, {
       method: "POST",
       body: JSON.stringify(request),
     });

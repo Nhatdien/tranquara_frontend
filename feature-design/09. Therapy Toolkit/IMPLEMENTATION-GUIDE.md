@@ -2074,6 +2074,19 @@ curl http://localhost:4000/v1/therapy-sessions -H "Authorization: Bearer $TOKEN"
 - [ ] PostgreSQL migration 000027 runs successfully
 - [ ] Go CRUD endpoints return correct responses
 
+> **⚠️ Sync Service — Deferred to Phase 4**
+>
+> The current `SyncService` is journal-specific (not a generic sync framework). The Pinia store
+> already contains **opportunistic sync stubs** — each `createSession`, `updateSession`, `deleteSession`,
+> and homework action attempts the SDK API call when online. This provides basic sync until a proper
+> bi-directional sync service is built in Phase 4.
+>
+> **Phase 4 will add:**
+> - `ToolkitSyncService` (or extend `SyncService`) with session/homework upload/download
+> - `syncDownloadFromServer()` + `syncUploadToServer()` on `therapy_toolkit_store`
+> - `fullBiDirectionalSync()` integrated into `04.background_sync.client.ts`
+> - Conflict resolution (server_id mapping, updated_at comparison)
+
 ---
 
 ### Phase 3: Prep Pack (AI)

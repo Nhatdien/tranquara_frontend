@@ -6,7 +6,7 @@
  */
 
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
-import type { TherapySession, HomeworkItem } from '~/types/therapy_toolkit';
+import type { TherapySession, HomeworkItem, PrepPack } from '~/types/therapy_toolkit';
 import SQLiteService from './sqlite_service';
 
 export class ToolkitRepository {
@@ -195,5 +195,83 @@ export class ToolkitRepository {
       [serverId, new Date().toISOString(), localId]
     );
     await this.persistToStore();
+  }
+
+  // ─── Prep Packs ─────────────────────────
+
+  async savePrepPack(pack: PrepPack): Promise<void> {
+    const db = this.getDb();
+
+    await db.run(
+      `INSERT OR REPLACE INTO prep_packs
+       (id, user_id, date_range_start, date_range_end, mood_overview, key_themes,
+        emotional_highlights, patterns, discussion_points, growth_moments,
+        personal_notes, journal_count, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        pack.id,
+        pack.user_id,
+        pack.date_range_start,
+        pack.date_range_end,
+        JSON.stringify(pack.mood_overview),
+        JSON.stringify(pack.key_themes),
+        JSON.stringify(pack.emotional_highlights),
+        JSON.stringify(pack.patterns),
+        JSON.stringify(pack.discussion_points),
+        JSON.stringify(pack.growth_moments),
+        pack.personal_notes || null,
+        pack.journal_count,
+        pack.created_at,
+      ]
+    );
+
+    await this.persistToStore();
+    console.log('[ToolkitRepo] Saved prep pack:', pack.id);
+  }
+
+  async getPrepPacksByUser(userId: string): Promise<PrepPack[]> {
+    const db = this.getDb();
+    const result = await db.query(
+      `SELECT * FROM prep_packs WHERE user_id = ? ORDER BY created_at DESC`,
+      [userId]
+    );
+
+    return (result.values || []).map((row: any) => ({
+      ...row,
+      mood_overview: row.mood_overview ? JSON.parse(row.mood_overview) : null,
+      key_themes: row.key_themes ? JSON.parse(row.key_themes) : [],
+      emotional_highlights: row.emotional_highlights ? JSON.parse(row.emotional_highlights) : [],
+      patterns: row.patterns ? JSON.parse(row.patterns) : [],
+      discussion_points: row.discussion_points ? JSON.parse(row.discussion_points) : [],
+      growth_moments: row.growth_moments ? JSON.parse(row.growth_moments) : [],
+    })) as PrepPack[];
+  }
+
+  async getPrepPackById(id: string): Promise<PrepPack | null> {
+    const db = this.getDb();
+    const result = await db.query(
+      `SELECT * FROM prep_packs WHERE id = ?`,
+      [id]
+    );
+
+    if (!result.values || result.values.length === 0) return null;
+
+    const row = result.values[0] as any;
+    return {
+      ...row,
+      mood_overview: row.mood_overview ? JSON.parse(row.mood_overview) : null,
+      key_themes: row.key_themes ? JSON.parse(row.key_themes) : [],
+      emotional_highlights: row.emotional_highlights ? JSON.parse(row.emotional_highlights) : [],
+      patterns: row.patterns ? JSON.parse(row.patterns) : [],
+      discussion_points: row.discussion_points ? JSON.parse(row.discussion_points) : [],
+      growth_moments: row.growth_moments ? JSON.parse(row.growth_moments) : [],
+    } as PrepPack;
+  }
+
+  async deletePrepPack(id: string): Promise<void> {
+    const db = this.getDb();
+    await db.run(`DELETE FROM prep_packs WHERE id = ?`, [id]);
+    await this.persistToStore();
+    console.log('[ToolkitRepo] Deleted prep pack:', id);
   }
 }
