@@ -477,7 +477,49 @@
     "session": {
       "title": "Session Tracker",
       "noSession": "No upcoming sessions. Schedule your next therapy session.",
-      "schedule": "Schedule Session"
+      "schedule": "Schedule Session",
+      "scheduleTitle": "When is your session?",
+      "scheduleConfirm": "Confirm",
+      "prepare": "Prepare for session",
+      "logAfter": "Log how it went",
+      "delete": "Delete session",
+      "deleteConfirm": "Delete this session? This cannot be undone.",
+      "pastSessions": "Past Sessions",
+      "before": {
+        "title": "Before Your Session",
+        "mood": "How are you feeling right now?",
+        "talkingPoints": "What do you want to talk about?",
+        "priority": "My top priority for this session"
+      },
+      "after": {
+        "title": "After Your Session",
+        "mood": "How do you feel now?",
+        "takeaways": "Key takeaways",
+        "homework": "Homework / Action items",
+        "addHomework": "Add homework item",
+        "rating": "Rate this session"
+      },
+      "status": {
+        "scheduled": "Scheduled",
+        "beforeCompleted": "Ready for session",
+        "completed": "Completed"
+      },
+      "detail": {
+        "title": "Session Details",
+        "moodComparison": "Mood",
+        "moodBefore": "Before",
+        "moodAfter": "After",
+        "talkingPoints": "Talking Points",
+        "priority": "Top Priority",
+        "takeaways": "Key Takeaways",
+        "notFound": "Session not found."
+      }
+    },
+    "homework": {
+      "title": "Therapy Homework",
+      "empty": "No homework items yet",
+      "completed": "Completed",
+      "addPlaceholder": "Add an item..."
     },
     "grounding": {
       "title": "Grounding Exercises",

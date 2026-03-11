@@ -7,6 +7,7 @@ import { UserLearned } from "./user_learned";
 import { Auth } from "./auth";
 import { AIService } from "./ai_service";
 import { AIMemories } from "./ai_memories";
+import { TherapyToolkit } from "./therapy_toolkit";
 
 class TranquaraSDK extends Base {
   constructor(config?: null | Config) {
@@ -35,8 +36,8 @@ class TranquaraSDK extends Base {
 
 }
 
-interface TranquaraSDK extends UserStreaks, UserJournals, UserLearned, Auth, AIService, AIMemories {}
+interface TranquaraSDK extends UserStreaks, UserJournals, UserLearned, Auth, AIService, AIMemories, TherapyToolkit {}
 
-applyMixins(TranquaraSDK, [UserStreaks, UserJournals, UserLearned, Auth, AIService, AIMemories]);
+applyMixins(TranquaraSDK, [UserStreaks, UserJournals, UserLearned, Auth, AIService, AIMemories, TherapyToolkit]);
 
 export default TranquaraSDK;

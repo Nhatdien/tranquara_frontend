@@ -140,3 +140,123 @@ export interface HomeworkItem {
   created_at: string;
   needs_sync?: boolean;
 }
+
+// ─── API Request/Response (Phase 3) ────────────────────
+
+export interface GeneratePrepPackRequest {
+  date_range_start: string;
+  date_range_end: string;
+  language?: string;
+}
+
+export interface GeneratePrepPackResponse {
+  prep_pack: PrepPack;
+  meta: {
+    journals_analyzed: number;
+    date_range: string;
+    generated_at: string;
+  };
+}
+
+// ─── Session Input Types ───────────────────────────────
+
+export interface CreateSessionInput {
+  session_date?: string;
+  status?: SessionStatus;
+  mood_before?: number;
+  talking_points?: string;
+  session_priority?: string;
+  prep_pack_id?: string;
+}
+
+export interface UpdateSessionInput {
+  session_date?: string;
+  mood_before?: number;
+  talking_points?: string;
+  session_priority?: string;
+  mood_after?: number;
+  key_takeaways?: string;
+  session_rating?: number;
+  status?: SessionStatus;
+}
+
+// ─── Static Session Slide Groups ───────────────────────
+// These are frontend-only constants — not stored in the backend.
+// They power the slide-based session creation flow.
+
+import type { SlideGroup } from './user_journal';
+
+/** Virtual collection ID for session slide groups (never sent to backend) */
+export const SESSION_COLLECTION_ID = 'session-tracker-virtual';
+
+/** Before-session slide group: mood, talking points, priority (date is set at scheduling time) */
+export const SESSION_BEFORE_SLIDE_GROUP: SlideGroup = {
+  id: 'session-before',
+  title: 'Before Your Session',
+  description: 'Prepare for your upcoming therapy session',
+  position: 0,
+  slides: [
+    {
+      id: 'before-mood',
+      type: 'emotion_log',
+      question: 'How are you feeling right now?',
+      question_vi: 'Bạn đang cảm thấy thế nào?',
+    },
+    {
+      id: 'before-talking-points',
+      type: 'journal_prompt',
+      question: 'What do you want to talk about?',
+      question_vi: 'Bạn muốn nói về điều gì?',
+      content: 'Write down the topics, feelings, or events you want to discuss with your therapist.',
+      content_vi: 'Ghi lại những chủ đề, cảm xúc, hoặc sự kiện bạn muốn thảo luận với chuyên gia.',
+    },
+    {
+      id: 'before-priority',
+      type: 'journal_prompt',
+      question: 'My top priority for this session',
+      question_vi: 'Ưu tiên hàng đầu của tôi cho buổi này',
+      content: 'If you could focus on just one thing, what would it be?',
+      content_vi: 'Nếu chỉ có thể tập trung vào một điều, đó sẽ là gì?',
+    },
+  ],
+};
+
+/** After-session slide group: mood, takeaways, homework, rating */
+export const SESSION_AFTER_SLIDE_GROUP: SlideGroup = {
+  id: 'session-after',
+  title: 'After Your Session',
+  description: 'Reflect on your therapy session',
+  position: 1,
+  slides: [
+    {
+      id: 'after-mood',
+      type: 'emotion_log',
+      question: 'How do you feel after the session?',
+      question_vi: 'Bạn cảm thấy thế nào sau buổi trị liệu?',
+    },
+    {
+      id: 'after-takeaways',
+      type: 'journal_prompt',
+      question: 'Key takeaways from the session',
+      question_vi: 'Những điều rút ra từ buổi trị liệu',
+      content: 'What insights, advice, or realizations stood out to you?',
+      content_vi: 'Những hiểu biết, lời khuyên, hoặc nhận ra nào nổi bật với bạn?',
+    },
+    {
+      id: 'after-homework',
+      type: 'checklist_input',
+      question: 'Homework & action items',
+      question_vi: 'Bài tập & hành động cần làm',
+      content: 'Add the tasks your therapist assigned or actions you want to take.',
+      content_vi: 'Thêm các bài tập chuyên gia giao hoặc hành động bạn muốn thực hiện.',
+    },
+    {
+      id: 'after-rating',
+      type: 'star_rating',
+      question: 'Rate this session',
+      question_vi: 'Đánh giá buổi trị liệu này',
+      content: 'How helpful was this session overall?',
+      content_vi: 'Buổi trị liệu này hữu ích như thế nào?',
+    },
+  ],
+};

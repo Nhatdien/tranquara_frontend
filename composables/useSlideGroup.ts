@@ -43,7 +43,12 @@ function localizeSlideGroup(group: SlideGroup, locale: string): SlideGroup {
   };
 }
 
-export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: string }) => {
+export const useSlideGroup = (props?: { 
+  collectionId?: string, 
+  slideGroupId?: string,
+  staticSlideGroup?: SlideGroup,
+  staticCollectionTitle?: string,
+}) => {
   const route = useRoute()
   const store = userJournalStore();
   const { locale } = useI18n();
@@ -52,6 +57,21 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
   const slideGroupId = computed(() => props?.slideGroupId || route.params.slideGroupId as string);
 
   const currentCollecton = computed(() => {
+    // Static mode: return a synthetic collection
+    if (props?.staticSlideGroup) {
+      return {
+        id: 'static',
+        title: props.staticCollectionTitle || props.staticSlideGroup.title,
+        description: props.staticSlideGroup.description,
+        category: 'toolkit',
+        type: 'journal' as const,
+        slide_groups: [props.staticSlideGroup],
+        is_active: true,
+        created_at: '',
+        updated_at: '',
+      };
+    }
+
     const template = store.templates.find((template) => template.id === collectionId.value);
     if (!template) return undefined;
     // Apply locale to template-level title/description
@@ -67,6 +87,11 @@ export const useSlideGroup = (props?: { collectionId?: string, slideGroupId?: st
   })
 
   const activeSlideGroup = computed(() => {
+    // Static mode: return the provided slide group directly (with locale)
+    if (props?.staticSlideGroup) {
+      return localizeSlideGroup(props.staticSlideGroup, locale.value);
+    }
+
     if (!currentCollecton.value) return undefined;
     const lang = locale.value;
     

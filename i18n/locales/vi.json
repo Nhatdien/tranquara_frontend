@@ -477,7 +477,49 @@
     "session": {
       "title": "Theo dõi buổi trị liệu",
       "noSession": "Chưa có buổi trị liệu. Hãy lên lịch buổi trị liệu tiếp theo.",
-      "schedule": "Lên lịch buổi trị liệu"
+      "schedule": "Lên lịch buổi trị liệu",
+      "scheduleTitle": "Buổi trị liệu của bạn khi nào?",
+      "scheduleConfirm": "Xác nhận",
+      "prepare": "Chuẩn bị cho buổi trị liệu",
+      "logAfter": "Ghi lại cảm nhận",
+      "delete": "Xóa buổi trị liệu",
+      "deleteConfirm": "Xóa buổi trị liệu này? Hành động này không thể hoàn tác.",
+      "pastSessions": "Các buổi trước",
+      "before": {
+        "title": "Trước buổi trị liệu",
+        "mood": "Bạn đang cảm thấy thế nào?",
+        "talkingPoints": "Bạn muốn nói về điều gì?",
+        "priority": "Ưu tiên hàng đầu của tôi"
+      },
+      "after": {
+        "title": "Sau buổi trị liệu",
+        "mood": "Bạn cảm thấy thế nào bây giờ?",
+        "takeaways": "Những điều rút ra",
+        "homework": "Bài tập / Hành động",
+        "addHomework": "Thêm bài tập",
+        "rating": "Đánh giá buổi trị liệu"
+      },
+      "status": {
+        "scheduled": "Đã lên lịch",
+        "beforeCompleted": "Sẵn sàng cho buổi trị liệu",
+        "completed": "Hoàn thành"
+      },
+      "detail": {
+        "title": "Chi tiết buổi trị liệu",
+        "moodComparison": "Tâm trạng",
+        "moodBefore": "Trước",
+        "moodAfter": "Sau",
+        "talkingPoints": "Chủ đề muốn nói",
+        "priority": "Ưu tiên hàng đầu",
+        "takeaways": "Điều rút ra",
+        "notFound": "Không tìm thấy buổi trị liệu."
+      }
+    },
+    "homework": {
+      "title": "Bài tập trị liệu",
+      "empty": "Chưa có bài tập nào",
+      "completed": "Hoàn thành",
+      "addPlaceholder": "Thêm mục..."
     },
     "grounding": {
       "title": "Bài tập hít thở",

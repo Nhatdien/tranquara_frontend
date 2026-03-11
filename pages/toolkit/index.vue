@@ -53,20 +53,224 @@
       </div>
     </div>
 
-    <!-- Section 3: Session Tracker (Phase 2 — placeholder) -->
+    <!-- Section 3: Session Tracker -->
     <div class="mb-8">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.session.title') }}
       </h2>
-      <div class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50 text-center">
-        <p class="text-neutral-400 text-sm mb-3">{{ $t('toolkit.session.noSession') }}</p>
-        <UButton
-          variant="soft"
-          color="neutral"
-          @click="navigateTo('/toolkit/session/new')"
+
+      <!-- Upcoming session card -->
+      <div v-if="toolkitStore.upcomingSession" class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50 mb-3">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-sm font-medium">{{ formatDate(toolkitStore.upcomingSession.session_date) }}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs px-2 py-0.5 rounded-full"
+              :class="toolkitStore.upcomingSession.status === 'before_completed'
+                ? 'bg-green-900/30 text-green-400'
+                : 'bg-neutral-700 text-neutral-300'">
+              {{ $t(`toolkit.session.status.${toolkitStore.upcomingSession.status === 'before_completed' ? 'beforeCompleted' : 'scheduled'}`) }}
+            </span>
+            <!-- Delete button -->
+            <button
+              class="text-neutral-600 hover:text-red-400 transition-colors"
+              @click="confirmDeleteSession(toolkitStore.upcomingSession.id)"
+            >
+              <Trash2 class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-3">
+          <!-- scheduled → Prepare for session -->
+          <UButton
+            v-if="toolkitStore.upcomingSession.status === 'scheduled'"
+            variant="soft"
+            color="neutral"
+            size="sm"
+            class="flex-1"
+            @click="navigateTo(`/toolkit/session/new?step=before&sessionId=${toolkitStore.upcomingSession.id}`)"
+          >
+            {{ $t('toolkit.session.prepare') }}
+          </UButton>
+          <!-- before_completed → Log how it went -->
+          <UButton
+            v-if="toolkitStore.upcomingSession.status === 'before_completed'"
+            variant="soft"
+            color="neutral"
+            size="sm"
+            class="flex-1"
+            @click="navigateTo(`/toolkit/session/new?step=after&sessionId=${toolkitStore.upcomingSession.id}`)"
+          >
+            {{ $t('toolkit.session.logAfter') }}
+          </UButton>
+        </div>
+      </div>
+
+      <!-- No session — inline schedule panel -->
+      <div v-else class="rounded-xl border border-neutral-700 bg-neutral-900/50 overflow-hidden">
+        <div class="p-5 text-center">
+          <p class="text-neutral-400 text-sm mb-3">{{ $t('toolkit.session.noSession') }}</p>
+          <UButton
+            variant="soft"
+            color="neutral"
+            @click="showSchedulePanel = !showSchedulePanel"
+          >
+            {{ $t('toolkit.session.schedule') }}
+          </UButton>
+        </div>
+
+        <!-- Date picker panel (expands inline) -->
+        <Transition name="slide-down">
+          <div v-if="showSchedulePanel" class="border-t border-neutral-700 px-5 pb-5 pt-4">
+            <p class="text-sm text-neutral-400 mb-3">{{ $t('toolkit.session.scheduleTitle') }}</p>
+            <input
+              type="date"
+              v-model="scheduleDate"
+              class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-center text-sm focus:outline-none focus:border-neutral-500 transition-colors mb-3"
+            />
+            <div class="flex gap-2">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                size="sm"
+                class="flex-1"
+                @click="showSchedulePanel = false"
+              >
+                {{ $t('common.cancel') }}
+              </UButton>
+              <UButton
+                variant="soft"
+                color="neutral"
+                size="sm"
+                class="flex-1"
+                :disabled="!scheduleDate"
+                @click="handleScheduleSession"
+              >
+                {{ $t('toolkit.session.scheduleConfirm') }}
+              </UButton>
+            </div>
+          </div>
+        </Transition>
+      </div>
+
+      <!-- Past sessions -->
+      <div v-if="toolkitStore.completedSessions.length > 0" class="mt-4">
+        <h3 class="text-xs text-neutral-500 uppercase tracking-wider mb-2">
+          {{ $t('toolkit.session.pastSessions') }}
+        </h3>
+        <div class="space-y-2">
+          <div
+            v-for="session in toolkitStore.completedSessions.slice(0, 5)"
+            :key="session.id"
+            class="flex items-center justify-between px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30 cursor-pointer active:bg-neutral-800/50 transition-colors"
+            @click="navigateTo(`/toolkit/session/${session.id}`)"
+          >
+            <div>
+              <span class="text-sm">{{ formatDate(session.session_date) }}</span>
+              <div v-if="session.session_rating" class="flex gap-0.5 mt-0.5">
+                <span
+                  v-for="star in 5"
+                  :key="star"
+                  class="text-xs"
+                  :class="star <= session.session_rating ? 'text-yellow-400' : 'text-neutral-700'"
+                >★</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-neutral-500">{{ $t('toolkit.session.status.completed') }}</span>
+              <Icon name="i-lucide-chevron-right" class="w-4 h-4 text-neutral-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3.5: Homework -->
+    <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
+          {{ $t('toolkit.homework.title') }}
+        </h2>
+        <span v-if="toolkitStore.homeworkItems.length > 0" class="text-xs text-neutral-500">
+          {{ completedHomeworkCount }}/{{ toolkitStore.homeworkItems.length }}
+        </span>
+      </div>
+
+      <!-- Add homework inline (when there's an upcoming session) -->
+      <div v-if="toolkitStore.upcomingSession" class="flex gap-2 mb-3">
+        <UInput
+          v-model="newHomeworkText"
+          :placeholder="$t('toolkit.homework.addPlaceholder')"
+          class="flex-1"
+          size="sm"
+          @keyup.enter="handleAddHomework"
+        />
+        <button
+          @click="handleAddHomework"
+          :disabled="!newHomeworkText.trim()"
+          class="w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-base transition-colors shrink-0"
+          :class="newHomeworkText.trim() ? 'hover:bg-neutral-700 text-white' : 'text-neutral-600 cursor-not-allowed'"
         >
-          {{ $t('toolkit.session.schedule') }}
-        </UButton>
+          +
+        </button>
+      </div>
+
+      <!-- Pending items -->
+      <div v-if="pendingHomework.length > 0" class="space-y-2">
+        <div
+          v-for="item in pendingHomework"
+          :key="item.id"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30"
+        >
+          <button
+            class="w-5 h-5 rounded border-2 border-neutral-600 shrink-0 transition-colors hover:border-neutral-400"
+            @click="toolkitStore.toggleHomework(item.id)"
+          />
+          <span class="text-sm flex-1">{{ item.content }}</span>
+          <button
+            class="text-neutral-600 hover:text-red-400 transition-colors shrink-0"
+            @click="toolkitStore.deleteHomework(item.id)"
+          >
+            <X class="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Completed items (collapsed) -->
+      <div v-if="completedHomework.length > 0" class="mt-2">
+        <button
+          v-if="pendingHomework.length > 0"
+          class="text-xs text-neutral-500 hover:text-neutral-400 mb-2 transition-colors"
+          @click="showCompletedHomework = !showCompletedHomework"
+        >
+          {{ showCompletedHomework ? '▾' : '▸' }} {{ $t('toolkit.homework.completed') }} ({{ completedHomework.length }})
+        </button>
+        <div v-if="showCompletedHomework || pendingHomework.length === 0" class="space-y-2">
+          <div
+            v-for="item in completedHomework"
+            :key="item.id"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800/50 bg-neutral-900/20"
+          >
+            <button
+              class="w-5 h-5 rounded border-2 border-green-500 bg-green-500/20 flex items-center justify-center shrink-0 transition-colors"
+              @click="toolkitStore.toggleHomework(item.id)"
+            >
+              <Icon name="i-lucide-check" class="w-3 h-3 text-green-400" />
+            </button>
+            <span class="text-sm flex-1 line-through text-neutral-500">{{ item.content }}</span>
+            <button
+              class="text-neutral-700 hover:text-red-400 transition-colors shrink-0"
+              @click="toolkitStore.deleteHomework(item.id)"
+            >
+              <X class="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div v-if="toolkitStore.homeworkItems.length === 0" class="py-4 text-center">
+        <p class="text-sm text-neutral-500">{{ $t('toolkit.homework.empty') }}</p>
       </div>
     </div>
 
@@ -93,21 +297,66 @@
 </template>
 
 <script lang="ts" setup>
-import { Wind } from "lucide-vue-next";
+import { Wind, Trash2, X } from "lucide-vue-next";
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useLearnedStore } from "~/stores/stores/user_learned";
+import { useToolkitStore } from "~/stores/stores/therapy_toolkit_store";
 import { JOURNEY_STEPS, TOOLKIT_COLLECTION_IDS } from "~/types/therapy_toolkit";
 import type { LocalTemplate } from "~/types/user_journal";
 
 const journalStore = userJournalStore();
 const learnedStore = useLearnedStore();
+const toolkitStore = useToolkitStore();
 
 const journeySteps = JOURNEY_STEPS;
+
+// ─── Schedule session panel ──────────────────────────
+const showSchedulePanel = ref(false);
+const scheduleDate = ref(new Date().toISOString().split('T')[0]);
+
+const handleScheduleSession = async () => {
+  if (!scheduleDate.value) return;
+  await toolkitStore.createSession({
+    session_date: scheduleDate.value,
+    status: 'scheduled',
+  });
+  showSchedulePanel.value = false;
+  scheduleDate.value = new Date().toISOString().split('T')[0];
+};
+
+// ─── Delete session ──────────────────────────────────
+const confirmDeleteSession = async (id: string) => {
+  if (confirm(useI18n().t('toolkit.session.deleteConfirm'))) {
+    await toolkitStore.deleteSession(id);
+  }
+};
+
+// ─── Homework ────────────────────────────────────────
+const newHomeworkText = ref('');
+const showCompletedHomework = ref(false);
+
+const pendingHomework = computed(() =>
+  toolkitStore.homeworkItems.filter(h => !h.completed)
+);
+
+const completedHomework = computed(() =>
+  toolkitStore.homeworkItems.filter(h => h.completed)
+);
+
+const completedHomeworkCount = computed(() => completedHomework.value.length);
+
+const handleAddHomework = async () => {
+  const text = newHomeworkText.value.trim();
+  if (!text || !toolkitStore.upcomingSession) return;
+  await toolkitStore.addHomework(toolkitStore.upcomingSession.id, text);
+  newHomeworkText.value = '';
+};
 
 // Load templates + progress on mount
 onMounted(async () => {
   await journalStore.getAllTemplates();
   await learnedStore.loadFromLocal();
+  await toolkitStore.loadFromLocal();
 });
 
 // Get collection by ID
@@ -143,4 +392,32 @@ const hasJournals = computed(() => journalStore.journals.length > 0);
 const navigateToCollection = (collectionId: string) => {
   navigateTo(`/learn_and_prepare/collection/${collectionId}`);
 };
+
+// Format session date for display
+const formatDate = (date?: string): string => {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
 </script>
+
+<style scoped>
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+.slide-down-enter-from,
+.slide-down-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+.slide-down-enter-to,
+.slide-down-leave-from {
+  max-height: 200px;
+  opacity: 1;
+}
+</style>

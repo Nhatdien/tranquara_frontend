@@ -95,8 +95,58 @@ CREATE TABLE IF NOT EXISTS sync_queue (
   UNIQUE(entity_type, entity_id)
 );`;
 
+// Therapy Sessions table schema (Phase 2 — Session Tracker)
+export const CREATE_THERAPY_SESSIONS_TABLE = `
+CREATE TABLE IF NOT EXISTS therapy_sessions (
+  id TEXT PRIMARY KEY,
+  server_id TEXT,
+  user_id TEXT NOT NULL,
+  session_date TEXT,
+  status TEXT DEFAULT 'scheduled',
+  mood_before INTEGER CHECK (mood_before >= 1 AND mood_before <= 10),
+  talking_points TEXT,
+  session_priority TEXT,
+  prep_pack_id TEXT,
+  mood_after INTEGER CHECK (mood_after >= 1 AND mood_after <= 10),
+  key_takeaways TEXT,
+  session_rating INTEGER CHECK (session_rating >= 1 AND session_rating <= 5),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  needs_sync INTEGER DEFAULT 1,
+  synced_at TEXT,
+  is_deleted INTEGER DEFAULT 0
+);`;
+
+export const CREATE_THERAPY_SESSIONS_INDEX_USER = `
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON therapy_sessions(user_id);`;
+
+export const CREATE_THERAPY_SESSIONS_INDEX_DATE = `
+CREATE INDEX IF NOT EXISTS idx_sessions_date ON therapy_sessions(session_date);`;
+
+// Homework Items table schema (Phase 2 — Session Tracker)
+export const CREATE_HOMEWORK_ITEMS_TABLE = `
+CREATE TABLE IF NOT EXISTS homework_items (
+  id TEXT PRIMARY KEY,
+  server_id TEXT,
+  session_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  content TEXT NOT NULL,
+  completed INTEGER DEFAULT 0,
+  completed_at TEXT,
+  created_at TEXT NOT NULL,
+  needs_sync INTEGER DEFAULT 1,
+  synced_at TEXT,
+  FOREIGN KEY (session_id) REFERENCES therapy_sessions(id)
+);`;
+
+export const CREATE_HOMEWORK_ITEMS_INDEX_SESSION = `
+CREATE INDEX IF NOT EXISTS idx_homework_session ON homework_items(session_id);`;
+
+export const CREATE_HOMEWORK_ITEMS_INDEX_USER = `
+CREATE INDEX IF NOT EXISTS idx_homework_user ON homework_items(user_id);`;
+
 // Database version tracking
-export const DB_VERSION = 4;
+export const DB_VERSION = 5;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -140,5 +190,14 @@ export const MIGRATIONS: Record<number, string[]> = {
   // v4: Add slide_groups_vi column for Vietnamese slide content
   4: [
     `ALTER TABLE journal_templates ADD COLUMN slide_groups_vi TEXT;`,
+  ],
+  // v5: Add therapy toolkit tables (sessions + homework)
+  5: [
+    CREATE_THERAPY_SESSIONS_TABLE,
+    CREATE_THERAPY_SESSIONS_INDEX_USER,
+    CREATE_THERAPY_SESSIONS_INDEX_DATE,
+    CREATE_HOMEWORK_ITEMS_TABLE,
+    CREATE_HOMEWORK_ITEMS_INDEX_SESSION,
+    CREATE_HOMEWORK_ITEMS_INDEX_USER,
   ],
 };

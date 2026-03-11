@@ -12,10 +12,13 @@ export type SlideConfig = {
 // Individual slide definition
 export type SlideData = {
   id: string;
-  type: 'emotion_log' | 'sleep_check' | 'journal_prompt' | 'doc' | 'further_reading' | 'cta';
+  type: 'emotion_log' | 'sleep_check' | 'journal_prompt' | 'doc' | 'further_reading' | 'cta' | 'date_picker' | 'star_rating' | 'checklist_input';
   question?: string;
+  question_vi?: string;
   title?: string;
+  title_vi?: string;
   content?: string;
+  content_vi?: string;
   config?: SlideConfig;
 }
 
