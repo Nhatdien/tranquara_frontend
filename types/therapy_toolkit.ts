@@ -141,6 +141,15 @@ export interface HomeworkItem {
   needs_sync?: boolean;
 }
 
+// --- Affirmations (local-only)
+export interface UserAffirmation {
+  id: string;
+  user_id: string;
+  content: string;
+  is_favorite: boolean;
+  created_at: string;
+}
+
 // ─── API Request/Response (Phase 3) ────────────────────
 
 export interface GeneratePrepPackRequest {

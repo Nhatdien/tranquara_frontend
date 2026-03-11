@@ -6,7 +6,7 @@
  */
 
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
-import type { TherapySession, HomeworkItem, PrepPack } from '~/types/therapy_toolkit';
+import type { TherapySession, HomeworkItem, PrepPack, UserAffirmation } from '~/types/therapy_toolkit';
 import SQLiteService from './sqlite_service';
 
 export class ToolkitRepository {
@@ -273,5 +273,53 @@ export class ToolkitRepository {
     await db.run(`DELETE FROM prep_packs WHERE id = ?`, [id]);
     await this.persistToStore();
     console.log('[ToolkitRepo] Deleted prep pack:', id);
+  }
+
+  // --- Affirmations (local-only)
+
+  async getAffirmationsByUser(userId: string): Promise<UserAffirmation[]> {
+    const db = this.getDb();
+    const result = await db.query(
+      `SELECT * FROM user_affirmations WHERE user_id = ? ORDER BY created_at DESC`,
+      [userId]
+    );
+    return (result.values || []).map((row: any) => ({
+      ...row,
+      is_favorite: !!row.is_favorite,
+    })) as UserAffirmation[];
+  }
+
+  async addAffirmation(affirmation: UserAffirmation): Promise<UserAffirmation> {
+    const db = this.getDb();
+    await db.run(
+      `INSERT INTO user_affirmations (id, user_id, content, is_favorite, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        affirmation.id,
+        affirmation.user_id,
+        affirmation.content,
+        affirmation.is_favorite ? 1 : 0,
+        affirmation.created_at,
+      ]
+    );
+    await this.persistToStore();
+    console.log('[ToolkitRepo] Added affirmation:', affirmation.id);
+    return affirmation;
+  }
+
+  async toggleAffirmationFavorite(id: string, isFavorite: boolean): Promise<void> {
+    const db = this.getDb();
+    await db.run(
+      `UPDATE user_affirmations SET is_favorite = ? WHERE id = ?`,
+      [isFavorite ? 1 : 0, id]
+    );
+    await this.persistToStore();
+  }
+
+  async deleteAffirmation(id: string): Promise<void> {
+    const db = this.getDb();
+    await db.run(`DELETE FROM user_affirmations WHERE id = ?`, [id]);
+    await this.persistToStore();
+    console.log('[ToolkitRepo] Deleted affirmation:', id);
   }
 }

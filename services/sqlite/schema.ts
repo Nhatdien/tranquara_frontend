@@ -171,8 +171,24 @@ CREATE INDEX IF NOT EXISTS idx_prep_packs_user ON prep_packs(user_id);`;
 export const CREATE_PREP_PACKS_INDEX_CREATED = `
 CREATE INDEX IF NOT EXISTS idx_prep_packs_created ON prep_packs(created_at DESC);`;
 
+// User affirmations table schema (local-only)
+export const CREATE_USER_AFFIRMATIONS_TABLE = `
+CREATE TABLE IF NOT EXISTS user_affirmations (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  content TEXT NOT NULL,
+  is_favorite INTEGER DEFAULT 0,
+  created_at TEXT NOT NULL
+);`;
+
+export const CREATE_USER_AFFIRMATIONS_INDEX_USER = `
+CREATE INDEX IF NOT EXISTS idx_affirmations_user ON user_affirmations(user_id);`;
+
+export const CREATE_USER_AFFIRMATIONS_INDEX_FAVORITE = `
+CREATE INDEX IF NOT EXISTS idx_affirmations_favorite ON user_affirmations(is_favorite);`;
+
 // Database version tracking
-export const DB_VERSION = 6;
+export const DB_VERSION = 7;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -231,5 +247,11 @@ export const MIGRATIONS: Record<number, string[]> = {
     CREATE_PREP_PACKS_TABLE,
     CREATE_PREP_PACKS_INDEX_USER,
     CREATE_PREP_PACKS_INDEX_CREATED,
+  ],
+  // v7: Add user affirmations table
+  7: [
+    CREATE_USER_AFFIRMATIONS_TABLE,
+    CREATE_USER_AFFIRMATIONS_INDEX_USER,
+    CREATE_USER_AFFIRMATIONS_INDEX_FAVORITE,
   ],
 };

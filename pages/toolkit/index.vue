@@ -293,25 +293,28 @@
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.grounding.title') }}
       </h2>
-      <div
-        class="flex items-center rounded-xl border border-neutral-700 bg-neutral-900/50 overflow-hidden cursor-pointer hover:bg-neutral-800/50 transition-colors"
-        @click="navigateTo('/toolkit/grounding/breathing')"
-      >
-        <div class="w-20 h-16 flex items-center justify-center bg-neutral-800 shrink-0">
-          <Wind class="w-8 h-8 text-neutral-300" />
-        </div>
-        <div class="flex-1 px-4 py-3">
-          <p class="font-medium">{{ $t('toolkit.grounding.breathing.title') }}</p>
-          <p class="text-xs text-neutral-400">{{ $t('toolkit.grounding.breathing.description') }}</p>
-        </div>
-        <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-neutral-500 mr-4" />
+      <div class="grid grid-cols-2 gap-3">
+        <button
+          v-for="tool in groundingTools"
+          :key="tool.key"
+          class="flex items-center gap-3 p-3 rounded-xl border border-neutral-700 bg-neutral-900/50 text-left hover:bg-neutral-800/50 transition-colors"
+          @click="navigateTo(tool.path)"
+        >
+          <div class="w-10 h-10 rounded-lg bg-neutral-800 flex items-center justify-center shrink-0">
+            <component :is="tool.icon" class="w-5 h-5 text-neutral-300" />
+          </div>
+          <div class="min-w-0">
+            <p class="font-medium text-sm">{{ $t(tool.titleKey) }}</p>
+            <p class="text-xs text-neutral-400">{{ $t(tool.descriptionKey) }}</p>
+          </div>
+        </button>
       </div>
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { Wind, Trash2, X } from "lucide-vue-next";
+import { Wind, Trash2, X, Eye, HeartPulse, Sparkles, PenLine } from "lucide-vue-next";
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useLearnedStore } from "~/stores/stores/user_learned";
 import { useToolkitStore } from "~/stores/stores/therapy_toolkit_store";
@@ -404,7 +407,7 @@ const hasJournals = computed(() => journalStore.journals.length > 0);
 
 // Navigate to collection — uses EXISTING slide viewer pages
 const navigateToCollection = (collectionId: string) => {
-  navigateTo(`/learn_and_prepare/collection/${collectionId}`);
+  navigateTo(`/toolkit/journey/${collectionId}`);
 };
 
 // Format session date for display
@@ -416,6 +419,44 @@ const formatDate = (date?: string): string => {
     year: 'numeric',
   });
 };
+
+const groundingTools = [
+  {
+    key: 'breathing',
+    titleKey: 'toolkit.grounding.breathing.title',
+    descriptionKey: 'toolkit.grounding.breathing.description',
+    icon: Wind,
+    path: '/toolkit/grounding/breathing',
+  },
+  {
+    key: 'fiveSenses',
+    titleKey: 'toolkit.grounding.fiveSenses.title',
+    descriptionKey: 'toolkit.grounding.fiveSenses.description',
+    icon: Eye,
+    path: '/toolkit/grounding/five-senses',
+  },
+  {
+    key: 'bodyScan',
+    titleKey: 'toolkit.grounding.bodyScan.title',
+    descriptionKey: 'toolkit.grounding.bodyScan.description',
+    icon: HeartPulse,
+    path: '/toolkit/grounding/body-scan',
+  },
+  {
+    key: 'affirmations',
+    titleKey: 'toolkit.grounding.affirmations.title',
+    descriptionKey: 'toolkit.grounding.affirmations.description',
+    icon: Sparkles,
+    path: '/toolkit/grounding/affirmations',
+  },
+  {
+    key: 'quickJournal',
+    titleKey: 'toolkit.grounding.quickJournal.title',
+    descriptionKey: 'toolkit.grounding.quickJournal.description',
+    icon: PenLine,
+    path: '/journaling',
+  },
+];
 </script>
 
 <style scoped>

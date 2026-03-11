@@ -7,7 +7,7 @@
         size="lg" 
         icon="i-lucide-chevron-left" 
         class="p-0"
-        @click="navigateTo('/learn_and_prepare')" 
+        @click="navigateTo(backPath)" 
       />
     </div>
 
@@ -19,7 +19,7 @@
     <!-- Collection Not Found -->
     <div v-else-if="!currentCollection" class="text-center py-24 px-4">
       <p class="text-neutral-400 mb-4">{{ $t('journal.collectionNotFound') }}</p>
-      <UButton @click="navigateTo('/learn_and_prepare')" variant="outline">
+      <UButton @click="navigateTo(backPath)" variant="outline">
         {{ $t('journal.backToLibrary') }}
       </UButton>
     </div>
@@ -90,6 +90,9 @@ const learnedStore = useLearnedStore();
 
 const isLoading = ref(true);
 const collectionId = computed(() => route.params?.id as string);
+const backPath = computed(() =>
+  route.path.startsWith('/toolkit/journey') ? '/toolkit/journey' : '/learn_and_prepare'
+);
 
 // Load templates and find current collection
 onMounted(async () => {

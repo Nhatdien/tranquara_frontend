@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import TranquaraSDK from "../tranquara_sdk";
 import { ToolkitRepository } from "~/services/sqlite/toolkit_repository";
 import { useAuthStore } from "./auth_store";
-import type { TherapySession, HomeworkItem, PrepPack, CreateSessionInput, UpdateSessionInput } from "~/types/therapy_toolkit";
+import type { TherapySession, HomeworkItem, PrepPack, CreateSessionInput, UpdateSessionInput, UserAffirmation } from "~/types/therapy_toolkit";
 
 const getUserId = (): string | undefined => {
   const authStore = useAuthStore();
@@ -16,6 +16,7 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
     homeworkItems: [] as HomeworkItem[],
     prepPacks: [] as PrepPack[],
     currentPrepPack: null as PrepPack | null,
+    affirmations: [] as UserAffirmation[],
     isGeneratingPrepPack: false,
     isLoading: false,
     isOnline: false,
@@ -60,6 +61,7 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         this.sessions = await repo.getSessionsByUser(userId);
         this.homeworkItems = await repo.getHomeworkByUser(userId);
         this.prepPacks = await repo.getPrepPacksByUser(userId);
+        this.affirmations = await repo.getAffirmationsByUser(userId);
       } catch (error) {
         console.error('[ToolkitStore] Error loading from local:', error);
       }
@@ -343,6 +345,55 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         }
       } catch (error) {
         console.error('[ToolkitStore] Error deleting prep pack:', error);
+      }
+    },
+
+    // --- Affirmations (local-only)
+
+    async addAffirmation(content: string): Promise<UserAffirmation | null> {
+      const userId = getUserId();
+      if (!userId) return null;
+
+      const item: UserAffirmation = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        content,
+        is_favorite: false,
+        created_at: new Date().toISOString(),
+      };
+
+      try {
+        const repo = new ToolkitRepository();
+        await repo.addAffirmation(item);
+        this.affirmations.unshift(item);
+        return item;
+      } catch (error) {
+        console.error('[ToolkitStore] Error adding affirmation:', error);
+        return null;
+      }
+    },
+
+    async toggleAffirmationFavorite(id: string) {
+      const idx = this.affirmations.findIndex(a => a.id === id);
+      if (idx === -1) return;
+      const newState = !this.affirmations[idx].is_favorite;
+
+      try {
+        const repo = new ToolkitRepository();
+        await repo.toggleAffirmationFavorite(id, newState);
+        this.affirmations[idx].is_favorite = newState;
+      } catch (error) {
+        console.error('[ToolkitStore] Error toggling affirmation favorite:', error);
+      }
+    },
+
+    async deleteAffirmation(id: string) {
+      try {
+        const repo = new ToolkitRepository();
+        await repo.deleteAffirmation(id);
+        this.affirmations = this.affirmations.filter(a => a.id !== id);
+      } catch (error) {
+        console.error('[ToolkitStore] Error deleting affirmation:', error);
       }
     },
 

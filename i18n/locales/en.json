@@ -257,9 +257,12 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
+    "add": "Add",
     "back": "Back",
     "next": "Next",
     "prev": "Prev",
+    "done": "Done",
+    "step": "Step {count} of {total}",
     "submit": "Submit",
     "confirm": "Confirm",
     "begin": "Begin",
@@ -458,20 +461,20 @@
       "overallProgress": "{percent}% complete",
       "chaptersProgress": "{completed}/{total} chapters",
       "step1": {
-        "label": "Preparation Pack",
-        "description": "Learn what to expect and how to prepare for therapy"
+        "label": "Learn About Therapy",
+        "description": "Signs you need therapy, first session, what to expect"
       },
       "step2": {
-        "label": "Session Tracker",
-        "description": "Track your therapy sessions and progress"
+        "label": "Your Mental Health History",
+        "description": "Diagnoses, past treatment, medications, crisis history"
       },
       "step3": {
-        "label": "Grounding Exercises",
-        "description": "Techniques to stay calm and centered"
+        "label": "Your Lifestyle & Support",
+        "description": "Sleep, diet, social support, daily routines"
       },
       "step4": {
-        "label": "Homework & Practice",
-        "description": "Activities to reinforce what you learn in therapy"
+        "label": "Prepare for Your Session",
+        "description": "Goals, concerns, what your therapist should know"
       }
     },
     "prepPack": {
@@ -572,6 +575,38 @@
         "holdOut": "Hold",
         "elapsed": "{time} elapsed",
         "complete": "Well done! You practiced for {duration}."
+      },
+      "fiveSenses": {
+        "title": "5-4-3-2-1",
+        "description": "Ground yourself by naming what you can sense",
+        "steps": {
+          "see": "Name 5 things you can see",
+          "touch": "Name 4 things you can touch",
+          "hear": "Name 3 things you can hear",
+          "smell": "Name 2 things you can smell",
+          "taste": "Name 1 thing you can taste"
+        },
+        "inputPlaceholder": "Type here...",
+        "complete": "You are here. You are present. You are safe."
+      },
+      "bodyScan": {
+        "title": "Body Scan",
+        "description": "Bring attention to each part of your body",
+        "focusOn": "Focus on",
+        "prompt": "Notice any tension and breathe into it.",
+        "complete": "Nice work. Take a moment to notice how you feel."
+      },
+      "affirmations": {
+        "title": "Safety Affirmations",
+        "description": "Calming reminders you can return to anytime",
+        "addPlaceholder": "Add your own affirmation...",
+        "favorites": "Favorites",
+        "myAffirmations": "My Affirmations",
+        "defaults": "Suggested"
+      },
+      "quickJournal": {
+        "title": "Quick Journal",
+        "description": "Start a quick free-form entry"
       }
     }
   }

@@ -167,6 +167,12 @@ export class SQLiteService {
             const script = migrationScripts[i];
             console.log(`[SQLite] Running script ${i + 1}/${migrationScripts.length}...`);
             try {
+              const shouldSkip = await this.shouldSkipScript(script);
+              if (shouldSkip) {
+                console.log(`[SQLite] Script ${i + 1} skipped (already applied)`);
+                continue;
+              }
+
               await this.db.execute(script);
               console.log(`[SQLite] Script ${i + 1} completed`);
             } catch (scriptError) {
@@ -185,6 +191,29 @@ export class SQLiteService {
     } catch (error) {
       console.error('[SQLite] Migration error:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Skip idempotent migration scripts when the schema already contains the target column.
+   * Currently supports: ALTER TABLE <table> ADD COLUMN <column> ...
+   */
+  private async shouldSkipScript(script: string): Promise<boolean> {
+    if (!this.db) return false;
+
+    const match = script.match(/^\s*ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)/i);
+    if (!match) return false;
+
+    const table = match[1];
+    const column = match[2];
+
+    try {
+      const result = await this.db.query(`PRAGMA table_info(${table});`);
+      const exists = (result.values || []).some((row: any) => row.name === column);
+      return exists;
+    } catch (error) {
+      console.warn('[SQLite] Failed to check column existence:', table, column, error);
+      return false;
     }
   }
 

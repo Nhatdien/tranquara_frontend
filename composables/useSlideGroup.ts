@@ -140,7 +140,10 @@ export const useSlideGroup = (props?: {
   }
 
   const openSlideGroup = (slideGroupId: string, collectionId: string) => {
-    navigateTo(`/learn_and_prepare/collection/${collectionId}/${slideGroupId}`)
+    const base = route.path.startsWith('/toolkit/journey')
+      ? '/toolkit/journey'
+      : '/learn_and_prepare/collection';
+    navigateTo(`${base}/${collectionId}/${slideGroupId}`);
   };
 
   const closeSlideGroup = () => {
