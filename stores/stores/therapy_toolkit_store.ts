@@ -164,6 +164,19 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         const repo = new ToolkitRepository();
         await repo.createHomework(item);
         this.homeworkItems.push(item);
+
+        // Sync to server if online
+        if (this.isOnline) {
+          try {
+            await TranquaraSDK.getInstance().createHomework({
+              session_id: sessionId,
+              content,
+            });
+          } catch (e) {
+            console.warn('[ToolkitStore] Failed to sync homework:', e);
+          }
+        }
+
         return item;
       } catch (error) {
         console.error('[ToolkitStore] Error adding homework:', error);
@@ -182,6 +195,15 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         await repo.toggleHomework(id, newState);
         item.completed = newState;
         item.completed_at = newState ? new Date().toISOString() : undefined;
+
+        // Sync to server if online
+        if (this.isOnline) {
+          try {
+            await TranquaraSDK.getInstance().toggleHomework(id, newState);
+          } catch (e) {
+            console.warn('[ToolkitStore] Failed to sync homework toggle:', e);
+          }
+        }
       } catch (error) {
         console.error('[ToolkitStore] Error toggling homework:', error);
       }
@@ -193,6 +215,15 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         const repo = new ToolkitRepository();
         await repo.deleteHomework(id);
         this.homeworkItems = this.homeworkItems.filter(h => h.id !== id);
+
+        // Sync to server if online
+        if (this.isOnline) {
+          try {
+            await TranquaraSDK.getInstance().deleteHomework(id);
+          } catch (e) {
+            console.warn('[ToolkitStore] Failed to sync homework delete:', e);
+          }
+        }
       } catch (error) {
         console.error('[ToolkitStore] Error deleting homework:', error);
       }
@@ -235,6 +266,28 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
           console.warn('[ToolkitStore] Failed to cache prep pack locally:', e);
         }
 
+        // Sync to server if online
+        if (this.isOnline) {
+          try {
+            await TranquaraSDK.getInstance().savePrepPackToServer({
+              date_range_start: dateRangeStart,
+              date_range_end: dateRangeEnd,
+              content: {
+                mood_overview: prepPack.mood_overview,
+                key_themes: prepPack.key_themes,
+                emotional_highlights: prepPack.emotional_highlights,
+                patterns: prepPack.patterns,
+                discussion_points: prepPack.discussion_points,
+                growth_moments: prepPack.growth_moments,
+              },
+              journal_count: prepPack.journal_count,
+              personal_notes: prepPack.personal_notes || null,
+            });
+          } catch (e) {
+            console.warn('[ToolkitStore] Failed to sync prep pack to server:', e);
+          }
+        }
+
         // Add to state (newest first)
         this.prepPacks.unshift(prepPack);
         this.currentPrepPack = prepPack;
@@ -270,7 +323,7 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
       }
     },
 
-    /** Delete a prep pack from local cache */
+    /** Delete a prep pack from local cache and server */
     async deletePrepPack(id: string) {
       try {
         const repo = new ToolkitRepository();
@@ -278,6 +331,15 @@ export const useToolkitStore = defineStore("therapy_toolkit", {
         this.prepPacks = this.prepPacks.filter(p => p.id !== id);
         if (this.currentPrepPack?.id === id) {
           this.currentPrepPack = null;
+        }
+
+        // Sync delete to server if online
+        if (this.isOnline) {
+          try {
+            await TranquaraSDK.getInstance().deletePrepPackFromServer(id);
+          } catch (e) {
+            console.warn('[ToolkitStore] Failed to sync prep pack delete:', e);
+          }
         }
       } catch (error) {
         console.error('[ToolkitStore] Error deleting prep pack:', error);

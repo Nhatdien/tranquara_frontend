@@ -73,6 +73,19 @@ export class TherapyToolkit extends Base {
   }
 
   async getPrepPack(id: string): Promise<{ prep_pack: PrepPack }> {
-    return this.fetch(`${this.config.base_url}/prep-packs?id=${id}`);
+    return this.fetch(`${this.config.base_url}/prep-packs/detail?id=${id}`);
+  }
+
+  async savePrepPackToServer(pack: any): Promise<{ prep_pack: PrepPack }> {
+    return this.fetch(`${this.config.base_url}/prep-packs`, {
+      method: "POST",
+      body: JSON.stringify(pack),
+    });
+  }
+
+  async deletePrepPackFromServer(id: string): Promise<void> {
+    return this.fetch(`${this.config.base_url}/prep-packs?id=${id}`, {
+      method: "DELETE",
+    });
   }
 }

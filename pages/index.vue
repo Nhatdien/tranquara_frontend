@@ -8,6 +8,13 @@
     
     <!-- Daily Prompt -->
     <HomePageDailyPrompt />
+
+    <!-- Therapy Homework (shows only when pending items exist) -->
+    <ToolkitHomeworkCard
+      v-if="pendingHomework.length > 0"
+      :pending-items="pendingHomework"
+      @toggle="toolkitStore.toggleHomework"
+    />
     
     <!-- Journal Entries Section -->
     <div class="px-4">
@@ -23,5 +30,16 @@
 </template>
 
 <script setup lang="ts">
-// Auto-imported components
+import { useToolkitStore } from "~/stores/stores/therapy_toolkit_store";
+
+const toolkitStore = useToolkitStore();
+
+const pendingHomework = computed(() => toolkitStore.pendingHomework);
+
+// Load toolkit data if not already loaded
+onMounted(async () => {
+  if (toolkitStore.homeworkItems.length === 0) {
+    await toolkitStore.loadFromLocal();
+  }
+});
 </script>

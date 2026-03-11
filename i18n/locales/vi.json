@@ -19,7 +19,12 @@
     "beginCheckIn": "Bắt đầu ghi nhận",
     "dailyPrompt": "Câu hỏi hàng ngày",
     "startWriting": "Bắt đầu viết",
-    "dayOf": "Ngày {day} / {total}"
+    "dayOf": "Ngày {day} / {total}",
+    "homework": {
+      "title": "Bài tập trị liệu",
+      "viewAll": "Xem tất cả",
+      "moreItems": "+{count} mục khác"
+    }
   },
   "entries": {
     "reflection": "SUY NGẪM",
@@ -501,7 +506,11 @@
       "notFound": "Không tìm thấy gói chuẩn bị.",
       "deleteConfirm": "Xóa gói chuẩn bị này?",
       "errorGenerate": "Không thể tạo gói chuẩn bị. Vui lòng thử lại.",
-      "pastPacks": "Các gói chuẩn bị trước"
+      "pastPacks": "Các gói chuẩn bị trước",
+      "preparation": {
+        "title": "Hành trình chuẩn bị",
+        "overall": "Tiến trình chung"
+      }
     },
     "session": {
       "title": "Theo dõi buổi trị liệu",

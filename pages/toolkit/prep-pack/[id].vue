@@ -182,6 +182,60 @@
         </h2>
         <p class="text-sm text-neutral-400">{{ prepPack.personal_notes }}</p>
       </div>
+
+      <!-- Preparation Journey Status -->
+      <div class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50">
+        <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
+          <BookOpen class="w-4 h-4 text-neutral-400" />
+          {{ $t('toolkit.prepPack.preparation.title') }}
+        </h2>
+        <div class="space-y-2.5">
+          <div
+            v-for="step in preparationStatus"
+            :key="step.collectionId"
+            class="flex items-center gap-3"
+          >
+            <div
+              class="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+              :class="step.isComplete
+                ? 'bg-green-500/20 border border-green-500/50'
+                : 'bg-neutral-800 border border-neutral-700'"
+            >
+              <Icon
+                v-if="step.isComplete"
+                name="i-lucide-check"
+                class="w-3 h-3 text-green-400"
+              />
+            </div>
+            <span
+              class="text-sm flex-1"
+              :class="step.isComplete ? 'text-neutral-300' : 'text-neutral-500'"
+            >
+              {{ step.label }}
+            </span>
+            <span class="text-xs text-neutral-600">
+              {{ step.completed }}/{{ step.total }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Overall progress -->
+        <div class="mt-3 pt-3 border-t border-neutral-800">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-neutral-500">{{ $t('toolkit.prepPack.preparation.overall') }}</span>
+            <span :class="overallJourneyProgress === 100 ? 'text-green-400 font-medium' : 'text-neutral-400'">
+              {{ overallJourneyProgress }}%
+            </span>
+          </div>
+          <div class="w-full h-1.5 bg-neutral-800 rounded-full mt-1.5 overflow-hidden">
+            <div
+              class="h-full rounded-full transition-all duration-500"
+              :class="overallJourneyProgress === 100 ? 'bg-green-500' : 'bg-neutral-500'"
+              :style="{ width: `${overallJourneyProgress}%` }"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -189,13 +243,19 @@
 <script lang="ts" setup>
 import {
   ChevronLeft, BarChart3, Hash, Sparkles, Repeat,
-  MessageCircle, Sprout, FileText, TrendingUp, TrendingDown
+  MessageCircle, Sprout, FileText, TrendingUp, TrendingDown, BookOpen
 } from "lucide-vue-next";
 import { useToolkitStore } from "~/stores/stores/therapy_toolkit_store";
+import { useLearnedStore } from "~/stores/stores/user_learned";
+import { userJournalStore } from "~/stores/stores/user_journal";
+import { JOURNEY_STEPS } from "~/types/therapy_toolkit";
 import type { PrepPack } from "~/types/therapy_toolkit";
 
+const { t } = useI18n();
 const route = useRoute();
 const toolkitStore = useToolkitStore();
+const learnedStore = useLearnedStore();
+const journalStore = userJournalStore();
 
 const isLoading = ref(true);
 const prepPack = ref<PrepPack | null>(null);
@@ -235,9 +295,44 @@ const formatDateRange = (start: string, end: string): string => {
   return `${s.toLocaleDateString(undefined, opts)} – ${e.toLocaleDateString(undefined, opts)}`;
 };
 
+// ─── Preparation Journey Status ────────────────────────
+const getSlideGroupCount = (collectionId: string): number => {
+  const collection = journalStore.templates.find(t => t.id === collectionId);
+  if (!collection) return 0;
+  const groups = typeof collection.slide_groups === 'string'
+    ? JSON.parse(collection.slide_groups)
+    : collection.slide_groups;
+  return groups?.length || 0;
+};
+
+const preparationStatus = computed(() =>
+  JOURNEY_STEPS.map(step => ({
+    collectionId: step.collectionId,
+    label: t(step.labelKey),
+    completed: learnedStore.getCompletedCount(step.collectionId),
+    total: getSlideGroupCount(step.collectionId),
+    isComplete: getSlideGroupCount(step.collectionId) > 0
+      && learnedStore.getCompletedCount(step.collectionId) >= getSlideGroupCount(step.collectionId),
+  }))
+);
+
+const overallJourneyProgress = computed(() => {
+  let totalCompleted = 0;
+  let totalGroups = 0;
+  for (const step of preparationStatus.value) {
+    totalCompleted += step.completed;
+    totalGroups += step.total;
+  }
+  return totalGroups > 0 ? Math.round((totalCompleted / totalGroups) * 100) : 0;
+});
+
 onMounted(async () => {
   const id = route.params.id as string;
-  const pack = await toolkitStore.loadPrepPack(id);
+  const [pack] = await Promise.all([
+    toolkitStore.loadPrepPack(id),
+    learnedStore.loadFromLocal(),
+    journalStore.getAllTemplates(),
+  ]);
   prepPack.value = pack;
   isLoading.value = false;
 });

@@ -19,7 +19,12 @@
     "beginCheckIn": "Begin Your Check-In",
     "dailyPrompt": "Daily Prompt",
     "startWriting": "Start Writing",
-    "dayOf": "Day {day} of {total}"
+    "dayOf": "Day {day} of {total}",
+    "homework": {
+      "title": "Therapy Homework",
+      "viewAll": "View all",
+      "moreItems": "+{count} more"
+    }
   },
   "entries": {
     "reflection": "REFLECTION",
@@ -501,7 +506,11 @@
       "notFound": "Prep pack not found.",
       "deleteConfirm": "Delete this prep pack?",
       "errorGenerate": "Failed to generate prep pack. Please try again.",
-      "pastPacks": "Past Prep Packs"
+      "pastPacks": "Past Prep Packs",
+      "preparation": {
+        "title": "Preparation Journey",
+        "overall": "Overall progress"
+      }
     },
     "session": {
       "title": "Session Tracker",

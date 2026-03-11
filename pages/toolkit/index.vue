@@ -6,31 +6,7 @@
       <p class="text-neutral-400 text-sm mt-1">{{ $t('toolkit.subtitle') }}</p>
     </div>
 
-    <!-- Section 1: Preparation Journey -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
-          {{ $t('toolkit.journey.title') }}
-        </h2>
-        <span v-if="overallProgress > 0" class="text-xs text-neutral-500">
-          {{ $t('toolkit.journey.overallProgress', { percent: overallProgress }) }}
-        </span>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <ToolkitJourneyStepCard
-          v-for="step in journeySteps"
-          :key="step.collectionId"
-          :step="step"
-          :collection="getCollection(step.collectionId)"
-          :completed-count="learnedStore.getCompletedCount(step.collectionId)"
-          :total-count="getSlideGroupCount(step.collectionId)"
-          @tap="navigateToCollection(step.collectionId)"
-        />
-      </div>
-    </div>
-
-    <!-- Section 2: Prep Pack -->
+    <!-- Section 1: Prep Pack (AI Summary) -->
     <div class="mb-8">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.prepPack.title') }}
@@ -67,7 +43,7 @@
       </div>
     </div>
 
-    <!-- Section 3: Session Tracker -->
+    <!-- Section 2: Session Tracker -->
     <div class="mb-8">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.session.title') }}
@@ -199,7 +175,7 @@
       </div>
     </div>
 
-    <!-- Section 3.5: Homework -->
+    <!-- Section 3: Homework -->
     <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
@@ -288,7 +264,31 @@
       </div>
     </div>
 
-    <!-- Section 4: Grounding Exercises -->
+    <!-- Section 4: Preparation Journey -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
+          {{ $t('toolkit.journey.title') }}
+        </h2>
+        <span v-if="overallProgress > 0" class="text-xs text-neutral-500">
+          {{ $t('toolkit.journey.overallProgress', { percent: overallProgress }) }}
+        </span>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <ToolkitJourneyStepCard
+          v-for="step in journeySteps"
+          :key="step.collectionId"
+          :step="step"
+          :collection="getCollection(step.collectionId)"
+          :completed-count="learnedStore.getCompletedCount(step.collectionId)"
+          :total-count="getSlideGroupCount(step.collectionId)"
+          @tap="navigateToCollection(step.collectionId)"
+        />
+      </div>
+    </div>
+
+    <!-- Section 5: Grounding Exercises -->
     <div class="mb-8">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.grounding.title') }}
