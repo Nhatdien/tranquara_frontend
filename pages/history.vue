@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full min-h-screen pb-20 px-4">
+  <div class="flex flex-col w-full min-h-screen pb-20 lg:pb-0 px-4">
     <!-- Header with Filter Button -->
     <div class="py-6 flex justify-between items-start">
       <div>

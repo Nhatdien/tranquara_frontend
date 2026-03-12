@@ -1,5 +1,5 @@
 <template>
-  <section class="min-h-screen pb-20">
+  <section class="min-h-screen pb-20 lg:pb-0">
     <!-- Back Button -->
     <div class="px-4 pt-4">
       <UButton 

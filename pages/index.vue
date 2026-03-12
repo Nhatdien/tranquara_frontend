@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full min-h-screen pb-20">
+  <div class="flex flex-col w-full min-h-screen pb-20 lg:pb-0">
     <!-- Date Header with Streak -->
     <HomePageDateHeader />
 

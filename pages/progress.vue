@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-default pb-20">
+  <div class="min-h-screen bg-default pb-20 lg:pb-0">
     <!-- Header -->
     <UContainer class="sticky top-0 z-10 bg-default border-b">
       <div class="flex items-center justify-between py-4">

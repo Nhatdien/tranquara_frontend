@@ -1,5 +1,5 @@
 <template>
-  <section class="min-h-screen px-6 pb-20 pt-6">
+  <section class="min-h-screen px-6 pb-20 lg:pb-0 pt-6">
     <!-- Back Button -->
     <div class="mb-6">
       <UButton variant="ghost" size="lg" icon="i-lucide-chevron-left" @click="navigateTo('/toolkit')" />

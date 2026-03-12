@@ -1,5 +1,5 @@
 <template>
-  <section class="px-4 py-6 pb-20">
+  <section class="px-4 py-6 pb-20 lg:pb-0">
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-2xl font-bold">{{ $t('toolkit.title') }}</h1>

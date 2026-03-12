@@ -1,7 +1,9 @@
 <template>
-  <div class="min-h-screen bg-[var(--ui-bg)] flex flex-col">
+  <div class="min-h-screen bg-default flex flex-col">
     <main class="flex-1 overflow-y-auto">
-      <slot />
+      <div class="mx-auto w-full max-w-2xl">
+        <slot />
+      </div>
     </main>
   </div>
 </template>
