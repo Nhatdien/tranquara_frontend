@@ -27,6 +27,9 @@
     <!-- Content -->
     <div v-else-if="prepPack" class="space-y-6">
 
+      <!-- Top cards: 2-col grid on desktop -->
+      <div class="lg:grid lg:grid-cols-2 lg:gap-6 space-y-6 lg:space-y-0">
+
       <!-- Mood Overview -->
       <div v-if="prepPack.mood_overview" class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50">
         <h2 class="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -137,6 +140,8 @@
           </div>
         </div>
       </div>
+
+      </div><!-- End 2-col grid -->
 
       <!-- Discussion Points -->
       <div v-if="prepPack.discussion_points?.length" class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50">

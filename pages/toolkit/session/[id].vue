@@ -1,5 +1,5 @@
 <template>
-  <section class="px-4 py-6 pb-24">
+  <section class="px-4 py-6 pb-24 lg:pb-6 max-w-2xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
       <button @click="navigateTo('/toolkit')" class="text-neutral-400 hover:text-white transition-colors">

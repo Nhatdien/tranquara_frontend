@@ -8,7 +8,7 @@
         icon="i-lucide-arrow-left"
         @click="emit('back')" />
       <div class="flex items-center gap-2">
-        <h1 class="text-xl font-bold truncate max-w-[180px]">
+        <h1 class="text-xl font-bold truncate max-w-[180px] md:max-w-sm lg:max-w-md">
           {{ journal.title || $t('journal.untitledJournal') }}
         </h1>
         <SyncBadge
@@ -21,7 +21,7 @@
     </header>
 
     <!-- Content Scrollable -->
-    <main class="flex-1 overflow-y-auto p-4 space-y-6">
+    <main class="flex-1 overflow-y-auto p-4 space-y-6 max-w-2xl mx-auto w-full">
       <!-- Meta Info -->
       <div class="flex flex-col gap-2">
         <span class="text-sm text-muted">{{ formatDate(journal.created_at) }}</span>
@@ -41,7 +41,7 @@
       </div>
 
       <!-- Journal Content -->
-      <div class="prose dark:prose-invert max-w-none journal-content">
+      <div class="prose dark:prose-invert max-w-none md:max-w-prose journal-content">
         <div v-html="journal.content_html || journal.content"></div>
       </div>
     </main>

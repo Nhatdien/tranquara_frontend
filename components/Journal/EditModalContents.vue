@@ -1,5 +1,5 @@
 <template>
-  <section class="p-4">
+  <section class="p-4 max-w-lg mx-auto">
     <div class="flex justify-between w-full">
       <ChevronLeft @click="prevNode" />
       <div class="flex items-center gap-2">
@@ -19,7 +19,7 @@
         viewport: 'h-full',
         dot: 'w-6 h-1 rounded-none'
       }">
-      <div class="h-[70vh] max-h-[700px]">
+      <div class="h-[70vh] max-h-[700px] lg:h-[60vh]">
         <component
           :is="renderSlide((item as CarouselSlideItem)?.content?.type)"
           :currentIndex
@@ -32,7 +32,7 @@
     </UCarousel>
 
     <!-- Button group -->
-    <div class="flex fixed justify-between left-4 right-4 bottom-8">
+    <div class="flex fixed justify-between bottom-8 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
       <div></div>
       <div class="flex items-center gap-2">
         <UButton :variant="'outline'" @click="saveJournalChanges" :loading="isSaving">

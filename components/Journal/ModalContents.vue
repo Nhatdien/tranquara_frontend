@@ -1,5 +1,5 @@
 <template>
-  <section class="p-4">
+  <section class="p-4 max-w-lg mx-auto">
     <div class="flex justify-between w-full">
       <ChevronLeft @click="prevNode" />
       <X @click="closeSlideGroup"/>
@@ -16,7 +16,7 @@
         viewport: 'h-full',
         dot: 'w-6 h-1 rounded-none'
       }">
-      <div class="h-[70vh] max-h-[700px]">
+      <div class="h-[70vh] max-h-[700px] lg:h-[60vh]">
         <component
           :is="renderSlide(item?.content?.type)"
           :currentIndex
@@ -32,7 +32,7 @@
        - a button to make forward (user can still slide backward)
        - a button to edit text format
        - a button to open the chatbox with the chatbot to help with the journaling process -->
-    <div class="flex fixed justify-between w-full bottom-8 right-4">
+    <div class="flex fixed justify-between bottom-8 left-1/2 -translate-x-1/2 w-full max-w-lg px-4">
       <div></div>
       <div class="flex items-center">
         <UButton :variant="'soft'" @click="nextNode"><ChevronRight /></UButton>
