@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-3 pb-6">
+  <section class="space-y-3 pb-6 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 xl:grid-cols-3">
     <!-- Sync Status Banner -->
     <SyncStatusBanner
       :is-online="userJournalStore().isOnline"
@@ -7,6 +7,7 @@
       :pending-count="pendingSyncCount"
       :show-sync-button="true"
       @sync="triggerSync"
+      class="md:col-span-2 xl:col-span-3"
     />
 
     <!-- Entry Cards -->
@@ -51,7 +52,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!userJournalStore().journals || userJournalStore().journals.length === 0" class="text-center py-12">
+    <div v-if="!userJournalStore().journals || userJournalStore().journals.length === 0" class="text-center py-12 md:col-span-2 xl:col-span-3">
       <p class="text-muted mb-4">{{ $t('entries.noEntries') }}</p>
       <UButton @click="navigateTo('/journaling')" variant="outline">
         {{ $t('entries.startFirst') }}
@@ -59,7 +60,7 @@
     </div>
 
     <!-- See All Button -->
-    <div v-if="userJournalStore().journals && userJournalStore().journals.length > 0" class="text-center pt-4">
+    <div v-if="userJournalStore().journals && userJournalStore().journals.length > 0" class="text-center pt-4 md:col-span-2 xl:col-span-3">
       <UButton 
         variant="ghost" 
         @click="navigateTo('/history')"

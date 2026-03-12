@@ -88,7 +88,7 @@
           {{ dateKey }}
         </h2>
         
-        <div class="space-y-3">
+        <div class="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0 xl:grid-cols-3">
           <div 
             v-for="entry in entries" 
             :key="entry.id"

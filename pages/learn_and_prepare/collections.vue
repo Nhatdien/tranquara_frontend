@@ -26,7 +26,7 @@
       </div>
 
       <!-- Collections List -->
-      <div class="px-4 flex flex-col gap-4">
+      <div class="px-4 flex flex-col gap-4 md:grid md:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="collection in allCollections"
           :key="collection.id"

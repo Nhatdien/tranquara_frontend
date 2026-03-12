@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 mb-6">
+  <div class="px-4 mb-6 md:px-0 md:mb-0">
     <!-- Check-In Hero Card -->
     <div class="relative rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden">
       <div class="flex flex-col items-center justify-center px-6 py-12 min-h-[360px]">

@@ -6,8 +6,8 @@
     <!-- Daily Check-In (Morning / Evening) -->
     <HomePageDailyCheckIn />
     
-    <!-- Daily Prompt -->
-    <HomePageDailyPrompt />
+    <!-- Daily Prompt — placeholder only, excluded from layout for now -->
+    <!-- <HomePageDailyPrompt /> -->
 
     <!-- Therapy Homework (shows only when pending items exist) -->
     <ToolkitHomeworkCard

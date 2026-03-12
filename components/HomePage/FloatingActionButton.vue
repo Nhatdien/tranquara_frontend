@@ -1,7 +1,7 @@
 <template>
   <button
     @click="handleClick"
-    class="fixed bottom-20 right-6 w-14 h-14 bg-primary rounded-full shadow-lg hover:bg-primary transition-all hover:scale-110 z-40 flex items-center justify-center"
+    class="fixed bottom-20 right-6 w-14 h-14 bg-primary rounded-full shadow-lg hover:bg-primary transition-all hover:scale-110 z-40 flex items-center justify-center lg:bottom-8 lg:right-8"
   >
     <Plus class="w-7 h-7 text-inverted" :stroke-width="2.5" />
   </button>

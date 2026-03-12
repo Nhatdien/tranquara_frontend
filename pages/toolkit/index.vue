@@ -6,8 +6,10 @@
       <p class="text-neutral-400 text-sm mt-1">{{ $t('toolkit.subtitle') }}</p>
     </div>
 
+    <!-- Prep Pack + Session Tracker: side-by-side on desktop -->
+    <div class="lg:grid lg:grid-cols-2 lg:gap-6">
     <!-- Section 1: Prep Pack (AI Summary) -->
-    <div class="mb-8">
+    <div class="mb-8 lg:mb-0">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.prepPack.title') }}
       </h2>
@@ -44,7 +46,7 @@
     </div>
 
     <!-- Section 2: Session Tracker -->
-    <div class="mb-8">
+    <div class="mb-8 lg:mb-0">
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.session.title') }}
       </h2>
@@ -174,6 +176,7 @@
         </div>
       </div>
     </div>
+    </div> <!-- End: Prep Pack + Session Tracker grid -->
 
     <!-- Section 3: Homework -->
     <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8">
@@ -275,7 +278,7 @@
         </span>
       </div>
 
-      <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-3 md:grid md:grid-cols-2">
         <ToolkitJourneyStepCard
           v-for="step in journeySteps"
           :key="step.collectionId"
@@ -293,7 +296,7 @@
       <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.grounding.title') }}
       </h2>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <button
           v-for="tool in groundingTools"
           :key="tool.key"
