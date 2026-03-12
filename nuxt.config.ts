@@ -18,7 +18,9 @@ export default defineNuxtConfig({
       baseFrontendURL: "",
       websocketURL: "",
       clientId: "",
-      keycloakURL: "", // Add Keycloak URL
+      keycloakURL: "",
+      keycloakRealm: "",
+      keycloakClientSecret: "",
     },
   },
   compatibilityDate: "2024-04-03",

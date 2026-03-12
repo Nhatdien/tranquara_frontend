@@ -521,29 +521,32 @@ export const userJournalStore = defineStore("user_journal", {
     },
 
     /**
-     * Delete journal (hard delete from local SQLite + server if online)
+     * Delete journal (hard delete from local SQLite + queue server delete if offline)
      */
     async deleteJournal(journalId: string) {
       try {
         // Get journal first to check if it has a server_id
         const journal = await JournalsRepository.getById(journalId);
 
-        // If journal exists on server and we're online, delete from server first
         if (journal?.server_id && this.isOnline) {
+          // Online: delete from server immediately
           try {
             const sdk = TranquaraSDK.getInstance();
             await sdk.deleteJournal(journal.server_id);
             console.log('[JournalStore] Journal deleted from server:', journal.server_id);
           } catch (error) {
-            console.warn('[JournalStore] Failed to delete from server (will still delete locally):', error);
+            console.warn('[JournalStore] Failed to delete from server (will retry via sync queue):', error);
+            // Queue for retry
+            SyncQueue.addDeleteToQueue(journal);
           }
+        } else if (journal?.server_id && !this.isOnline) {
+          // Offline: queue the delete for when we're back online
+          SyncQueue.addDeleteToQueue(journal);
+          console.log('[JournalStore] Offline — queued server delete for:', journal.server_id);
         }
 
         // Hard delete from local SQLite
         await JournalsRepository.hardDelete(journalId);
-
-        // Remove from sync queue (in case it was pending)
-        SyncQueue.removeFromQueue(journalId);
 
         // Update store state
         this.journals = this.journals.filter((j) => j.id !== journalId);

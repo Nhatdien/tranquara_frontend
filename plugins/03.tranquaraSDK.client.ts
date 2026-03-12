@@ -38,9 +38,19 @@ export default defineNuxtPlugin(async (nuxtApp) => {
       tranquaraSDK.config.current_username = user.preferred_username || "";
       
       console.log('[Plugin] SDK configured for authenticated user');
-      // Don't initialize database here - let pages do it when mounted
 
-      // Fetch streak data for authenticated user
+      // Fetch streak data (works offline via local computation)
+      const streakStore = useUserStreakStore();
+      streakStore.fetchStreak().catch((err: any) => {
+        console.warn('[Plugin] Failed to fetch streak on init:', err);
+      });
+    } else if (authStore.user) {
+      // Token expired (offline) but we have a persisted session
+      // SDK can work for local operations, server calls will fail gracefully
+      tranquaraSDK.config.current_username = (authStore.user as any).preferred_username || "";
+      console.log('[Plugin] SDK configured for offline session (no valid token)');
+
+      // Streak can still be computed from local data
       const streakStore = useUserStreakStore();
       streakStore.fetchStreak().catch((err: any) => {
         console.warn('[Plugin] Failed to fetch streak on init:', err);

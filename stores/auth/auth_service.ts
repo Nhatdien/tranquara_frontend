@@ -46,7 +46,11 @@ export class AuthService {
 
   private readonly REALM = 'tranquara_auth';
   private readonly CLIENT_ID = 'tranquara_auth_client';
-  private readonly CLIENT_SECRET = 'JWUXybAZ4Qrm99KaRMF0wWM5DI8X1j5m';
+  private get CLIENT_SECRET(): string {
+    return typeof window !== 'undefined'
+      ? (window as any).__NUXT__?.config?.public?.keycloakClientSecret || ''
+      : '';
+  }
 
   private constructor() {
     // No initialization needed - using getters
@@ -124,7 +128,11 @@ export class AuthService {
   }
 
   /**
-   * Refresh access token using refresh token
+   * Refresh access token using refresh token.
+   * 
+   * IMPORTANT: Does NOT call logout() on failure.
+   * If offline, the refresh will fail but the user should stay in the app
+   * with their local session. Only explicit user logout clears the session.
    */
   async refreshAccessToken(): Promise<boolean> {
     try {
@@ -158,8 +166,9 @@ export class AuthService {
 
       return true;
     } catch (error) {
-      console.error('Token refresh error:', error);
-      await this.logout();
+      console.error('Token refresh error (may be offline):', error);
+      // DON'T logout here — user may just be offline
+      // They can still use the app with local data
       return false;
     }
   }
@@ -178,8 +187,16 @@ export class AuthService {
         await secureStorage.setToken('access_token', tokens.access_token);
         await secureStorage.setToken('refresh_token', tokens.refresh_token);
         await storage.set('token_expiry', this.tokenExpiry);
+
+        // Persist user profile for offline session survival
+        // This allows the app to work offline even after token expiry
+        const profile = this.getUserProfile();
+        if (profile) {
+          await secureStorage.setToken('user_profile', JSON.stringify(profile));
+          await secureStorage.setToken('has_local_session', 'true');
+        }
         
-        console.log('✅ Tokens stored securely');
+        console.log('✅ Tokens and local session stored securely');
       } catch (error) {
         console.error('❌ Error storing tokens:', error);
       }
@@ -187,7 +204,14 @@ export class AuthService {
   }
 
   /**
-   * Load tokens from storage on app start
+   * Load tokens from storage on app start.
+   * 
+   * Offline-first strategy:
+   * - If tokens are valid → use them normally
+   * - If tokens expired but refresh succeeds → great, refreshed
+   * - If tokens expired and refresh fails (offline) → still return true
+   *   because we have a persisted local session. The user can use the app
+   *   offline. Server calls will fail gracefully, but local CRUD works.
    */
   async loadTokens(): Promise<boolean> {
     if (process.client) {
@@ -206,9 +230,26 @@ export class AuthService {
           // Check if token is expired
           if (this.isTokenExpired()) {
             console.log('⚠️ Token expired, attempting refresh...');
-            return await this.refreshAccessToken();
+            const refreshed = await this.refreshAccessToken();
+            if (refreshed) return true;
+
+            // Refresh failed (likely offline) — check for persisted local session
+            // Don't logout! User can still use the app offline.
+            const hasLocalSession = await this.hasLocalSession();
+            if (hasLocalSession) {
+              console.log('📱 Offline but local session exists — allowing offline access');
+              return true;
+            }
+            return false;
           }
 
+          return true;
+        }
+
+        // No tokens at all — check if we have a local session (edge case: tokens cleared but session persists)
+        const hasLocalSession = await this.hasLocalSession();
+        if (hasLocalSession) {
+          console.log('📱 No tokens but local session exists — allowing offline access');
           return true;
         }
       } catch (error) {
@@ -244,7 +285,8 @@ export class AuthService {
   }
 
   /**
-   * Get user profile from token
+   * Get user profile from token.
+   * Falls back to parsing even expired tokens to extract profile data.
    */
   getUserProfile(): UserProfile | null {
     if (!this.accessToken) return null;
@@ -264,7 +306,7 @@ export class AuthService {
   }
 
   /**
-   * Get user UUID from token
+   * Get user UUID from token (works even with expired tokens since JWT is self-contained)
    */
   getUserUUID(): string | null {
     const profile = this.getUserProfile();
@@ -272,14 +314,64 @@ export class AuthService {
   }
 
   /**
-   * Check if user is authenticated
+   * Check if user is authenticated.
+   * Returns true if either:
+   * 1. Valid (non-expired) access token exists, OR
+   * 2. A persisted local session exists (user logged in before, may be offline)
+   * 
+   * For server calls, use hasValidToken() instead.
    */
   isAuthenticated(): boolean {
+    // Fast path: valid token in memory
+    if (this.accessToken && !this.isTokenExpired()) {
+      return true;
+    }
+    // Slow path is handled by the async version in the store
+    // For sync check, we allow if accessToken exists (even expired) as a hint
+    return !!this.accessToken;
+  }
+
+  /**
+   * Check if we have a valid (non-expired) token for server calls
+   */
+  hasValidToken(): boolean {
     return !!this.accessToken && !this.isTokenExpired();
   }
 
   /**
-   * Logout - clear all tokens and storage
+   * Check if a local session exists (persisted on successful login).
+   * This survives token expiry and offline periods.
+   */
+  async hasLocalSession(): Promise<boolean> {
+    if (!process.client) return false;
+    try {
+      const value = await secureStorage.getToken('has_local_session');
+      return value === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Get persisted user profile from SecureStorage.
+   * Used when token is expired (offline) but local session exists.
+   */
+  async getPersistedProfile(): Promise<UserProfile | null> {
+    if (!process.client) return null;
+    try {
+      const profileJson = await secureStorage.getToken('user_profile');
+      if (profileJson) {
+        return JSON.parse(profileJson) as UserProfile;
+      }
+    } catch (error) {
+      console.error('Error loading persisted profile:', error);
+    }
+    return null;
+  }
+
+  /**
+   * Logout - clear all tokens, local session, and storage.
+   * This is the ONLY place that clears the local session.
    */
   async logout(): Promise<void> {
     this.accessToken = null;
@@ -290,9 +382,11 @@ export class AuthService {
       try {
         await secureStorage.removeToken('access_token');
         await secureStorage.removeToken('refresh_token');
+        await secureStorage.removeToken('has_local_session');
+        await secureStorage.removeToken('user_profile');
         await storage.remove('token_expiry');
         
-        console.log('✅ Tokens cleared from secure storage');
+        console.log('✅ Tokens and local session cleared from secure storage');
       } catch (error) {
         console.error('❌ Error clearing tokens:', error);
       }

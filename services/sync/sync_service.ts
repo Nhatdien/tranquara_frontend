@@ -136,7 +136,11 @@ export class SyncService {
         
         for (const item of batch) {
           try {
-            await this.syncJournal(item.journal, userId);
+            if (item.action === 'delete') {
+              await this.syncDeleteJournal(item.journal);
+            } else {
+              await this.syncJournal(item.journal, userId);
+            }
             result.syncedCount++;
             SyncQueue.removeFromQueue(item.journal.id);
           } catch (error) {
@@ -192,6 +196,27 @@ export class SyncService {
       console.log('[SyncService] Journal synced successfully:', journal.id, '→', response.id);
     } catch (error) {
       console.error('[SyncService] Error syncing journal:', journal.id, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a journal from the server (queued offline delete).
+   * Only deletes if the journal has a server_id.
+   */
+  private async syncDeleteJournal(journal: LocalJournal): Promise<void> {
+    if (!journal.server_id) {
+      console.log('[SyncService] Journal has no server_id, skip server delete:', journal.id);
+      return;
+    }
+
+    console.log('[SyncService] Deleting journal from server:', journal.server_id);
+
+    try {
+      await TranquaraSDK.getInstance().deleteJournal(journal.server_id);
+      console.log('[SyncService] Journal deleted from server:', journal.server_id);
+    } catch (error) {
+      console.error('[SyncService] Error deleting journal from server:', journal.server_id, error);
       throw error;
     }
   }

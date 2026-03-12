@@ -43,10 +43,14 @@ export class Auth {
 
       const tokenUrl = `${keycloakURL}/realms/tranquara_auth/protocol/openid-connect/token`;
 
+      const clientSecret = (this as any).config?.keycloakClientSecret ||
+        (typeof window !== 'undefined' ? (window as any).__NUXT__?.config?.public?.keycloakClientSecret : null) ||
+        '';
+
       const formData = new URLSearchParams({
         grant_type: 'password',
         client_id: 'tranquara_auth_client',
-        client_secret: 'JWUXybAZ4Qrm99KaRMF0wWM5DI8X1j5m',
+        client_secret: clientSecret,
         username: credentials.username,
         password: credentials.password,
         scope: 'openid email profile',
@@ -119,10 +123,14 @@ export class Auth {
 
       const tokenUrl = `${keycloakURL}/realms/tranquara_auth/protocol/openid-connect/token`;
 
+      const clientSecret = (this as any).config?.keycloakClientSecret ||
+        (typeof window !== 'undefined' ? (window as any).__NUXT__?.config?.public?.keycloakClientSecret : null) ||
+        '';
+
       const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         client_id: 'tranquara_auth_client',
-        client_secret: 'JWUXybAZ4Qrm99KaRMF0wWM5DI8X1j5m',
+        client_secret: clientSecret,
         refresh_token: this.refreshToken,
       });
 
@@ -161,6 +169,13 @@ export class Auth {
     await secureStorage.setToken('refresh_token', tokens.refresh_token);
     await storage.set('token_expiry', this.tokenExpiry.toString());
 
+    // Persist user profile for offline session survival
+    const profile = this.getUserProfile();
+    if (profile) {
+      await secureStorage.setToken('user_profile', JSON.stringify(profile));
+      await secureStorage.setToken('has_local_session', 'true');
+    }
+
     // Update SDK config with new token
     if ((this as any).config) {
       (this as any).config.access_token = tokens.access_token;
@@ -168,7 +183,11 @@ export class Auth {
   }
 
   /**
-   * Load tokens from secure storage
+   * Load tokens from secure storage.
+   * 
+   * Offline-first: If tokens exist but are expired, still return true
+   * so the app can work offline with local session data.
+   * The expired token still contains the user profile (JWT is self-contained).
    */
   async loadTokens(): Promise<boolean> {
     try {
@@ -177,7 +196,9 @@ export class Auth {
       const expiryStr = await storage.get<string>('token_expiry');
 
       if (!accessToken || !refreshToken) {
-        return false;
+        // No tokens at all — check for persisted local session
+        const hasSession = await this.hasLocalSession();
+        return hasSession;
       }
 
       this.accessToken = accessToken;
@@ -189,6 +210,9 @@ export class Auth {
         (this as any).config.access_token = accessToken;
       }
 
+      // Token is valid — great
+      // Token is expired — still return true (user can work offline)
+      // The expired JWT still contains user profile data for local use
       return true;
     } catch (error) {
       console.error('Load tokens error:', error);
@@ -213,10 +237,48 @@ export class Auth {
   }
 
   /**
-   * Check if user is authenticated
+   * Check if user is authenticated (includes offline session).
+   * Returns true if we have tokens (even expired) — user can work offline.
+   * For server calls, use hasValidToken() instead.
    */
   isAuthenticated(): boolean {
+    return !!this.accessToken;
+  }
+
+  /**
+   * Check if we have a valid (non-expired) token for server calls
+   */
+  hasValidToken(): boolean {
     return !!this.accessToken && (!this.tokenExpiry || Date.now() < this.tokenExpiry);
+  }
+
+  /**
+   * Check if a persisted local session exists.
+   * This survives token expiry and offline periods.
+   */
+  async hasLocalSession(): Promise<boolean> {
+    try {
+      const value = await secureStorage.getToken('has_local_session');
+      return value === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Get persisted user profile from SecureStorage.
+   * Used when token is expired/missing but local session exists.
+   */
+  async getPersistedProfile(): Promise<TokenPayload | null> {
+    try {
+      const profileJson = await secureStorage.getToken('user_profile');
+      if (profileJson) {
+        return JSON.parse(profileJson) as TokenPayload;
+      }
+    } catch (error) {
+      console.error('Error loading persisted profile:', error);
+    }
+    return null;
   }
 
   /**
@@ -242,7 +304,8 @@ export class Auth {
   }
 
   /**
-   * Logout - clear all tokens
+   * Logout - clear all tokens and local session.
+   * This is the ONLY place that clears the persisted local session.
    */
   async logout(): Promise<void> {
     this.accessToken = null;
@@ -251,6 +314,8 @@ export class Auth {
 
     await secureStorage.removeToken('access_token');
     await secureStorage.removeToken('refresh_token');
+    await secureStorage.removeToken('has_local_session');
+    await secureStorage.removeToken('user_profile');
     await storage.remove('token_expiry');
 
     // Clear SDK config

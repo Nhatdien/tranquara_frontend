@@ -187,8 +187,28 @@ CREATE INDEX IF NOT EXISTS idx_affirmations_user ON user_affirmations(user_id);`
 export const CREATE_USER_AFFIRMATIONS_INDEX_FAVORITE = `
 CREATE INDEX IF NOT EXISTS idx_affirmations_favorite ON user_affirmations(is_favorite);`;
 
+// AI Memories cache table schema
+export const CREATE_AI_MEMORIES_TABLE = `
+CREATE TABLE IF NOT EXISTS ai_memories (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  content TEXT NOT NULL,
+  category TEXT NOT NULL,
+  source_journal_ids TEXT,
+  confidence REAL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  cached_at TEXT NOT NULL
+);`;
+
+export const CREATE_AI_MEMORIES_INDEX_USER = `
+CREATE INDEX IF NOT EXISTS idx_ai_memories_user ON ai_memories(user_id);`;
+
+export const CREATE_AI_MEMORIES_INDEX_CATEGORY = `
+CREATE INDEX IF NOT EXISTS idx_ai_memories_category ON ai_memories(user_id, category);`;
+
 // Database version tracking
-export const DB_VERSION = 7;
+export const DB_VERSION = 8;
 export const DB_NAME = 'tranquara_journals.db';
 
 /**
@@ -253,5 +273,11 @@ export const MIGRATIONS: Record<number, string[]> = {
     CREATE_USER_AFFIRMATIONS_TABLE,
     CREATE_USER_AFFIRMATIONS_INDEX_USER,
     CREATE_USER_AFFIRMATIONS_INDEX_FAVORITE,
+  ],
+  // v8: Add AI memories cache table
+  8: [
+    CREATE_AI_MEMORIES_TABLE,
+    CREATE_AI_MEMORIES_INDEX_USER,
+    CREATE_AI_MEMORIES_INDEX_CATEGORY,
   ],
 };

@@ -1,15 +1,19 @@
 /**
  * Sync Queue Service
  * 
- * Manages journals pending synchronization with server
- * Tracks retry logic and error handling
+ * Manages journals pending synchronization with server.
+ * Supports create/update AND delete actions.
+ * Tracks retry logic and error handling.
  */
 
 import JournalsRepository from '../sqlite/journals_repository';
 import type { LocalJournal } from '~/types/user_journal';
 
+export type SyncAction = 'upsert' | 'delete';
+
 export interface SyncQueueItem {
   journal: LocalJournal;
+  action: SyncAction;
   retryCount: number;
   lastError?: string;
 }
@@ -42,6 +46,7 @@ export class SyncQueue {
       pendingJournals.forEach(journal => {
         this.queue.set(journal.id, {
           journal,
+          action: 'upsert',
           retryCount: 0,
         });
       });
@@ -54,14 +59,28 @@ export class SyncQueue {
   }
 
   /**
-   * Add journal to sync queue
+   * Add journal to sync queue (create/update)
    */
   public addToQueue(journal: LocalJournal): void {
     this.queue.set(journal.id, {
       journal,
+      action: 'upsert',
       retryCount: 0,
     });
-    console.log('[SyncQueue] Added to queue:', journal.id);
+    console.log('[SyncQueue] Added to queue (upsert):', journal.id);
+  }
+
+  /**
+   * Add a delete operation to the sync queue.
+   * When online, the server delete will be processed by SyncService.
+   */
+  public addDeleteToQueue(journal: LocalJournal): void {
+    this.queue.set(journal.id, {
+      journal,
+      action: 'delete',
+      retryCount: 0,
+    });
+    console.log('[SyncQueue] Added to queue (delete):', journal.id);
   }
 
   /**

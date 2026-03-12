@@ -1,12 +1,14 @@
 /**
  * useAIGuard — Composable for AI feature gating
  *
- * Checks whether AI features are enabled in settings.
- * When disabled, shows a toast message directing the user to Settings.
+ * Checks whether AI features are enabled in settings AND whether the device
+ * is online (AI requires server connectivity).
+ * When disabled or offline, shows a toast message directing the user.
  * Also provides the user's "Your Story" context for AI requests.
  */
 
 import { useSettingsStore } from '~/stores/stores/settings_store';
+import NetworkMonitor from '~/services/sync/network_monitor';
 
 export function useAIGuard() {
   const settingsStore = useSettingsStore();
@@ -15,11 +17,15 @@ export function useAIGuard() {
   /** Whether AI features are currently enabled */
   const isAIEnabled = computed(() => settingsStore.aiEnabled);
 
+  /** Whether the device is online */
+  const isOnline = computed(() => NetworkMonitor.isConnected());
+
   /** The user's personal story context (empty string if none) */
   const yourStory = computed(() => settingsStore.yourStory);
 
   /**
-   * Check if AI is enabled. If not, show a toast and return false.
+   * Check if AI is enabled AND device is online. 
+   * If not, show a toast and return false.
    * Use this as a guard before any AI call:
    *
    * ```ts
@@ -37,11 +43,23 @@ export function useAIGuard() {
       });
       return false;
     }
+
+    if (!NetworkMonitor.isConnected()) {
+      toast.add({
+        title: 'You\'re offline',
+        description: 'AI insights will be available when you\'re back online. Your journal is saved locally.',
+        icon: 'i-lucide-wifi-off',
+        color: 'info',
+      });
+      return false;
+    }
+
     return true;
   };
 
   return {
     isAIEnabled,
+    isOnline,
     yourStory,
     canUseAI,
   };

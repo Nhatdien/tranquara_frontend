@@ -36,24 +36,36 @@ export const useAuthStore = defineStore('auth', {
      * Note: Does NOT sync to backend during plugin initialization to avoid race conditions
      * Backend sync happens after all plugins are loaded
      */
+    /**
+     * Initialize auth state from stored tokens.
+     * 
+     * Offline-first strategy:
+     * - If tokens are valid → authenticated normally
+     * - If tokens expired but local session exists → authenticated in offline mode
+     *   (user can use all local features, server calls fail gracefully)
+     */
     async initialize() {
       this.loading = true;
       try {
-        const hasTokens = await TranquaraSDK.getInstance().loadTokens();
+        const sdk = TranquaraSDK.getInstance();
+        const hasTokens = await sdk.loadTokens();
         console.log('[AuthStore] Tokens loaded:', hasTokens);
         
-        const isAuth = TranquaraSDK.getInstance().isAuthenticated();
-        console.log('[AuthStore] Is authenticated:', isAuth);
-        
-        if (hasTokens && isAuth) {
-          const profile = TranquaraSDK.getInstance().getUserProfile();
-          console.log('[AuthStore] User profile:', profile);
+        if (hasTokens) {
+          // loadTokens returns true for both valid tokens AND expired-but-has-local-session
+          let profile = sdk.getUserProfile();
           
-          this.user = profile;
-          this.isAuthenticated = true;
-
-          // Don't sync to backend here - let it happen after all plugins are loaded
-          console.log('Auth initialized from stored tokens');
+          // If profile is null (token missing/invalid), try persisted profile
+          if (!profile) {
+            profile = await sdk.getPersistedProfile();
+            console.log('[AuthStore] Using persisted profile for offline session');
+          }
+          
+          if (profile) {
+            this.user = profile;
+            this.isAuthenticated = true;
+            console.log('[AuthStore] Auth initialized (hasValidToken:', sdk.hasValidToken(), ')');
+          }
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -174,7 +186,8 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Refresh tokens
+     * Refresh tokens.
+     * Does NOT logout on failure — user may just be offline.
      */
     async refreshToken() {
       try {
@@ -182,13 +195,11 @@ export const useAuthStore = defineStore('auth', {
         if (refreshed) {
           this.user = TranquaraSDK.getInstance().getUserProfile();
           this.isAuthenticated = true;
-        } else {
-          await this.logout();
         }
+        // If refresh fails, DON'T logout — user can still work offline
         return refreshed;
       } catch (error) {
-        console.error('Token refresh error:', error);
-        await this.logout();
+        console.error('Token refresh error (may be offline):', error);
         return false;
       }
     },
