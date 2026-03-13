@@ -1,9 +1,9 @@
 <template>
-  <section class="px-4 py-6 pb-20">
+  <section class="px-4 py-6 pb-20 lg:pb-0">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">{{ $t('learn.library') }}</h1>
-      <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full" />
+      <h1 class="text-2xl font-bold lg:text-3xl">{{ $t('learn.library') }}</h1>
+      <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full lg:hidden" />
     </div>
 
     <!-- Sync Status Banner -->
@@ -21,20 +21,20 @@
 
     <template v-else>
       <!-- Featured Section -->
-      <div class="flex flex-col gap-3 mb-8">
+      <div class="flex flex-col gap-3 mb-8 md:grid md:grid-cols-2">
         <div
           v-for="featured in featuredCollections"
           :key="featured.id"
-          class="flex items-center rounded-xl border border-neutral-700 bg-neutral-900/50 overflow-hidden cursor-pointer hover:bg-neutral-800/50 transition-colors"
+          class="flex items-center rounded-xl border border-default bg-elevated overflow-hidden cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
           @click="navigateTo(`/learn_and_prepare/collection/${featured.id}`)">
-          <div class="w-24 h-20 flex items-center justify-center bg-neutral-800 shrink-0">
-            <component :is="getFeaturedIcon(featured.category)" class="w-10 h-10 text-neutral-300" />
+          <div class="w-24 h-20 flex items-center justify-center bg-accented shrink-0">
+            <component :is="getFeaturedIcon(featured.category)" class="w-10 h-10 text-default" />
           </div>
           <div class="flex-1 px-4 py-3">
-            <p class="text-xs text-neutral-400 mb-1">{{ $t('learn.featured') }}</p>
+            <p class="text-xs text-muted mb-1">{{ $t('learn.featured') }}</p>
             <p class="font-medium">{{ featured.title }}</p>
           </div>
-          <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-neutral-500 mr-4" />
+          <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-dimmed mr-4" />
         </div>
       </div>
 
@@ -42,26 +42,26 @@
       <div class="mb-8">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold">{{ $t('learn.collections') }}</h2>
-          <NuxtLink to="/learn_and_prepare/collections" class="text-sm text-neutral-400 flex items-center gap-1 hover:text-neutral-200">
+          <NuxtLink to="/learn_and_prepare/collections" class="text-sm text-muted flex items-center gap-1 hover:text-default">
             {{ $t('learn.seeAll') }}
             <Icon name="i-lucide-chevron-right" class="w-4 h-4" />
           </NuxtLink>
         </div>
         
-        <!-- Collection Cards (Horizontal Scroll) -->
-        <div class="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+        <!-- Collection Cards (Horizontal Scroll → Grid on desktop) -->
+        <div class="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide lg:grid lg:grid-cols-3 xl:grid-cols-4 lg:overflow-visible lg:mx-0 lg:px-0">
           <div
             v-for="collection in displayedCollections"
             :key="collection.id"
-            class="flex-shrink-0 w-72 p-5 rounded-xl border border-neutral-700 bg-neutral-900/50 cursor-pointer hover:bg-neutral-800/50 transition-colors"
+            class="shrink-0 w-72 lg:w-auto lg:shrink p-5 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
             @click="navigateTo(`/learn_and_prepare/collection/${collection.id}`)">
             <div class="flex items-start gap-4">
               <div class="w-16 h-24 flex items-center justify-center">
-                <component :is="getCollectionIcon(collection.category)" class="w-12 h-20 text-neutral-300" />
+                <component :is="getCollectionIcon(collection.category)" class="w-12 h-20 text-default" />
               </div>
               <div class="flex-1">
                 <h3 class="font-semibold mb-1">{{ collection.title }}</h3>
-                <p class="text-sm text-neutral-400 mb-3">{{ $t('learn.chapters', { count: collection.slide_groups?.length || 0 }) }}</p>
+                <p class="text-sm text-muted mb-3">{{ $t('learn.chapters', { count: collection.slide_groups?.length || 0 }) }}</p>
                 <UProgress :model-value="getCollectionProgress(collection.id)" size="sm" color="neutral" />
               </div>
             </div>
@@ -79,7 +79,7 @@
             v-for="category in categories"
             :key="category.id"
             class="flex flex-col items-center gap-2 px-4 py-2 rounded-lg shrink-0 transition-colors"
-            :class="selectedCategory === category.id ? 'text-white' : 'text-neutral-400 hover:text-neutral-200'"
+            :class="selectedCategory === category.id ? 'text-highlighted' : 'text-muted hover:text-default'"
             @click="selectedCategory = category.id">
             <component :is="category.icon" class="w-6 h-6" />
             <span class="text-xs whitespace-nowrap">{{ category.label }}</span>
@@ -87,14 +87,14 @@
         </div>
 
         <!-- Category Cards Grid (Slide Groups) -->
-        <div class="grid grid-cols-1 gap-3 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-4">
           <div
             v-for="item in categorySlideGroups"
             :key="item.slideGroup.id"
-            class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 cursor-pointer hover:bg-neutral-800/50 transition-colors"
+            class="p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
             @click="navigateTo(`/learn_and_prepare/collection/${item.collectionId}/${item.slideGroup.id}`)">
             <h3 class="font-medium text-base mb-1">{{ item.slideGroup.title }}</h3>
-            <p class="text-xs text-neutral-400">{{ $t('learn.questions', { count: item.slideGroup.slides?.length || 0 }) }}</p>
+            <p class="text-xs text-muted">{{ $t('learn.questions', { count: item.slideGroup.slides?.length || 0 }) }}</p>
           </div>
         </div>
 
@@ -102,7 +102,7 @@
         <NuxtLink 
           v-if="categorySlideGroups.length > 0"
           :to="`/learn_and_prepare/category/${selectedCategory}`" 
-          class="flex items-center justify-center gap-1 text-sm text-neutral-400 hover:text-neutral-200">
+          class="flex items-center justify-center gap-1 text-sm text-muted hover:text-default">
           {{ $t('learn.seeAllOnCategory', { count: totalCategoryCount, category: selectedCategoryLabel }) }}
           <Icon name="i-lucide-chevron-right" class="w-4 h-4" />
         </NuxtLink>

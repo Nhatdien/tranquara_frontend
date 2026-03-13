@@ -11,7 +11,7 @@
       <input
         type="date"
         v-model="selectedDate"
-        class="w-full px-4 py-3 rounded-xl bg-neutral-900 border border-neutral-700 text-center text-lg focus:outline-none focus:border-neutral-500 transition-colors"
+        class="w-full px-4 py-3 rounded-xl bg-elevated border border-default text-center text-lg focus:outline-none focus:border-accented transition-colors"
       />
     </div>
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <nav class="fixed bottom-0 left-0 w-full h-16 bg-elevated border-t z-50">
+  <nav class="fixed bottom-0 left-0 w-full h-16 bg-elevated border-t z-50 lg:hidden">
     <div class="flex h-full items-center justify-around px-2">
       <NuxtLink
         v-for="item in bottomNavSchema"

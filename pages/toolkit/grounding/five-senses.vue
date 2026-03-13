@@ -1,19 +1,22 @@
 <template>
-  <section class="min-h-screen px-6 pb-20 pt-6">
-    <!-- Back Button -->
-    <div class="mb-6">
+  <section class="min-h-screen px-6 pb-20 lg:pb-0 pt-6">
+    <!-- Desktop Breadcrumbs -->
+    <DesktopBreadcrumb :items="breadcrumbs" />
+
+    <!-- Back Button (mobile) -->
+    <div class="mb-6 lg:hidden">
       <UButton variant="ghost" size="lg" icon="i-lucide-chevron-left" @click="navigateTo('/toolkit')" />
     </div>
 
-    <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.fiveSenses.title') }}</h1>
-    <p class="text-neutral-400 text-sm mb-6">{{ $t('toolkit.grounding.fiveSenses.description') }}</p>
+    <h1 class="text-xl font-semibold mb-2 lg:text-2xl">{{ $t('toolkit.grounding.fiveSenses.title') }}</h1>
+    <p class="text-muted text-sm mb-6">{{ $t('toolkit.grounding.fiveSenses.description') }}</p>
 
     <!-- Step indicator -->
-    <div class="text-xs text-neutral-500 mb-4">
+    <div class="text-xs text-dimmed mb-4">
       {{ $t('common.step', { count: currentStepIndex + 1, total: steps.length }) }}
     </div>
 
-    <div class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 mb-6">
+    <div class="p-4 rounded-xl border border-default bg-elevated mb-6">
       <h2 class="text-sm font-semibold mb-3">{{ stepLabel }}</h2>
 
       <div class="space-y-3">
@@ -22,7 +25,7 @@
           :key="i"
           class="flex items-center gap-3"
         >
-          <span class="text-xs text-neutral-500 w-5">{{ i + 1 }}.</span>
+          <span class="text-xs text-dimmed w-5">{{ i + 1 }}.</span>
           <UInput
             v-model="currentInputs[i]"
             size="sm"
@@ -60,9 +63,16 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
+
 definePageMeta({ layout: 'detail' });
 
 const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.grounding.fiveSenses.title') },
+])
 
 const steps = [
   { key: 'see', count: 5, labelKey: 'toolkit.grounding.fiveSenses.steps.see' },

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-default pb-20">
+  <div class="min-h-screen bg-default pb-20 lg:pb-0">
     <SettingsSubpageHeader :title="$t('profile.notifications')" />
 
     <UContainer>

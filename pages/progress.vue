@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-default pb-20">
+  <div class="min-h-screen bg-default pb-20 lg:pb-0">
     <!-- Header -->
     <UContainer class="sticky top-0 z-10 bg-default border-b">
       <div class="flex items-center justify-between py-4">
@@ -16,7 +16,7 @@
 
     <UContainer class="py-6 space-y-6">
       <!-- Summary Cards Grid -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
         <UCard class="text-center">
           <div>
             <p class="text-3xl font-bold text-highlighted">{{ totalCompletedDays }}</p>

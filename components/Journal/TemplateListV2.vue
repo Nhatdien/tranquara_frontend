@@ -1,5 +1,5 @@
 <template>
-  <section class="min-h-screen pb-20">
+  <section class="min-h-screen pb-20 lg:pb-0">
     <!-- Back Button -->
     <div class="px-4 pt-4">
       <UButton 
@@ -18,7 +18,7 @@
 
     <!-- Collection Not Found -->
     <div v-else-if="!currentCollection" class="text-center py-24 px-4">
-      <p class="text-neutral-400 mb-4">{{ $t('journal.collectionNotFound') }}</p>
+      <p class="text-muted mb-4">{{ $t('journal.collectionNotFound') }}</p>
       <UButton @click="navigateTo(backPath)" variant="outline">
         {{ $t('journal.backToLibrary') }}
       </UButton>
@@ -27,23 +27,23 @@
     <!-- Collection Detail -->
     <template v-else>
       <!-- Header -->
-      <div class="px-6 pt-8 pb-12 text-center">
-        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
+      <div class="px-6 pt-8 pb-12 text-center max-w-4xl mx-auto">
+        <p class="text-xs text-muted tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
         <h1 class="text-2xl font-bold mb-4">{{ currentCollection.title }}</h1>
-        <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
+        <p class="text-muted text-sm leading-relaxed max-w-sm mx-auto">
           {{ currentCollection.description }}
         </p>
       </div>
 
       <!-- Slide Groups Carousel -->
-      <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory">
+      <div class="flex gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-visible lg:snap-none">
         <div
           v-for="(slideGroup, index) in currentCollection.slide_groups"
           :key="slideGroup.id"
-          class="flex-shrink-0 w-[85vw] max-w-md min-h-[320px] p-6 rounded-2xl border border-neutral-700 bg-neutral-900/50 flex flex-col snap-center">
+          class="shrink-0 w-[85vw] max-w-md lg:w-auto lg:max-w-none min-h-[320px] p-6 rounded-2xl border border-default bg-elevated flex flex-col snap-center lg:snap-align-none">
           <!-- Chapter Number -->
           <div class="flex justify-end mb-8">
-            <span class="text-neutral-500 text-sm font-medium">
+            <span class="text-dimmed text-sm font-medium">
               {{ String(index + 1).padStart(2, '0') }}
             </span>
           </div>
@@ -51,7 +51,7 @@
           <!-- Content -->
           <div class="flex-1">
             <h2 class="text-xl font-bold mb-3 uppercase">{{ slideGroup.title }}</h2>
-            <p class="text-neutral-400 text-sm leading-relaxed">
+            <p class="text-muted text-sm leading-relaxed">
               {{ slideGroup.description }}
             </p>
           </div>
@@ -62,7 +62,7 @@
               variant="solid"
               color="neutral"
               size="lg"
-              class="px-8 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+              class="px-8 rounded-full"
               @click="openSlideGroup(slideGroup.id, currentCollection.id)">
               {{ $t('common.begin') }}
             </UButton>

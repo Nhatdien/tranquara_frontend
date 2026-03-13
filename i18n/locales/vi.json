@@ -6,7 +6,9 @@
     "today": "Hôm nay",
     "toolkit": "Bộ công cụ",
     "library": "Thư viện",
-    "history": "Lịch sử"
+    "history": "Lịch sử",
+    "profile": "Hồ sơ",
+    "newJournal": "Nhật ký mới"
   },
   "home": {
     "today": "hôm nay.",
@@ -30,7 +32,8 @@
     "reflection": "SUY NGẪM",
     "noEntries": "Chưa có bài viết nào",
     "startFirst": "Bắt đầu bài viết đầu tiên",
-    "seeAll": "Xem tất cả"
+    "seeAll": "Xem tất cả",
+    "emptyPrompt": "Dành một chút thời gian suy ngẫm — bài viết đầu tiên đang chờ bạn."
   },
   "history": {
     "title": "Lịch sử",
@@ -55,7 +58,9 @@
     "applyFilters": "Áp dụng bộ lọc",
     "activeFilters": "Bộ lọc đang dùng:",
     "clearAll": "Xoá tất cả",
-    "journal": "Nhật ký"
+    "journal": "Nhật ký",
+    "tryDifferentFilters": "Thử điều chỉnh bộ lọc để tìm nội dung bạn cần.",
+    "startJournalingPrompt": "Bắt đầu hành trình viết nhật ký — suy nghĩ của bạn xứng đáng có một không gian riêng."
   },
   "learn": {
     "library": "Thư viện",
@@ -270,7 +275,8 @@
     "loading": "Đang tải...",
     "error": "Đã xảy ra lỗi",
     "retry": "Thử lại",
-    "view": "Xem"
+    "view": "Xem",
+    "details": "Chi tiết"
   },
   "auth": {
     "welcomeBack": "Chào mừng trở lại",
@@ -313,7 +319,7 @@
     "syncedTitle": "Đã đồng bộ",
     "offlineMessage": "Làm việc ngoại tuyến - thay đổi sẽ được đồng bộ khi có kết nối",
     "syncingJournals": "Đang đồng bộ nhật ký...",
-    "pendingSync": "{count} {count, plural, one {mục} other {mục}} chờ đồng bộ",
+    "pendingSync": "{count} mục chờ đồng bộ | {count} mục chờ đồng bộ",
     "syncNow": "Đồng bộ ngay",
     "retry": "Thử lại",
     "dataSync": "Đồng bộ dữ liệu",
@@ -321,7 +327,7 @@
     "online": "Trực tuyến",
     "offline": "Ngoại tuyến",
     "pendingUploads": "Chờ tải lên",
-    "items": "{count} {count, plural, one {mục} other {mục}}",
+    "items": "{count} mục | {count} mục",
     "lastSync": "Đồng bộ gần nhất",
     "partialSync": "Đồng bộ một phần",
     "syncError": "Lỗi đồng bộ",
@@ -335,11 +341,11 @@
     "viewAll": "Xem tất cả",
     "clearHistory": "Xóa lịch sử",
     "resetStats": "Đặt lại thống kê",
-    "syncItems": "Đồng bộ {count} {count, plural, one {mục} other {mục}}",
+    "syncItems": "Đồng bộ {count} mục | Đồng bộ {count} mục",
     "offlineTooltip": "Ngoại tuyến - Thay đổi sẽ được đồng bộ khi có kết nối",
     "syncingTooltip": "Đang đồng bộ...",
     "syncErrorTooltip": "Lỗi đồng bộ: {error}",
-    "pendingSyncTooltip": "{count} {count, plural, one {mục} other {mục}} chờ đồng bộ",
+    "pendingSyncTooltip": "{count} mục chờ đồng bộ | {count} mục chờ đồng bộ",
     "lastSyncedTooltip": "Đồng bộ gần nhất: {time}",
     "uploadedToCloud": "Đã tải lên cloud",
     "downloadedFromCloud": "Đã tải xuống từ cloud",

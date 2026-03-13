@@ -1,24 +1,25 @@
 <template>
-  <div class="flex flex-col w-full min-h-screen pb-20 px-4">
+  <div class="flex flex-col w-full min-h-screen pb-20 lg:pb-0 px-4">
     <!-- Header with Filter Button -->
     <div class="py-6 flex justify-between items-start">
       <div>
-        <h1 class="text-3xl font-bold mb-2">{{ $t('history.title') }}</h1>
-        <p class="text-muted text-sm">{{ $t('history.subtitle') }}</p>
+        <h1 class="text-3xl font-bold mb-2 lg:text-4xl">{{ $t('history.title') }}</h1>
+        <p class="text-muted text-sm lg:text-base">{{ $t('history.subtitle') }}</p>
       </div>
       
-      <!-- Filter Button (Top Right) -->
+      <!-- Filter Button (mobile only — desktop has inline panel) -->
       <UButton
         variant="ghost"
         color="neutral"
         icon="i-lucide-sliders-horizontal"
         size="lg"
+        class="lg:hidden"
         @click="isFilterDrawerOpen = true"
       />
     </div>
 
-    <!-- Active Filters Display -->
-    <div v-if="hasActiveFilters" class="mb-4 flex flex-wrap gap-2 items-center">
+    <!-- Active Filters Display (mobile only — desktop shows inline) -->
+    <div v-if="hasActiveFilters" class="mb-4 flex flex-wrap gap-2 items-center lg:hidden">
       <span class="text-xs text-muted">{{ $t('history.activeFilters') }}</span>
       
       <UBadge v-if="searchQuery" color="primary" variant="soft" class="gap-1">
@@ -50,6 +51,83 @@
       </UButton>
     </div>
 
+    <!-- Desktop: Two-pane layout / Mobile: Single column -->
+    <div class="lg:flex lg:gap-6">
+
+      <!-- Desktop Filter Panel (always visible on lg+) -->
+      <aside class="hidden lg:block w-72 shrink-0">
+        <div class="sticky top-4 space-y-5 p-5 rounded-xl border border-default bg-elevated">
+          <h3 class="text-sm font-semibold text-highlighted flex items-center gap-2">
+            <Icon name="i-lucide-sliders-horizontal" class="w-4 h-4" />
+            {{ $t('history.filters') }}
+          </h3>
+
+          <!-- Search -->
+          <div>
+            <label class="text-xs font-medium text-muted mb-1.5 block">{{ $t('history.search') }}</label>
+            <UInput
+              v-model="searchQuery"
+              :placeholder="$t('history.searchPlaceholder')"
+              icon="i-lucide-search"
+              size="sm"
+              @input="applyFilters"
+            />
+          </div>
+
+          <!-- Date Range -->
+          <div>
+            <label class="text-xs font-medium text-muted mb-1.5 block">{{ $t('history.dateRange') }}</label>
+            <UInput
+              :model-value="formatDateRange()"
+              :placeholder="$t('history.dateRangePlaceholder')"
+              readonly
+              icon="i-lucide-calendar"
+              size="sm"
+              class="cursor-pointer"
+              @click="showDateRangePicker = true"
+            />
+            <UButton
+              v-if="dateRange"
+              variant="link"
+              size="xs"
+              class="mt-1"
+              @click="dateRange = null; applyFilters()"
+            >
+              {{ $t('history.clearDates') }}
+            </UButton>
+          </div>
+
+          <!-- Collection Filter -->
+          <div>
+            <label class="text-xs font-medium text-muted mb-1.5 block">{{ $t('history.filterByType') }}</label>
+            <USelect
+              v-model="selectedCollection"
+              :items="collectionOptions"
+              :placeholder="$t('history.allEntries')"
+              value-key="value"
+              size="sm"
+              class="w-full"
+              @update:model-value="applyFilters"
+            />
+          </div>
+
+          <!-- Reset -->
+          <UButton
+            v-if="hasActiveFilters"
+            variant="ghost"
+            color="neutral"
+            size="xs"
+            block
+            @click="clearAllFilters"
+          >
+            {{ $t('history.clearAll') }}
+          </UButton>
+        </div>
+      </aside>
+
+      <!-- Main Content (entries) -->
+      <div class="flex-1 min-w-0">
+
     <!-- Sync Status Banner -->
     <div class="mb-4">
       <SyncStatusBanner
@@ -67,10 +145,15 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="filteredJournals.length === 0" class="text-center py-12">
-      <Icon name="i-lucide-book-open" class="w-12 h-12 text-muted mx-auto mb-4" />
-      <p class="text-muted mb-4">
+    <div v-else-if="filteredJournals.length === 0" class="text-center py-16 lg:py-24">
+      <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+        <Icon name="i-lucide-book-open" class="w-10 h-10 lg:w-12 lg:h-12 text-dimmed" />
+      </div>
+      <h3 class="text-lg font-semibold text-highlighted mb-2">
         {{ hasActiveFilters ? $t('history.noMatchingEntries') : $t('history.noEntries') }}
+      </h3>
+      <p class="text-muted text-sm mb-6 max-w-sm mx-auto">
+        {{ hasActiveFilters ? $t('history.tryDifferentFilters') : $t('history.startJournalingPrompt') }}
       </p>
       <UButton v-if="hasActiveFilters" @click="clearAllFilters" variant="outline">
         {{ $t('history.clearFilters') }}
@@ -88,11 +171,13 @@
           {{ dateKey }}
         </h2>
         
-        <div class="space-y-3">
+        <div class="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
           <div 
             v-for="entry in entries" 
             :key="entry.id"
-            class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented transition relative"
+            class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            tabindex="0"
+            @keydown.enter="openEntry(entry)"
             @click="openEntry(entry)"
           >
             <!-- Sync Status Badge -->
@@ -135,7 +220,10 @@
       </div>
     </div>
 
-    <!-- Filter Drawer -->
+      </div> <!-- End: Main Content -->
+    </div> <!-- End: Two-pane layout -->
+
+    <!-- Mobile Filter Drawer (hidden on desktop) -->
     <UDrawer 
       v-model:open="isFilterDrawerOpen" 
       direction="bottom"
@@ -178,20 +266,6 @@
             </UButton>
           </div>
 
-          <!-- Date Range Picker Modal -->
-          <UModal v-model:open="showDateRangePicker">
-            <template #content>
-              <div class="p-4">
-                <h3 class="text-lg font-semibold mb-4">{{ $t('history.selectDateRange') }}</h3>
-                <UCalendar v-model="tempDateRange" range class="mx-auto" />
-                <div class="flex justify-end gap-2 mt-4">
-                  <UButton variant="outline" @click="tempDateRange = null">{{ $t('history.clear') }}</UButton>
-                  <UButton @click="showDateRangePicker = false">{{ $t('history.done') }}</UButton>
-                </div>
-              </div>
-            </template>
-          </UModal>
-
           <!-- Template/Collection Filter -->
           <div>
             <label class="text-sm font-medium text-muted mb-2 block">{{ $t('history.filterByType') }}</label>
@@ -225,6 +299,20 @@
         </div>
       </template>
     </UDrawer>
+
+    <!-- Date Range Picker Modal (shared by both mobile drawer and desktop panel) -->
+    <UModal v-model:open="showDateRangePicker">
+      <template #content>
+        <div class="p-4">
+          <h3 class="text-lg font-semibold mb-4">{{ $t('history.selectDateRange') }}</h3>
+          <UCalendar v-model="desktopDateRangeProxy" range class="mx-auto" />
+          <div class="flex justify-end gap-2 mt-4">
+            <UButton variant="outline" @click="clearDateRangeProxy">{{ $t('history.clear') }}</UButton>
+            <UButton @click="confirmDateRangeProxy">{{ $t('history.done') }}</UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -258,6 +346,34 @@ const dateRange = ref<DateRangeValue | null>(null);
 const tempSearchQuery = ref('');
 const tempSelectedCollection = ref<string | null>(null);
 const tempDateRange = ref<any>(null); // Using any for UCalendar compatibility
+
+// Date range proxy — routes to tempDateRange (mobile drawer) or dateRange (desktop panel)
+const desktopDateRangeProxy = computed({
+  get: () => isFilterDrawerOpen.value ? tempDateRange.value : dateRange.value,
+  set: (val) => {
+    if (isFilterDrawerOpen.value) {
+      tempDateRange.value = val;
+    } else {
+      dateRange.value = val as DateRangeValue | null;
+    }
+  },
+});
+
+const clearDateRangeProxy = () => {
+  if (isFilterDrawerOpen.value) {
+    tempDateRange.value = null;
+  } else {
+    dateRange.value = null;
+    applyFilters();
+  }
+};
+
+const confirmDateRangeProxy = () => {
+  showDateRangePicker.value = false;
+  if (!isFilterDrawerOpen.value) {
+    applyFilters();
+  }
+};
 
 // Collection options for dropdown (compact display)
 const collectionOptions = computed(() => {

@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col gap-4">
     <div
-      class="flex flex-col min-h-[125px] rounded-md border border-neutral-600 p-4 text-sm"
+      class="flex flex-col min-h-[125px] rounded-md border border-default p-4 text-sm"
       v-for="collection in collections"
       @click="navigateTo(`/learn_and_prepare/collection/${collection.id}`)">
       <p>{{ collection.title }}</p>
-      <p class="text-neutral-500">{{ collection.description }}</p>
+      <p class="text-dimmed">{{ collection.description }}</p>
       <p class="self-end mt-auto">
         {{ collection.slide_groups.length }} lessons
       </p>

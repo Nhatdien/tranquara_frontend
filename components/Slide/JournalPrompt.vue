@@ -2,7 +2,7 @@
   <div>
     <div class="mb-4">
       <h2 class="text-left">{{ content?.question || content?.question_content }}</h2>
-      <blockquote class="text-neutral-300 text-sm">
+      <blockquote class="text-default text-sm">
         {{ content?.content || content?.question_description }}
       </blockquote>
     </div>

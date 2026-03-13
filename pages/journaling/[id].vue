@@ -27,7 +27,7 @@
       </header>
 
       <!-- Title Input -->
-      <div class="px-4 pt-4">
+      <div class="px-4 pt-4 max-w-2xl mx-auto w-full">
         <input
           v-model="title"
           type="text"
@@ -37,12 +37,12 @@
       </div>
 
       <!-- Date Display -->
-      <div class="px-4 py-2">
+      <div class="px-4 py-2 max-w-2xl mx-auto w-full">
         <span class="text-sm text-muted">{{ formattedDate }}</span>
       </div>
 
       <!-- TipTap Editor -->
-      <div class="flex-1 px-4 pb-4">
+      <div class="flex-1 px-4 pb-4 max-w-2xl mx-auto w-full">
         <CommonMarkdownEditor
           ref="editorRef"
           v-model="content"
@@ -51,7 +51,7 @@
       </div>
 
       <!-- Bottom Toolbar -->
-      <div class="fixed bottom-0 left-0 right-0 bg-background border-t border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between">
+      <div class="fixed bottom-0 left-0 right-0 lg:left-64 bg-background border-t border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <!-- Mood Selector -->
           <UButton 
@@ -84,7 +84,7 @@
       <!-- Mood Picker Modal -->
       <UModal v-model:open="showMoodPicker">
         <template #content>
-          <div class="p-6">
+          <div class="p-6 w-full max-w-md mx-auto">
             <h3 class="text-lg font-semibold mb-4 text-center">{{ $t('journal.howFeeling') }}</h3>
             <EmotionSliderV2 v-model="moodScore" />
             <UButton block class="mt-4" @click="confirmMood">{{ $t('common.confirm') }}</UButton>

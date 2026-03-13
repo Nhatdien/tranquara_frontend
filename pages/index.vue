@@ -1,13 +1,13 @@
 <template>
-  <div class="flex flex-col w-full min-h-screen pb-20">
+  <div class="flex flex-col w-full min-h-screen pb-20 lg:pb-0">
     <!-- Date Header with Streak -->
     <HomePageDateHeader />
 
     <!-- Daily Check-In (Morning / Evening) -->
     <HomePageDailyCheckIn />
     
-    <!-- Daily Prompt -->
-    <HomePageDailyPrompt />
+    <!-- Daily Prompt — placeholder only, excluded from layout for now -->
+    <!-- <HomePageDailyPrompt /> -->
 
     <!-- Therapy Homework (shows only when pending items exist) -->
     <ToolkitHomeworkCard
