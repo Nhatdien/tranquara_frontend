@@ -22,7 +22,7 @@
       </button>
     </div>
 
-    <p v-if="rating > 0" class="text-sm text-neutral-400 mt-4">
+    <p v-if="rating > 0" class="text-sm text-muted mt-4">
       {{ rating }} / 5
     </p>
   </div>

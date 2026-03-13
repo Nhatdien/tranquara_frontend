@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex items-center gap-4 p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 cursor-pointer hover:bg-neutral-800/50 transition-colors"
+    class="flex items-center gap-4 p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted transition-colors"
     @click="$emit('tap')"
   >
     <!-- Step number + icon -->
     <div
       class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-      :class="isComplete ? 'bg-green-500/20 text-green-400' : 'bg-neutral-800 text-neutral-400'"
+      :class="isComplete ? 'bg-green-500/20 text-green-400' : 'bg-accented text-muted'"
     >
       <CheckCircle v-if="isComplete" class="w-6 h-6" />
       <component v-else :is="stepIcon" class="w-6 h-6" />
@@ -15,10 +15,10 @@
     <!-- Content -->
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2">
-        <span class="text-xs text-neutral-500 font-medium">{{ step.step }}</span>
+        <span class="text-xs text-dimmed font-medium">{{ step.step }}</span>
         <h3 class="font-medium truncate">{{ $t(step.labelKey) }}</h3>
       </div>
-      <p class="text-xs text-neutral-400 mt-0.5">
+      <p class="text-xs text-muted mt-0.5">
         {{ $t('toolkit.journey.chaptersProgress', { completed: completedCount, total: totalCount }) }}
       </p>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Arrow -->
-    <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-neutral-500 shrink-0" />
+    <Icon name="i-lucide-chevron-right" class="w-5 h-5 text-dimmed shrink-0" />
   </div>
 </template>
 

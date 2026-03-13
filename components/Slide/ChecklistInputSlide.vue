@@ -18,8 +18,8 @@
       <button
         @click="addItem"
         :disabled="!newItemText.trim()"
-        class="w-10 h-10 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-lg transition-colors"
-        :class="newItemText.trim() ? 'hover:bg-neutral-700 text-white' : 'text-neutral-600 cursor-not-allowed'"
+        class="w-10 h-10 rounded-full bg-accented border border-default flex items-center justify-center text-lg transition-colors"
+        :class="newItemText.trim() ? 'hover:bg-muted text-highlighted' : 'text-toned cursor-not-allowed'"
       >
         +
       </button>
@@ -30,15 +30,15 @@
       <div
         v-for="(item, i) in items"
         :key="i"
-        class="flex items-center justify-between px-4 py-3 rounded-xl border border-neutral-700 bg-neutral-900/50"
+        class="flex items-center justify-between px-4 py-3 rounded-xl border border-default bg-elevated"
       >
         <div class="flex items-center gap-3 flex-1 min-w-0">
-          <div class="w-5 h-5 rounded border-2 border-neutral-600 shrink-0" />
+          <div class="w-5 h-5 rounded border-2 border-accented shrink-0" />
           <span class="text-sm truncate">{{ item }}</span>
         </div>
         <button
           @click="removeItem(i)"
-          class="text-neutral-500 hover:text-neutral-300 ml-2 shrink-0 text-lg"
+          class="text-dimmed hover:text-default ml-2 shrink-0 text-lg"
         >
           ×
         </button>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Counter -->
-    <p v-if="items.length > 0" class="text-xs text-neutral-500 mt-3 text-center">
+    <p v-if="items.length > 0" class="text-xs text-dimmed mt-3 text-center">
       {{ items.length }} {{ items.length === 1 ? 'item' : 'items' }}
     </p>
   </div>

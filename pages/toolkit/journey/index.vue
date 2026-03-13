@@ -2,17 +2,17 @@
   <section class="px-4 py-6 pb-20 lg:pb-0">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
-      <button @click="navigateTo('/toolkit')" class="text-neutral-400 hover:text-white transition-colors">
+      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors">
         <ChevronLeft class="w-5 h-5" />
       </button>
       <div>
         <h1 class="text-xl font-bold">{{ $t('toolkit.journey.title') }}</h1>
-        <p class="text-neutral-400 text-xs mt-0.5">{{ $t('toolkit.journey.description') }}</p>
+        <p class="text-muted text-xs mt-0.5">{{ $t('toolkit.journey.description') }}</p>
       </div>
     </div>
 
     <!-- Overall progress -->
-    <div v-if="overallProgress > 0" class="mb-4 text-xs text-neutral-500">
+    <div v-if="overallProgress > 0" class="mb-4 text-xs text-dimmed">
       {{ $t('toolkit.journey.overallProgress', { percent: overallProgress }) }}
     </div>
 

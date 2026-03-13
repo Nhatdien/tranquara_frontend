@@ -1,19 +1,19 @@
 <template>
   <div class="px-4 mb-6 md:px-0 md:mb-0">
     <!-- Check-In Hero Card -->
-    <div class="relative rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden">
+    <div class="relative rounded-2xl bg-inverted border border-inverted overflow-hidden">
       <div class="flex flex-col items-center justify-center px-6 py-12 min-h-[360px]">
         <!-- Illustration -->
 
         <!-- Greeting -->
-        <h2 class="text-2xl font-bold text-white mb-8">{{ $t(greeting) }}</h2>
+        <h2 class="text-2xl font-bold text-inverted mb-8">{{ $t(greeting) }}</h2>
 
         <!-- Begin Button -->
         <UButton
           size="xl"
           color="neutral"
           variant="solid"
-          class="px-8 rounded-full bg-neutral-100 text-neutral-900 hover:bg-white font-semibold"
+          class="px-8 rounded-full font-semibold"
           @click="beginCheckIn">
           {{ $t('home.beginCheckIn') }}
         </UButton>

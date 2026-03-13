@@ -7,25 +7,25 @@
 
     <!-- Title -->
     <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.breathing.title') }}</h1>
-    <p class="text-neutral-400 text-sm mb-12">{{ $t('toolkit.grounding.breathing.description') }}</p>
+    <p class="text-muted text-sm mb-12">{{ $t('toolkit.grounding.breathing.description') }}</p>
 
     <!-- Breathing Circle -->
     <div class="relative w-48 h-48 mb-8">
       <!-- Outer ring -->
       <div
         class="absolute inset-0 rounded-full border-2 transition-all ease-linear"
-        :class="isRunning ? phaseColorClass : 'border-neutral-700'"
+        :class="isRunning ? phaseColorClass : 'border-default'"
         :style="circleStyle"
       />
       <!-- Phase label -->
       <div class="absolute inset-0 flex items-center justify-center">
         <span v-if="isRunning" class="text-lg font-medium">{{ phaseLabel }}</span>
-        <span v-else class="text-neutral-500 text-sm">{{ $t('toolkit.grounding.breathing.start') }}</span>
+        <span v-else class="text-dimmed text-sm">{{ $t('toolkit.grounding.breathing.start') }}</span>
       </div>
     </div>
 
     <!-- Timer -->
-    <p v-if="isRunning" class="text-neutral-400 text-sm mb-8">
+    <p v-if="isRunning" class="text-muted text-sm mb-8">
       {{ $t('toolkit.grounding.breathing.elapsed', { time: formattedElapsed }) }}
     </p>
 
@@ -43,7 +43,7 @@
       variant="solid"
       color="neutral"
       size="xl"
-      class="px-12 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+      class="px-12 rounded-full"
       @click="startBreathing"
     >
       {{ $t('toolkit.grounding.breathing.start') }}
@@ -106,7 +106,7 @@ const phaseColorClass = computed(() => {
     case 'holdIn': return 'border-yellow-400';
     case 'exhale': return 'border-green-400';
     case 'holdOut': return 'border-purple-400';
-    default: return 'border-neutral-400';
+    default: return 'border-muted';
   }
 });
 

@@ -6,14 +6,14 @@
     </div>
 
     <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.fiveSenses.title') }}</h1>
-    <p class="text-neutral-400 text-sm mb-6">{{ $t('toolkit.grounding.fiveSenses.description') }}</p>
+    <p class="text-muted text-sm mb-6">{{ $t('toolkit.grounding.fiveSenses.description') }}</p>
 
     <!-- Step indicator -->
-    <div class="text-xs text-neutral-500 mb-4">
+    <div class="text-xs text-dimmed mb-4">
       {{ $t('common.step', { count: currentStepIndex + 1, total: steps.length }) }}
     </div>
 
-    <div class="p-4 rounded-xl border border-neutral-700 bg-neutral-900/50 mb-6">
+    <div class="p-4 rounded-xl border border-default bg-elevated mb-6">
       <h2 class="text-sm font-semibold mb-3">{{ stepLabel }}</h2>
 
       <div class="space-y-3">
@@ -22,7 +22,7 @@
           :key="i"
           class="flex items-center gap-3"
         >
-          <span class="text-xs text-neutral-500 w-5">{{ i + 1 }}.</span>
+          <span class="text-xs text-dimmed w-5">{{ i + 1 }}.</span>
           <UInput
             v-model="currentInputs[i]"
             size="sm"

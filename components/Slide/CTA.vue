@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center">
     <div class="text-center">
       <h2>{{ content?.title || content?.headline }}</h2>
-      <p class="text-sm text-neutral-400">{{ content?.content || content?.subtext }}</p>
+      <p class="text-sm text-muted">{{ content?.content || content?.subtext }}</p>
       <JournalTemplateCardV2
         :slide_group="findSlideGroup(content?.config?.collection_id || content?.collection_id, content?.config?.slide_group_id || content?.slide_group_id)"
         @click="

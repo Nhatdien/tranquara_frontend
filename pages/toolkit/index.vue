@@ -3,26 +3,26 @@
     <!-- Header -->
     <div class="mb-8">
       <h1 class="text-2xl font-bold">{{ $t('toolkit.title') }}</h1>
-      <p class="text-neutral-400 text-sm mt-1">{{ $t('toolkit.subtitle') }}</p>
+      <p class="text-muted text-sm mt-1">{{ $t('toolkit.subtitle') }}</p>
     </div>
 
     <!-- Prep Pack + Session Tracker: side-by-side on desktop -->
     <div class="lg:grid lg:grid-cols-2 lg:gap-6">
     <!-- Section 1: Prep Pack (AI Summary) -->
     <div class="mb-8 lg:mb-0">
-      <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
+      <h2 class="text-sm text-muted tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.prepPack.title') }}
       </h2>
-      <div class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50">
-        <p class="text-neutral-400 text-sm mb-3">{{ $t('toolkit.prepPack.description') }}</p>
+      <div class="p-5 rounded-xl border border-default bg-elevated">
+        <p class="text-muted text-sm mb-3">{{ $t('toolkit.prepPack.description') }}</p>
 
         <!-- Last generated info -->
         <div v-if="toolkitStore.latestPrepPack" class="flex items-center justify-between mb-3">
-          <span class="text-xs text-neutral-500">
+          <span class="text-xs text-dimmed">
             {{ $t('toolkit.prepPack.lastGenerated') }}: {{ formatDate(toolkitStore.latestPrepPack.created_at) }}
           </span>
           <button
-            class="text-xs text-neutral-400 hover:text-white transition-colors underline"
+            class="text-xs text-muted hover:text-highlighted transition-colors underline"
             @click="navigateTo(`/toolkit/prep-pack/${toolkitStore.latestPrepPack.id}`)"
           >
             {{ $t('common.view') }}
@@ -39,7 +39,7 @@
         >
           {{ toolkitStore.latestPrepPack ? $t('toolkit.prepPack.viewAll') : $t('toolkit.prepPack.generate') }}
         </UButton>
-        <p v-if="!hasJournals" class="text-xs text-neutral-500 mt-2 text-center">
+        <p v-if="!hasJournals" class="text-xs text-dimmed mt-2 text-center">
           {{ $t('toolkit.prepPack.noJournals') }}
         </p>
       </div>
@@ -47,24 +47,24 @@
 
     <!-- Section 2: Session Tracker -->
     <div class="mb-8 lg:mb-0">
-      <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
+      <h2 class="text-sm text-muted tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.session.title') }}
       </h2>
 
       <!-- Upcoming session card -->
-      <div v-if="toolkitStore.upcomingSession" class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50 mb-3">
+      <div v-if="toolkitStore.upcomingSession" class="p-5 rounded-xl border border-default bg-elevated mb-3">
         <div class="flex items-center justify-between mb-1">
           <span class="text-sm font-medium">{{ formatDate(toolkitStore.upcomingSession.session_date) }}</span>
           <div class="flex items-center gap-2">
             <span class="text-xs px-2 py-0.5 rounded-full"
               :class="toolkitStore.upcomingSession.status === 'before_completed'
                 ? 'bg-green-900/30 text-green-400'
-                : 'bg-neutral-700 text-neutral-300'">
+                : 'bg-accented text-default'">>
               {{ $t(`toolkit.session.status.${toolkitStore.upcomingSession.status === 'before_completed' ? 'beforeCompleted' : 'scheduled'}`) }}
             </span>
             <!-- Delete button -->
             <button
-              class="text-neutral-600 hover:text-red-400 transition-colors"
+            class="text-toned hover:text-red-400 transition-colors"
               @click="confirmDeleteSession(toolkitStore.upcomingSession.id)"
             >
               <Trash2 class="w-4 h-4" />
@@ -99,9 +99,9 @@
       </div>
 
       <!-- No session — inline schedule panel -->
-      <div v-else class="rounded-xl border border-neutral-700 bg-neutral-900/50 overflow-hidden">
+      <div v-else class="rounded-xl border border-default bg-elevated overflow-hidden">
         <div class="p-5 text-center">
-          <p class="text-neutral-400 text-sm mb-3">{{ $t('toolkit.session.noSession') }}</p>
+          <p class="text-muted text-sm mb-3">{{ $t('toolkit.session.noSession') }}</p>
           <UButton
             variant="soft"
             color="neutral"
@@ -113,12 +113,12 @@
 
         <!-- Date picker panel (expands inline) -->
         <Transition name="slide-down">
-          <div v-if="showSchedulePanel" class="border-t border-neutral-700 px-5 pb-5 pt-4">
-            <p class="text-sm text-neutral-400 mb-3">{{ $t('toolkit.session.scheduleTitle') }}</p>
+          <div v-if="showSchedulePanel" class="border-t border-default px-5 pb-5 pt-4">
+            <p class="text-sm text-muted mb-3">{{ $t('toolkit.session.scheduleTitle') }}</p>
             <input
               type="date"
               v-model="scheduleDate"
-              class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-center text-sm focus:outline-none focus:border-neutral-500 transition-colors mb-3"
+              class="w-full px-4 py-3 rounded-xl bg-accented border border-default text-center text-sm focus:outline-none focus:border-accented transition-colors mb-3"
             />
             <div class="flex gap-2">
               <UButton
@@ -147,14 +147,14 @@
 
       <!-- Past sessions -->
       <div v-if="toolkitStore.completedSessions.length > 0" class="mt-4">
-        <h3 class="text-xs text-neutral-500 uppercase tracking-wider mb-2">
+        <h3 class="text-xs text-dimmed uppercase tracking-wider mb-2">
           {{ $t('toolkit.session.pastSessions') }}
         </h3>
         <div class="space-y-2">
           <div
             v-for="session in toolkitStore.completedSessions.slice(0, 5)"
             :key="session.id"
-            class="flex items-center justify-between px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30 cursor-pointer active:bg-neutral-800/50 transition-colors"
+            class="flex items-center justify-between px-4 py-3 rounded-xl border border-muted bg-muted cursor-pointer active:bg-accented transition-colors"
             @click="navigateTo(`/toolkit/session/${session.id}`)"
           >
             <div>
@@ -164,13 +164,13 @@
                   v-for="star in 5"
                   :key="star"
                   class="text-xs"
-                  :class="star <= session.session_rating ? 'text-yellow-400' : 'text-neutral-700'"
+                  :class="star <= session.session_rating ? 'text-yellow-400' : 'text-accented'"
                 >★</span>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-neutral-500">{{ $t('toolkit.session.status.completed') }}</span>
-              <Icon name="i-lucide-chevron-right" class="w-4 h-4 text-neutral-600" />
+              <span class="text-xs text-dimmed">{{ $t('toolkit.session.status.completed') }}</span>
+              <Icon name="i-lucide-chevron-right" class="w-4 h-4 text-toned" />
             </div>
           </div>
         </div>
@@ -181,10 +181,10 @@
     <!-- Section 3: Homework -->
     <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
+        <h2 class="text-sm text-muted tracking-[0.2em] uppercase">
           {{ $t('toolkit.homework.title') }}
         </h2>
-        <span v-if="toolkitStore.homeworkItems.length > 0" class="text-xs text-neutral-500">
+        <span v-if="toolkitStore.homeworkItems.length > 0" class="text-xs text-dimmed">
           {{ completedHomeworkCount }}/{{ toolkitStore.homeworkItems.length }}
         </span>
       </div>
@@ -201,8 +201,8 @@
         <button
           @click="handleAddHomework"
           :disabled="!newHomeworkText.trim()"
-          class="w-9 h-9 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-base transition-colors shrink-0"
-          :class="newHomeworkText.trim() ? 'hover:bg-neutral-700 text-white' : 'text-neutral-600 cursor-not-allowed'"
+          class="w-9 h-9 rounded-full bg-accented border border-default flex items-center justify-center text-base transition-colors shrink-0"
+          :class="newHomeworkText.trim() ? 'hover:bg-muted text-highlighted' : 'text-toned cursor-not-allowed'"
         >
           +
         </button>
@@ -213,15 +213,15 @@
         <div
           v-for="item in pendingHomework"
           :key="item.id"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-muted bg-muted"
         >
           <button
-            class="w-5 h-5 rounded border-2 border-neutral-600 shrink-0 transition-colors hover:border-neutral-400"
+            class="w-5 h-5 rounded border-2 border-accented shrink-0 transition-colors hover:border-muted"
             @click="toolkitStore.toggleHomework(item.id)"
           />
           <span class="text-sm flex-1">{{ item.content }}</span>
           <button
-            class="text-neutral-600 hover:text-red-400 transition-colors shrink-0"
+            class="text-toned hover:text-red-400 transition-colors shrink-0"
             @click="toolkitStore.deleteHomework(item.id)"
           >
             <X class="w-3.5 h-3.5" />
@@ -233,7 +233,7 @@
       <div v-if="completedHomework.length > 0" class="mt-2">
         <button
           v-if="pendingHomework.length > 0"
-          class="text-xs text-neutral-500 hover:text-neutral-400 mb-2 transition-colors"
+          class="text-xs text-dimmed hover:text-muted mb-2 transition-colors"
           @click="showCompletedHomework = !showCompletedHomework"
         >
           {{ showCompletedHomework ? '▾' : '▸' }} {{ $t('toolkit.homework.completed') }} ({{ completedHomework.length }})
@@ -242,7 +242,7 @@
           <div
             v-for="item in completedHomework"
             :key="item.id"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800/50 bg-neutral-900/20"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl border border-muted/50 bg-muted"
           >
             <button
               class="w-5 h-5 rounded border-2 border-green-500 bg-green-500/20 flex items-center justify-center shrink-0 transition-colors"
@@ -250,9 +250,9 @@
             >
               <Icon name="i-lucide-check" class="w-3 h-3 text-green-400" />
             </button>
-            <span class="text-sm flex-1 line-through text-neutral-500">{{ item.content }}</span>
+            <span class="text-sm flex-1 line-through text-dimmed">{{ item.content }}</span>
             <button
-              class="text-neutral-700 hover:text-red-400 transition-colors shrink-0"
+              class="text-toned hover:text-red-400 transition-colors shrink-0"
               @click="toolkitStore.deleteHomework(item.id)"
             >
               <X class="w-3.5 h-3.5" />
@@ -263,17 +263,17 @@
 
       <!-- Empty state -->
       <div v-if="toolkitStore.homeworkItems.length === 0" class="py-4 text-center">
-        <p class="text-sm text-neutral-500">{{ $t('toolkit.homework.empty') }}</p>
+        <p class="text-sm text-dimmed">{{ $t('toolkit.homework.empty') }}</p>
       </div>
     </div>
 
     <!-- Section 4: Preparation Journey -->
     <div class="mb-8">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase">
+        <h2 class="text-sm text-muted tracking-[0.2em] uppercase">
           {{ $t('toolkit.journey.title') }}
         </h2>
-        <span v-if="overallProgress > 0" class="text-xs text-neutral-500">
+        <span v-if="overallProgress > 0" class="text-xs text-dimmed">
           {{ $t('toolkit.journey.overallProgress', { percent: overallProgress }) }}
         </span>
       </div>
@@ -293,22 +293,22 @@
 
     <!-- Section 5: Grounding Exercises -->
     <div class="mb-8">
-      <h2 class="text-sm text-neutral-400 tracking-[0.2em] uppercase mb-4">
+      <h2 class="text-sm text-muted tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.grounding.title') }}
       </h2>
       <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <button
           v-for="tool in groundingTools"
           :key="tool.key"
-          class="flex items-center gap-3 p-3 rounded-xl border border-neutral-700 bg-neutral-900/50 text-left hover:bg-neutral-800/50 transition-colors"
+          class="flex items-center gap-3 p-3 rounded-xl border border-default bg-elevated text-left hover:bg-muted transition-colors"
           @click="navigateTo(tool.path)"
         >
-          <div class="w-10 h-10 rounded-lg bg-neutral-800 flex items-center justify-center shrink-0">
-            <component :is="tool.icon" class="w-5 h-5 text-neutral-300" />
+          <div class="w-10 h-10 rounded-lg bg-accented flex items-center justify-center shrink-0">
+            <component :is="tool.icon" class="w-5 h-5 text-default" />
           </div>
           <div class="min-w-0">
             <p class="font-medium text-sm">{{ $t(tool.titleKey) }}</p>
-            <p class="text-xs text-neutral-400">{{ $t(tool.descriptionKey) }}</p>
+            <p class="text-xs text-muted">{{ $t(tool.descriptionKey) }}</p>
           </div>
         </button>
       </div>

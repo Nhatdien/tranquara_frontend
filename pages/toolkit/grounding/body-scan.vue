@@ -6,14 +6,14 @@
     </div>
 
     <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.bodyScan.title') }}</h1>
-    <p class="text-neutral-400 text-sm mb-6">{{ $t('toolkit.grounding.bodyScan.description') }}</p>
+    <p class="text-muted text-sm mb-6">{{ $t('toolkit.grounding.bodyScan.description') }}</p>
 
-    <div class="p-5 rounded-xl border border-neutral-700 bg-neutral-900/50 mb-6 text-center">
-      <p class="text-xs text-neutral-500 mb-2">
+    <div class="p-5 rounded-xl border border-default bg-elevated mb-6 text-center">
+      <p class="text-xs text-dimmed mb-2">
         {{ $t('toolkit.grounding.bodyScan.focusOn') }}
       </p>
       <p class="text-2xl font-semibold">{{ currentPart }}</p>
-      <p class="text-neutral-400 text-sm mt-3">{{ $t('toolkit.grounding.bodyScan.prompt') }}</p>
+      <p class="text-muted text-sm mt-3">{{ $t('toolkit.grounding.bodyScan.prompt') }}</p>
     </div>
 
     <div class="flex gap-2">

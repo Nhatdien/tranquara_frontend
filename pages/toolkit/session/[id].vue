@@ -2,7 +2,7 @@
   <section class="px-4 py-6 pb-24 lg:pb-6 max-w-2xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
-      <button @click="navigateTo('/toolkit')" class="text-neutral-400 hover:text-white transition-colors">
+      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors">
         <ChevronLeft class="w-5 h-5" />
       </button>
       <h1 class="text-lg font-semibold">{{ $t('toolkit.session.detail.title') }}</h1>
@@ -12,9 +12,9 @@
       <!-- Date & Rating row -->
       <div class="flex items-center justify-between mb-6">
         <div>
-          <p class="text-sm text-neutral-400">{{ formatDate(session.session_date) }}</p>
+          <p class="text-sm text-muted">{{ formatDate(session.session_date) }}</p>
           <span class="text-xs px-2 py-0.5 rounded-full mt-1 inline-block"
-            :class="session.status === 'completed' ? 'bg-green-900/30 text-green-400' : 'bg-neutral-700 text-neutral-300'">
+            :class="session.status === 'completed' ? 'bg-green-900/30 text-green-400' : 'bg-accented text-default'">
             {{ $t(`toolkit.session.status.${session.status}`) }}
           </span>
         </div>
@@ -23,80 +23,80 @@
             v-for="star in 5"
             :key="star"
             class="text-lg"
-            :class="star <= session.session_rating ? 'text-yellow-400' : 'text-neutral-700'"
+            :class="star <= session.session_rating ? 'text-yellow-400' : 'text-accented'"
           >★</span>
         </div>
       </div>
 
       <!-- Mood comparison -->
-      <div v-if="session.mood_before || session.mood_after" class="mb-6 p-4 rounded-xl border border-neutral-700 bg-neutral-900/50">
-        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-3">{{ $t('toolkit.session.detail.moodComparison') }}</p>
+      <div v-if="session.mood_before || session.mood_after" class="mb-6 p-4 rounded-xl border border-default bg-elevated">
+        <p class="text-xs text-muted uppercase tracking-wider mb-3">{{ $t('toolkit.session.detail.moodComparison') }}</p>
         <div class="flex items-center gap-4">
           <div v-if="session.mood_before" class="flex-1 text-center">
-            <p class="text-2xl font-bold">{{ session.mood_before }}<span class="text-sm text-neutral-500">/10</span></p>
-            <p class="text-xs text-neutral-400 mt-1">{{ $t('toolkit.session.detail.moodBefore') }}</p>
+            <p class="text-2xl font-bold">{{ session.mood_before }}<span class="text-sm text-dimmed">/10</span></p>
+            <p class="text-xs text-muted mt-1">{{ $t('toolkit.session.detail.moodBefore') }}</p>
           </div>
           <div v-if="session.mood_before && session.mood_after" class="flex flex-col items-center">
-            <ArrowRight class="w-4 h-4 text-neutral-600" />
+            <ArrowRight class="w-4 h-4 text-toned" />
             <span class="text-xs mt-1"
-              :class="moodDelta > 0 ? 'text-green-400' : moodDelta < 0 ? 'text-red-400' : 'text-neutral-500'">
+              :class="moodDelta > 0 ? 'text-green-400' : moodDelta < 0 ? 'text-red-400' : 'text-dimmed'">
               {{ moodDelta > 0 ? `+${moodDelta}` : moodDelta }}
             </span>
           </div>
           <div v-if="session.mood_after" class="flex-1 text-center">
-            <p class="text-2xl font-bold">{{ session.mood_after }}<span class="text-sm text-neutral-500">/10</span></p>
-            <p class="text-xs text-neutral-400 mt-1">{{ $t('toolkit.session.detail.moodAfter') }}</p>
+            <p class="text-2xl font-bold">{{ session.mood_after }}<span class="text-sm text-dimmed">/10</span></p>
+            <p class="text-xs text-muted mt-1">{{ $t('toolkit.session.detail.moodAfter') }}</p>
           </div>
         </div>
       </div>
 
       <!-- Talking points -->
       <div v-if="session.talking_points" class="mb-5">
-        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.talkingPoints') }}</p>
-        <div class="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30">
+        <p class="text-xs text-muted uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.talkingPoints') }}</p>
+        <div class="p-4 rounded-xl border border-muted bg-muted">
           <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ stripHtml(session.talking_points) }}</p>
         </div>
       </div>
 
       <!-- Session priority -->
       <div v-if="session.session_priority" class="mb-5">
-        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.priority') }}</p>
-        <div class="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30">
+        <p class="text-xs text-muted uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.priority') }}</p>
+        <div class="p-4 rounded-xl border border-muted bg-muted">
           <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ stripHtml(session.session_priority) }}</p>
         </div>
       </div>
 
       <!-- Key takeaways -->
       <div v-if="session.key_takeaways" class="mb-5">
-        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.takeaways') }}</p>
-        <div class="p-4 rounded-xl border border-neutral-800 bg-neutral-900/30">
+        <p class="text-xs text-muted uppercase tracking-wider mb-2">{{ $t('toolkit.session.detail.takeaways') }}</p>
+        <div class="p-4 rounded-xl border border-muted bg-muted">
           <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ stripHtml(session.key_takeaways) }}</p>
         </div>
       </div>
 
       <!-- Homework items -->
       <div v-if="sessionHomework.length > 0" class="mb-5">
-        <p class="text-xs text-neutral-400 uppercase tracking-wider mb-2">
+        <p class="text-xs text-muted uppercase tracking-wider mb-2">
           {{ $t('toolkit.homework.title') }}
-          <span class="text-neutral-600 ml-1">({{ completedHomeworkCount }}/{{ sessionHomework.length }})</span>
+          <span class="text-toned ml-1">({{ completedHomeworkCount }}/{{ sessionHomework.length }})</span>
         </p>
         <div class="space-y-2">
           <div
             v-for="item in sessionHomework"
             :key="item.id"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-neutral-900/30 cursor-pointer transition-colors"
-            :class="item.completed ? 'border-green-900/40' : 'border-neutral-800'"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl border bg-muted cursor-pointer transition-colors"
+            :class="item.completed ? 'border-green-900/40' : 'border-muted'"
             @click="toolkitStore.toggleHomework(item.id)"
           >
             <div
               class="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors"
-              :class="item.completed ? 'border-green-500 bg-green-500/20' : 'border-neutral-600'"
+              :class="item.completed ? 'border-green-500 bg-green-500/20' : 'border-accented'"
             >
               <Icon v-if="item.completed" name="i-lucide-check" class="w-3 h-3 text-green-400" />
             </div>
             <span
               class="text-sm flex-1"
-              :class="item.completed ? 'line-through text-neutral-500' : ''"
+              :class="item.completed ? 'line-through text-dimmed' : ''"
             >
               {{ item.content }}
             </span>
@@ -105,7 +105,7 @@
       </div>
 
       <!-- Delete session -->
-      <div class="mt-8 border-t border-neutral-800 pt-5">
+      <div class="mt-8 border-t border-muted pt-5">
         <button
           class="flex items-center gap-2 text-red-400 hover:text-red-300 text-sm transition-colors"
           @click="handleDelete"
@@ -117,7 +117,7 @@
     </div>
 
     <!-- Not found -->
-    <div v-else class="text-center py-16 text-neutral-500">
+    <div v-else class="text-center py-16 text-dimmed">
       <p>{{ $t('toolkit.session.detail.notFound') }}</p>
     </div>
   </section>

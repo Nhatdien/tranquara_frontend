@@ -18,7 +18,7 @@
 
     <!-- Category Not Found -->
     <div v-else-if="categoryTemplates.length === 0" class="text-center py-24 px-4">
-      <p class="text-neutral-400 mb-4">{{ $t('learnSub.noTemplatesFound') }}</p>
+      <p class="text-muted mb-4">{{ $t('learnSub.noTemplatesFound') }}</p>
       <UButton @click="navigateTo('/learn_and_prepare')" variant="outline">
         {{ $t('journal.backToLibrary') }}
       </UButton>
@@ -28,9 +28,9 @@
     <template v-else>
       <!-- Header -->
       <div class="px-6 pt-8 pb-12 text-center">
-        <p class="text-xs text-neutral-400 tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
+        <p class="text-xs text-muted tracking-[0.3em] uppercase mb-2">{{ $t('common.collection') }}</p>
         <h1 class="text-2xl font-bold mb-4">{{ categoryLabel }}</h1>
-        <p class="text-neutral-400 text-sm leading-relaxed max-w-sm mx-auto">
+        <p class="text-muted text-sm leading-relaxed max-w-sm mx-auto">
           {{ categoryDescription }}
         </p>
       </div>
@@ -44,10 +44,10 @@
           <div
             v-for="(slideGroup, index) in template.slide_groups"
             :key="slideGroup.id"
-            class="w-[85vw] max-w-md min-h-[320px] p-6 rounded-2xl border border-neutral-700 bg-neutral-900/50 flex flex-col mb-4">
+            class="w-[85vw] max-w-md min-h-[320px] p-6 rounded-2xl border border-default bg-elevated flex flex-col mb-4">
             <!-- Chapter Number -->
             <div class="flex justify-end mb-8">
-              <span class="text-neutral-500 text-sm font-medium">
+              <span class="text-dimmed text-sm font-medium">
                 {{ String(index + 1).padStart(2, '0') }}
               </span>
             </div>
@@ -55,7 +55,7 @@
             <!-- Content -->
             <div class="flex-1">
               <h2 class="text-xl font-bold mb-3 uppercase">{{ slideGroup.title }}</h2>
-              <p class="text-neutral-400 text-sm leading-relaxed">
+              <p class="text-muted text-sm leading-relaxed">
                 {{ slideGroup.description }}
               </p>
             </div>
@@ -66,7 +66,7 @@
                 variant="solid"
                 color="neutral"
                 size="lg"
-                class="px-8 rounded-full bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
+                class="px-8 rounded-full"
                 @click="openSlideGroup(slideGroup.id, template.id)">
                 {{ $t('common.begin') }}
               </UButton>

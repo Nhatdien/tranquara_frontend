@@ -6,7 +6,7 @@
     </div>
 
     <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.affirmations.title') }}</h1>
-    <p class="text-neutral-400 text-sm mb-6">{{ $t('toolkit.grounding.affirmations.description') }}</p>
+    <p class="text-muted text-sm mb-6">{{ $t('toolkit.grounding.affirmations.description') }}</p>
 
     <!-- Add new affirmation -->
     <div class="flex gap-2 mb-6">
@@ -30,14 +30,14 @@
 
     <!-- Favorites -->
     <div v-if="favoriteAffirmations.length > 0" class="mb-6">
-      <h2 class="text-xs text-neutral-500 uppercase tracking-wider mb-2">
+      <h2 class="text-xs text-dimmed uppercase tracking-wider mb-2">
         {{ $t('toolkit.grounding.affirmations.favorites') }}
       </h2>
       <div class="space-y-2">
         <div
           v-for="item in favoriteAffirmations"
           :key="item.id"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-muted bg-muted"
         >
           <button
             class="text-yellow-400"
@@ -47,7 +47,7 @@
           </button>
           <span class="text-sm flex-1">{{ item.content }}</span>
           <button
-            class="text-neutral-600 hover:text-red-400 transition-colors"
+            class="text-toned hover:text-red-400 transition-colors"
             @click="toolkitStore.deleteAffirmation(item.id)"
           >
             <X class="w-4 h-4" />
@@ -58,24 +58,24 @@
 
     <!-- My affirmations -->
     <div v-if="userAffirmations.length > 0" class="mb-6">
-      <h2 class="text-xs text-neutral-500 uppercase tracking-wider mb-2">
+      <h2 class="text-xs text-dimmed uppercase tracking-wider mb-2">
         {{ $t('toolkit.grounding.affirmations.myAffirmations') }}
       </h2>
       <div class="space-y-2">
         <div
           v-for="item in userAffirmations"
           :key="item.id"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl border border-muted bg-muted"
         >
           <button
-            class="text-neutral-600 hover:text-yellow-400 transition-colors"
+            class="text-toned hover:text-yellow-400 transition-colors"
             @click="toolkitStore.toggleAffirmationFavorite(item.id)"
           >
             <Star class="w-4 h-4" />
           </button>
           <span class="text-sm flex-1">{{ item.content }}</span>
           <button
-            class="text-neutral-600 hover:text-red-400 transition-colors"
+            class="text-toned hover:text-red-400 transition-colors"
             @click="toolkitStore.deleteAffirmation(item.id)"
           >
             <X class="w-4 h-4" />
@@ -86,14 +86,14 @@
 
     <!-- Default affirmations -->
     <div class="mb-6">
-      <h2 class="text-xs text-neutral-500 uppercase tracking-wider mb-2">
+      <h2 class="text-xs text-dimmed uppercase tracking-wider mb-2">
         {{ $t('toolkit.grounding.affirmations.defaults') }}
       </h2>
       <div class="space-y-2">
         <div
           v-for="(item, i) in defaultAffirmations"
           :key="i"
-          class="px-4 py-3 rounded-xl border border-neutral-800 bg-neutral-900/30 text-sm text-neutral-300"
+          class="px-4 py-3 rounded-xl border border-muted bg-muted text-sm text-default"
         >
           {{ item }}
         </div>
