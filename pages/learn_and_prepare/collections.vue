@@ -30,7 +30,7 @@
         <div
           v-for="collection in allCollections"
           :key="collection.id"
-          class="p-5 rounded-2xl border border-default bg-elevated cursor-pointer hover:bg-muted transition-colors"
+          class="p-5 rounded-2xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
           @click="navigateTo(`/learn_and_prepare/collection/${collection.id}`)">
           <div class="flex items-center gap-5">
             <!-- Icon -->

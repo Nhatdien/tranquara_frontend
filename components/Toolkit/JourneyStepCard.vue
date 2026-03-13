@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center gap-4 p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted transition-colors"
+    class="flex items-center gap-4 p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
     @click="$emit('tap')"
   >
     <!-- Step number + icon -->

@@ -1,8 +1,8 @@
 <template>
   <div class="px-4 mb-6 md:px-0 md:mb-0">
     <!-- Check-In Hero Card -->
-    <div class="relative rounded-2xl bg-inverted border border-inverted overflow-hidden">
-      <div class="flex flex-col items-center justify-center px-6 py-12 min-h-[360px]">
+    <div class="relative rounded-2xl bg-inverted border border-inverted overflow-hidden lg:max-w-2xl lg:mx-auto">
+      <div class="flex flex-col items-center justify-center px-6 py-12 min-h-[360px] lg:min-h-[280px] lg:py-10">
         <!-- Illustration -->
 
         <!-- Greeting -->

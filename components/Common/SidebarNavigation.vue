@@ -8,8 +8,23 @@
       <p class="text-xs text-muted mt-1">{{ $t('app.name') }}</p>
     </div>
 
+    <!-- New Journal Action -->
+    <div class="px-3 mb-4">
+      <UButton
+        block
+        color="primary"
+        variant="solid"
+        size="md"
+        class="justify-start gap-2"
+        @click="navigateTo('/journaling')"
+      >
+        <PenLine :size="18" />
+        <span>{{ $t('nav.newJournal') }}</span>
+      </UButton>
+    </div>
+
     <!-- Main Navigation -->
-    <nav class="flex-1 px-3 space-y-1 mt-2">
+    <nav class="flex-1 px-3 space-y-1">
       <NuxtLink
         v-for="item in bottomNavSchema"
         :key="item.link"
@@ -48,7 +63,7 @@
 
 <script setup lang="ts">
 import { bottomNavSchema } from "./bottomNavSchema";
-import { Home, HeartHandshake, BookOpen, Clock, User } from "lucide-vue-next";
+import { Home, HeartHandshake, BookOpen, Clock, User, PenLine } from "lucide-vue-next";
 
 const route = useRoute();
 

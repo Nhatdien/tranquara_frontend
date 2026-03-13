@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">{{ $t('learn.library') }}</h1>
-      <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full" />
+      <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full lg:hidden" />
     </div>
 
     <!-- Sync Status Banner -->
@@ -25,7 +25,7 @@
         <div
           v-for="featured in featuredCollections"
           :key="featured.id"
-          class="flex items-center rounded-xl border border-default bg-elevated overflow-hidden cursor-pointer hover:bg-muted transition-colors"
+          class="flex items-center rounded-xl border border-default bg-elevated overflow-hidden cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
           @click="navigateTo(`/learn_and_prepare/collection/${featured.id}`)">
           <div class="w-24 h-20 flex items-center justify-center bg-accented shrink-0">
             <component :is="getFeaturedIcon(featured.category)" class="w-10 h-10 text-default" />
@@ -53,7 +53,7 @@
           <div
             v-for="collection in displayedCollections"
             :key="collection.id"
-            class="shrink-0 w-72 lg:w-auto lg:shrink p-5 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted transition-colors"
+            class="shrink-0 w-72 lg:w-auto lg:shrink p-5 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
             @click="navigateTo(`/learn_and_prepare/collection/${collection.id}`)">
             <div class="flex items-start gap-4">
               <div class="w-16 h-24 flex items-center justify-center">
@@ -91,7 +91,7 @@
           <div
             v-for="item in categorySlideGroups"
             :key="item.slideGroup.id"
-            class="p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted transition-colors"
+            class="p-4 rounded-xl border border-default bg-elevated cursor-pointer hover:bg-muted hover:shadow-sm transition-all"
             @click="navigateTo(`/learn_and_prepare/collection/${item.collectionId}/${item.slideGroup.id}`)">
             <h3 class="font-medium text-base mb-1">{{ item.slideGroup.title }}</h3>
             <p class="text-xs text-muted">{{ $t('learn.questions', { count: item.slideGroup.slides?.length || 0 }) }}</p>

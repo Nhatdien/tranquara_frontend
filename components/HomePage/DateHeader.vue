@@ -8,12 +8,12 @@
 
     <!-- Date Display -->
     <div class="text-center flex-1">
-      <h1 class="text-2xl font-bold text-primary">{{ $t('home.today') }}</h1>
-      <p class="text-sm text-muted">{{ formattedDate }}</p>
+      <h1 class="text-2xl font-bold text-primary lg:text-3xl">{{ $t('home.today') }}</h1>
+      <p class="text-sm text-muted lg:text-base">{{ formattedDate }}</p>
     </div>
 
-    <!-- Profile and Sync Icons -->
-    <div class="flex items-center gap-1">
+    <!-- Profile and Sync Icons (mobile only — sidebar has profile on desktop) -->
+    <div class="flex items-center gap-1 lg:invisible">
       <!-- Sync Status Mini Indicator -->
       <SyncMiniIndicator size="sm" @click="navigateToSync" />
       

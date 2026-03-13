@@ -179,7 +179,7 @@
     </div> <!-- End: Prep Pack + Session Tracker grid -->
 
     <!-- Section 3: Homework -->
-    <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8">
+    <div v-if="toolkitStore.homeworkItems.length > 0 || toolkitStore.upcomingSession" class="mb-8 lg:max-w-2xl">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-sm text-muted tracking-[0.2em] uppercase">
           {{ $t('toolkit.homework.title') }}
@@ -278,7 +278,7 @@
         </span>
       </div>
 
-      <div class="flex flex-col gap-3 md:grid md:grid-cols-2">
+      <div class="flex flex-col gap-3 md:grid md:grid-cols-2 xl:grid-cols-3">
         <ToolkitJourneyStepCard
           v-for="step in journeySteps"
           :key="step.collectionId"
@@ -296,11 +296,11 @@
       <h2 class="text-sm text-muted tracking-[0.2em] uppercase mb-4">
         {{ $t('toolkit.grounding.title') }}
       </h2>
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         <button
           v-for="tool in groundingTools"
           :key="tool.key"
-          class="flex items-center gap-3 p-3 rounded-xl border border-default bg-elevated text-left hover:bg-muted transition-colors"
+          class="flex items-center gap-3 p-3 rounded-xl border border-default bg-elevated text-left hover:bg-muted hover:shadow-sm transition-all"
           @click="navigateTo(tool.path)"
         >
           <div class="w-10 h-10 rounded-lg bg-accented flex items-center justify-center shrink-0">

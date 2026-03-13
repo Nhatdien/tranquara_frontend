@@ -35,16 +35,16 @@
         </p>
       </div>
 
-      <!-- Slide Groups Carousel -->
-      <div class="flex justify-center gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory">
+      <!-- Slide Groups Carousel (mobile) / Grid (desktop) -->
+      <div class="flex justify-center gap-4 overflow-x-auto px-4 pb-4 scrollbar-hide snap-x snap-mandatory lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-visible lg:snap-none">
         <div
           v-for="(template, templateIndex) in categoryTemplates"
           :key="template.id"
-          class="flex-shrink-0 snap-center">
+          class="shrink-0 snap-center lg:contents">
           <div
             v-for="(slideGroup, index) in template.slide_groups"
             :key="slideGroup.id"
-            class="w-[85vw] max-w-md min-h-[320px] p-6 rounded-2xl border border-default bg-elevated flex flex-col mb-4">
+            class="w-[85vw] max-w-md lg:w-auto lg:max-w-none min-h-[320px] p-6 rounded-2xl border border-default bg-elevated flex flex-col mb-4 hover:shadow-sm transition-all">
             <!-- Chapter Number -->
             <div class="flex justify-end mb-8">
               <span class="text-dimmed text-sm font-medium">
