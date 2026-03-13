@@ -29,7 +29,7 @@
         v-for="item in bottomNavSchema"
         :key="item.link"
         :to="item.link"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         :class="isActive(item.link)
           ? 'bg-primary/10 text-primary'
           : 'text-muted hover:bg-accented hover:text-default'
@@ -48,7 +48,7 @@
     <div class="px-3 pb-4 border-t border-default pt-3">
       <NuxtLink
         to="/profile"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         :class="isActive('/profile')
           ? 'bg-primary/10 text-primary'
           : 'text-muted hover:bg-accented hover:text-default'

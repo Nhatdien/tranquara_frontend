@@ -3,8 +3,8 @@
     <!-- Header with Filter Button -->
     <div class="py-6 flex justify-between items-start">
       <div>
-        <h1 class="text-3xl font-bold mb-2">{{ $t('history.title') }}</h1>
-        <p class="text-muted text-sm">{{ $t('history.subtitle') }}</p>
+        <h1 class="text-3xl font-bold mb-2 lg:text-4xl">{{ $t('history.title') }}</h1>
+        <p class="text-muted text-sm lg:text-base">{{ $t('history.subtitle') }}</p>
       </div>
       
       <!-- Filter Button (mobile only — desktop has inline panel) -->
@@ -145,10 +145,15 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="filteredJournals.length === 0" class="text-center py-12">
-      <Icon name="i-lucide-book-open" class="w-12 h-12 text-muted mx-auto mb-4" />
-      <p class="text-muted mb-4">
+    <div v-else-if="filteredJournals.length === 0" class="text-center py-16 lg:py-24">
+      <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+        <Icon name="i-lucide-book-open" class="w-10 h-10 lg:w-12 lg:h-12 text-dimmed" />
+      </div>
+      <h3 class="text-lg font-semibold text-highlighted mb-2">
         {{ hasActiveFilters ? $t('history.noMatchingEntries') : $t('history.noEntries') }}
+      </h3>
+      <p class="text-muted text-sm mb-6 max-w-sm mx-auto">
+        {{ hasActiveFilters ? $t('history.tryDifferentFilters') : $t('history.startJournalingPrompt') }}
       </p>
       <UButton v-if="hasActiveFilters" @click="clearAllFilters" variant="outline">
         {{ $t('history.clearFilters') }}
@@ -170,7 +175,9 @@
           <div 
             v-for="entry in entries" 
             :key="entry.id"
-            class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all relative"
+            class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+            tabindex="0"
+            @keydown.enter="openEntry(entry)"
             @click="openEntry(entry)"
           >
             <!-- Sync Status Badge -->

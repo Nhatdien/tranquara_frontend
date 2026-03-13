@@ -1,12 +1,15 @@
 <template>
   <section class="px-4 py-6 pb-20 lg:pb-0">
+    <!-- Desktop Breadcrumbs -->
+    <DesktopBreadcrumb :items="breadcrumbs" />
+
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
-      <button @click="navigateTo('/toolkit/prep-pack')" class="text-muted hover:text-highlighted transition-colors">
+      <button @click="navigateTo('/toolkit/prep-pack')" class="text-muted hover:text-highlighted transition-colors lg:hidden">
         <ChevronLeft class="w-5 h-5" />
       </button>
       <div class="flex-1 min-w-0">
-        <h1 class="text-xl font-bold">{{ $t('toolkit.prepPack.title') }}</h1>
+        <h1 class="text-xl font-bold lg:text-2xl">{{ $t('toolkit.prepPack.title') }}</h1>
         <p v-if="prepPack" class="text-xs text-muted mt-0.5">
           {{ formatDateRange(prepPack.date_range_start, prepPack.date_range_end) }}
           · {{ $t('toolkit.prepPack.journalsAnalyzed', { count: prepPack.journal_count }) }}
@@ -246,6 +249,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
 import {
   ChevronLeft, BarChart3, Hash, Sparkles, Repeat,
   MessageCircle, Sprout, FileText, TrendingUp, TrendingDown, BookOpen
@@ -261,6 +265,12 @@ const route = useRoute();
 const toolkitStore = useToolkitStore();
 const learnedStore = useLearnedStore();
 const journalStore = userJournalStore();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.prepPack.title'), to: '/toolkit/prep-pack' },
+  { label: t('common.details') },
+])
 
 const isLoading = ref(true);
 const prepPack = ref<PrepPack | null>(null);

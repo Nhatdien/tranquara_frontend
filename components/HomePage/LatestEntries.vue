@@ -14,7 +14,9 @@
     <div
       v-if="userJournalStore()?.journals?.length > 0"
       @click="() => openEntry(userJournalStore().journals[0])"
-      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all border relative lg:col-span-2 lg:p-6"
+      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all border relative lg:col-span-2 lg:p-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      tabindex="0"
+      @keydown.enter="() => openEntry(userJournalStore().journals[0])"
     >
       <!-- Sync Status Badge (top right) -->
       <div class="absolute top-3 right-3 lg:top-5 lg:right-5">
@@ -58,7 +60,9 @@
       v-for="journal in userJournalStore()?.journals?.slice(1)" 
       :key="journal.id"
       @click="() => openEntry(journal)"
-      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all border relative"
+      class="bg-muted rounded-xl p-4 cursor-pointer hover:bg-accented hover:shadow-sm transition-all border relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      tabindex="0"
+      @keydown.enter="() => openEntry(journal)"
     >
       <!-- Sync Status Badge (top right) -->
       <div class="absolute top-3 right-3">
@@ -95,8 +99,13 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!userJournalStore().journals || userJournalStore().journals.length === 0" class="text-center py-12 md:col-span-2 xl:col-span-3">
-      <p class="text-muted mb-4">{{ $t('entries.noEntries') }}</p>
+    <!-- Empty State -->
+    <div v-if="!userJournalStore().journals || userJournalStore().journals.length === 0" class="text-center py-16 md:col-span-2 xl:col-span-3">
+      <div class="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+        <Icon name="i-lucide-pen-line" class="w-8 h-8 text-dimmed" />
+      </div>
+      <p class="text-highlighted font-medium mb-1">{{ $t('entries.noEntries') }}</p>
+      <p class="text-muted text-sm mb-4 max-w-xs mx-auto">{{ $t('entries.emptyPrompt') }}</p>
       <UButton @click="navigateTo('/journaling')" variant="outline">
         {{ $t('entries.startFirst') }}
       </UButton>

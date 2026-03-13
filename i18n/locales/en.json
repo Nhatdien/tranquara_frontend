@@ -32,7 +32,8 @@
     "reflection": "REFLECTION",
     "noEntries": "No journal entries yet",
     "startFirst": "Start Your First Entry",
-    "seeAll": "See all entries"
+    "seeAll": "See all entries",
+    "emptyPrompt": "Take a moment to reflect — your first entry is waiting."
   },
   "history": {
     "title": "History",
@@ -57,7 +58,9 @@
     "applyFilters": "Apply Filters",
     "activeFilters": "Active filters:",
     "clearAll": "Clear all",
-    "journal": "Journal"
+    "journal": "Journal",
+    "tryDifferentFilters": "Try adjusting your filters to find what you're looking for.",
+    "startJournalingPrompt": "Begin your journaling journey — your thoughts deserve a space."
   },
   "learn": {
     "library": "Library",
@@ -272,7 +275,8 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "retry": "Retry",
-    "view": "View"
+    "view": "View",
+    "details": "Details"
   },
   "auth": {
     "welcomeBack": "Welcome Back",

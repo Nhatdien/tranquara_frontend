@@ -1,12 +1,15 @@
 <template>
   <section class="px-4 py-6 pb-20 lg:pb-0">
+    <!-- Desktop Breadcrumbs -->
+    <DesktopBreadcrumb :items="breadcrumbs" />
+
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
-      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors">
+      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors lg:hidden">
         <ChevronLeft class="w-5 h-5" />
       </button>
       <div>
-        <h1 class="text-xl font-bold">{{ $t('toolkit.journey.title') }}</h1>
+        <h1 class="text-xl font-bold lg:text-2xl">{{ $t('toolkit.journey.title') }}</h1>
         <p class="text-muted text-xs mt-0.5">{{ $t('toolkit.journey.description') }}</p>
       </div>
     </div>
@@ -32,6 +35,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
 import { ChevronLeft } from "lucide-vue-next";
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useLearnedStore } from "~/stores/stores/user_learned";
@@ -40,9 +44,15 @@ import type { LocalTemplate } from "~/types/user_journal";
 
 definePageMeta({ layout: "default" });
 
+const { t } = useI18n();
 const journalStore = userJournalStore();
 const learnedStore = useLearnedStore();
 const journeySteps = JOURNEY_STEPS;
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.journey.title') },
+])
 
 onMounted(async () => {
   await journalStore.getAllTemplates();

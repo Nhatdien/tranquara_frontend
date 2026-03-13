@@ -2,7 +2,7 @@
   <section class="px-4 py-6 pb-20 lg:pb-0">
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">{{ $t('learn.library') }}</h1>
+      <h1 class="text-2xl font-bold lg:text-3xl">{{ $t('learn.library') }}</h1>
       <UButton variant="ghost" size="lg" icon="i-lucide-user" class="rounded-full lg:hidden" />
     </div>
 

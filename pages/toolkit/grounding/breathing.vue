@@ -1,7 +1,12 @@
 <template>
-  <section class="min-h-screen flex flex-col items-center justify-center px-6 pb-20 lg:pb-0">
-    <!-- Back Button -->
-    <div class="fixed top-4 left-4 z-10">
+  <section class="min-h-screen flex flex-col items-center justify-center px-6 pb-20 lg:pb-0 relative">
+    <!-- Desktop Breadcrumbs (top-left) -->
+    <div class="absolute top-4 left-4 z-10">
+      <DesktopBreadcrumb :items="breadcrumbs" />
+    </div>
+
+    <!-- Back Button (mobile) -->
+    <div class="fixed top-4 left-4 z-10 lg:hidden">
       <UButton variant="ghost" size="lg" icon="i-lucide-chevron-left" @click="navigateTo('/toolkit')" />
     </div>
 
@@ -74,11 +79,17 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
 import { BOX_BREATHING_CONFIG } from '~/types/therapy_toolkit';
 
 definePageMeta({ layout: 'detail' });
 
 const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.grounding.breathing.title') },
+])
 
 const config = BOX_BREATHING_CONFIG;
 const phases = [

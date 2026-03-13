@@ -1,11 +1,14 @@
 <template>
   <section class="px-4 py-6 pb-24 lg:pb-6 max-w-2xl mx-auto">
+    <!-- Desktop Breadcrumbs -->
+    <DesktopBreadcrumb :items="breadcrumbs" />
+
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
-      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors">
+      <button @click="navigateTo('/toolkit')" class="text-muted hover:text-highlighted transition-colors lg:hidden">
         <ChevronLeft class="w-5 h-5" />
       </button>
-      <h1 class="text-lg font-semibold">{{ $t('toolkit.session.detail.title') }}</h1>
+      <h1 class="text-lg font-semibold lg:text-2xl">{{ $t('toolkit.session.detail.title') }}</h1>
     </div>
 
     <div v-if="session">
@@ -124,6 +127,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
 import { ChevronLeft, ArrowRight, Trash2 } from 'lucide-vue-next';
 import { useToolkitStore } from '~/stores/stores/therapy_toolkit_store';
 
@@ -132,6 +136,11 @@ definePageMeta({ layout: 'default' });
 const route = useRoute();
 const toolkitStore = useToolkitStore();
 const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.session.detail.title') },
+])
 
 const sessionId = route.params.id as string;
 

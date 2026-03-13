@@ -1,11 +1,14 @@
 <template>
   <section class="min-h-screen px-6 pb-20 lg:pb-0 pt-6">
-    <!-- Back Button -->
-    <div class="mb-6">
+    <!-- Desktop Breadcrumbs -->
+    <DesktopBreadcrumb :items="breadcrumbs" />
+
+    <!-- Back Button (mobile) -->
+    <div class="mb-6 lg:hidden">
       <UButton variant="ghost" size="lg" icon="i-lucide-chevron-left" @click="navigateTo('/toolkit')" />
     </div>
 
-    <h1 class="text-xl font-semibold mb-2">{{ $t('toolkit.grounding.fiveSenses.title') }}</h1>
+    <h1 class="text-xl font-semibold mb-2 lg:text-2xl">{{ $t('toolkit.grounding.fiveSenses.title') }}</h1>
     <p class="text-muted text-sm mb-6">{{ $t('toolkit.grounding.fiveSenses.description') }}</p>
 
     <!-- Step indicator -->
@@ -60,9 +63,16 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
+
 definePageMeta({ layout: 'detail' });
 
 const { t } = useI18n();
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.toolkit'), icon: 'i-lucide-heart-handshake', to: '/toolkit' },
+  { label: t('toolkit.grounding.fiveSenses.title') },
+])
 
 const steps = [
   { key: 'see', count: 5, labelKey: 'toolkit.grounding.fiveSenses.steps.see' },

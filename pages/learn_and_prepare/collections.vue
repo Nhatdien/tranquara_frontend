@@ -1,7 +1,12 @@
 <template>
   <section class="min-h-screen pb-20 lg:pb-0">
-    <!-- Back Button -->
+    <!-- Desktop Breadcrumbs -->
     <div class="px-4 pt-4">
+      <DesktopBreadcrumb :items="breadcrumbs" />
+    </div>
+
+    <!-- Back Button (mobile) -->
+    <div class="px-4 pt-4 lg:hidden">
       <UButton 
         variant="ghost" 
         size="lg" 
@@ -52,6 +57,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { BreadcrumbItem } from '@nuxt/ui'
 import { userJournalStore } from "~/stores/stores/user_journal";
 import { useLearnedStore } from "~/stores/stores/user_learned";
 import { 
@@ -69,9 +75,15 @@ import {
   CheckSquare
 } from "lucide-vue-next";
 
+const { t } = useI18n();
 const journalStore = userJournalStore();
 const learnedStore = useLearnedStore();
 const isLoading = ref(true);
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  { label: t('nav.library'), icon: 'i-lucide-book-open', to: '/learn_and_prepare' },
+  { label: t('learnSub.collections') },
+])
 
 // Load templates and progress on mount
 onMounted(async () => {
